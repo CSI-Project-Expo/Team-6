@@ -52,7 +52,7 @@ This solution improves efficiency, reduces congestion, and enhances the overall 
 - Bootstrap / Tailwind CSS  
 
 **Backend:**
-- Python (Flask) or Node.js (Express)  
+- Python (Flask)  
 
 **Database:**
 - MySQL / SQLite  
