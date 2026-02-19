@@ -55,7 +55,7 @@ This solution improves efficiency, reduces congestion, and enhances the overall 
 - Python (Flask)  
 
 **Database:**
-- MySQL / SQLite  
+- MySQL 
 
 **Tools:**
 - Git & GitHub  
