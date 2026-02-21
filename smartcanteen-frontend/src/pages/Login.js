@@ -1,30 +1,35 @@
 import React, { useState } from "react";
 import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleLogin = async () => {
-    try {
-      const res = await api.post("/auth/login", {
-        email: email,
-        password: password
-      });
+  const navigate = useNavigate();
 
-      setMessage(res.data.message);
+ const handleLogin = async () => {
+  try {
+    const res = await api.post("/auth/login", {
+      email: email,
+      password: password
+    });
 
-      if (res.data.role === "ADMIN") {
-        alert("Welcome Admin");
-      } else {
-        alert("Welcome Student");
-      }
+    setMessage(res.data.message);
 
-    } catch (err) {
-      setMessage("Login failed");
+    // Redirect based on role after successful login
+
+    if (res.data.role === "ADMIN") {
+      navigate("/admin");
+    } else {
+      navigate("/student");
     }
-  };
+
+  } catch (err) {
+    setMessage("Login failed");
+  }
+};
 
   return (
     <div>
