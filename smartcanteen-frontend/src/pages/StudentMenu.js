@@ -5,14 +5,23 @@ import { useNavigate } from "react-router-dom";
 function StudentMenu() {
   const navigate = useNavigate();
 
-  const userId = localStorage.getItem("user_id"); // from login
+  //  get user id from localStorage
+  const userId = parseInt(localStorage.getItem("user_id"));
 
   const [menu, setMenu] = useState([]);
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [cartItems, setCartItems] = useState([]);
 
-  const hotelId = 1; // temporary (later from selection or params)
+  const hotelId = 1; // temporary
+
+  // 🚨 safety check
+  useEffect(() => {
+    if (!userId) {
+      alert("Please login again");
+      navigate("/login");
+    }
+  }, [userId, navigate]);
 
   // Fetch Menu
   useEffect(() => {
@@ -20,7 +29,7 @@ function StudentMenu() {
       .get(`http://127.0.0.1:5000/student/menu/${hotelId}`)
       .then(res => setMenu(res.data))
       .catch(err => console.log(err));
-  }, []);
+  }, [hotelId]);
 
   // Fetch Pickup Slots
   useEffect(() => {
@@ -28,7 +37,7 @@ function StudentMenu() {
       .get(`http://127.0.0.1:5000/student/pickup-slots/${hotelId}`)
       .then(res => setSlots(res.data))
       .catch(err => console.log(err));
-  }, []);
+  }, [hotelId]);
 
   // Add to cart
   const addToCart = (item) => {

@@ -19,6 +19,8 @@ function Login() {
     setMessage(res.data.message);
 
     // Redirect based on role after successful login
+localStorage.setItem("user_id", res.data.user_id);
+localStorage.setItem("role", res.data.role);
 
     if (res.data.role === "ADMIN") {
       navigate("/admin");
