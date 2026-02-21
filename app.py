@@ -186,24 +186,29 @@ def place_order():
 # ===============================
 # TOKEN
 # ===============================
-@app.route("/token/<int:order_id>", methods=["POST"])
+@app.route("/token/<int:order_id>", methods=["GET", "POST"])
 def generate_token(order_id):
     db = get_db_connection()
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
 
-    token_code = str(uuid.uuid4())[:8]
+    # Check if token already exists
+    cursor.execute("SELECT token_code FROM order_tokens WHERE order_id=%s", (order_id,))
+    existing = cursor.fetchone()
 
-    cursor.execute("""
-        INSERT INTO order_tokens (order_id, token_code)
-        VALUES (%s, %s)
-    """, (order_id, token_code))
+    if existing:
+        token_code = existing["token_code"]
+    else:
+        # Generate new token
+        token_code = str(uuid.uuid4())[:8]
+        cursor.execute("""
+            INSERT INTO order_tokens (order_id, token_code)
+            VALUES (%s, %s)
+        """, (order_id, token_code))
+        db.commit()
 
-    db.commit()
     cursor.close()
     db.close()
-
     return jsonify({"token": token_code})
-
 
 # ===============================
 # RUN
