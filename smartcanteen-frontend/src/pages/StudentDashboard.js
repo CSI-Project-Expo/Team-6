@@ -1,23 +1,31 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function StudentDashboard() {
   const [hotels, setHotels] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:5000/admin/hotels")
-      .then(res => setHotels(res.data))
-      .catch(err => console.log(err));
+    fetchHotels();
   }, []);
+
+  const fetchHotels = async () => {
+    const res = await api.get("/admin/hotels");
+    setHotels(res.data);
+  };
 
   return (
     <div>
-      <h2>Available Hotels</h2>
+      <h2>Student Dashboard</h2>
 
-      {hotels.map(hotel => (
+      <h3>Select Hotel</h3>
+      {hotels.map((hotel) => (
         <div key={hotel.hotel_id}>
-          <h3>{hotel.hotel_name}</h3>
-          <p>{hotel.location}</p>
+          <p>{hotel.hotel_name}</p>
+          <button onClick={() => navigate(`/menu?hotel_id=${hotel.hotel_id}`)}>
+            View Menu
+          </button>
         </div>
       ))}
     </div>
