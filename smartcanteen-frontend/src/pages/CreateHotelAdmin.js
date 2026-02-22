@@ -1,5 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function CreateHotelAdmin() {
   const [name, setName] = useState("");
@@ -7,34 +8,65 @@ function CreateHotelAdmin() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleCreateAdmin = async () => {
-    try {
-      await axios.post("http://127.0.0.1:5000/superadmin/create-hotel-admin", {
-        name,
-        email,
-        password
-      });
+  const navigate = useNavigate();
 
-      setMessage("Hotel Admin created ✅");
+  const handleCreateAdmin = async () => {
+    if (!name || !email || !password) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:5000/superadmin/create-hotel-admin",
+        {
+          name,
+          email,
+          password
+        }
+      );
+
+      setMessage(res.data.message);
       setName("");
       setEmail("");
       setPassword("");
+
     } catch (error) {
-      setMessage("Failed to create admin ❌");
+      console.log(error);
+      setMessage("Failed to create hotel admin");
     }
   };
 
   return (
     <div>
-      <h2>Create Hotel Admin</h2>
+      <h2>👨‍🍳 Create Hotel Admin</h2>
 
-      <input placeholder="Name" onChange={(e)=>setName(e.target.value)} /><br/>
-      <input placeholder="Email" onChange={(e)=>setEmail(e.target.value)} /><br/>
-      <input placeholder="Password" type="password" onChange={(e)=>setPassword(e.target.value)} /><br/>
+      <input
+        type="text"
+        placeholder="Name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+      /><br /><br />
 
-      <button onClick={handleCreateAdmin}>Create Admin</button>
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      /><br /><br />
+
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      /><br /><br />
+
+      <button onClick={handleCreateAdmin}>Create Hotel Admin</button>
 
       <p>{message}</p>
+
+      <button onClick={() => navigate("/superadmin")}>⬅ Back</button>
     </div>
   );
 }
