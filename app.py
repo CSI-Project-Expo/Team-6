@@ -126,8 +126,9 @@ def get_menu(hotel_id):
     return jsonify(menu)
 
 
+
 # ===============================
-# PICKUP SLOTS (FIXED timedelta bug)
+# PICKUP SLOTS
 # ===============================
 @app.route("/student/pickup-slots/<int:hotel_id>", methods=["GET"])
 def view_pickup_slots(hotel_id):
@@ -137,7 +138,6 @@ def view_pickup_slots(hotel_id):
     cursor.execute("SELECT * FROM pickup_slots WHERE hotel_id=%s", (hotel_id,))
     slots = cursor.fetchall()
 
-    # Convert time fields to string
     for slot in slots:
         slot["start_time"] = str(slot["start_time"])
         slot["end_time"] = str(slot["end_time"])
@@ -164,8 +164,8 @@ def place_order():
     items = data["items"]
 
     cursor.execute("""
-        INSERT INTO orders (user_id, hotel_id, slot_id, order_date, total_amount)
-        VALUES (%s, %s, %s, CURDATE(), %s)
+        INSERT INTO orders (user_id, hotel_id, slot_id, order_date, total_amount, status)
+        VALUES (%s, %s, %s, CURDATE(), %s, 'PLACED')
     """, (user_id, hotel_id, slot_id, total_amount))
 
     order_id = cursor.lastrowid
@@ -184,21 +184,44 @@ def place_order():
 
 
 # ===============================
-# TOKEN
+# GET ORDER STATUS
 # ===============================
-@app.route("/token/<int:order_id>", methods=["GET", "POST"])
+@app.route("/student/order/<int:order_id>", methods=["GET"])
+def get_order(order_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT order_id, total_amount, status
+        FROM orders
+        WHERE order_id = %s
+    """, (order_id,))
+
+    order = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    if not order:
+        return jsonify({"message": "Order not found"}), 404
+
+    return jsonify(order)
+
+
+# ===============================
+# TOKEN GENERATION
+# ===============================
+@app.route("/token/<int:order_id>", methods=["GET"])
 def generate_token(order_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # Check if token already exists
     cursor.execute("SELECT token_code FROM order_tokens WHERE order_id=%s", (order_id,))
     existing = cursor.fetchone()
 
     if existing:
         token_code = existing["token_code"]
     else:
-        # Generate new token
         token_code = str(uuid.uuid4())[:8]
         cursor.execute("""
             INSERT INTO order_tokens (order_id, token_code)
@@ -209,7 +232,6 @@ def generate_token(order_id):
     cursor.close()
     db.close()
     return jsonify({"token": token_code})
-
 
 
 # ===============================
@@ -235,26 +257,28 @@ def validate_token():
     if not token:
         return jsonify({"message": "Invalid token"}), 404
 
-    # check if already collected
-    cursor.execute("""
-        SELECT * FROM collected_tokens WHERE token_code = %s
-    """, (token_code,))
+    cursor.execute("SELECT * FROM collected_tokens WHERE token_code=%s", (token_code,))
     used = cursor.fetchone()
 
     if used:
         return jsonify({"message": "Token already used"}), 400
 
-    # mark token as collected
     cursor.execute("""
         INSERT INTO collected_tokens (token_code, collected_at)
         VALUES (%s, NOW())
     """, (token_code,))
+
+    cursor.execute("""
+        UPDATE orders SET status='COLLECTED' WHERE order_id=%s
+    """, (token["order_id"],))
 
     db.commit()
     cursor.close()
     db.close()
 
     return jsonify({"message": "Token valid. Order served ✅"})
+
+
 # ===============================
 # RUN
 # ===============================

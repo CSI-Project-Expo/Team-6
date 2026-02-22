@@ -7,7 +7,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import TokenPage from "./pages/TokenPage";
 import StaffTokenPage from "./pages/StaffTokenPage";
-
+import TrackOrder from "./pages/TrackOrder";
 
 function App() {
   return (
@@ -20,6 +20,7 @@ function App() {
         <Route path="/order" element={<PlaceOrder />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/token/:orderId" element={<TokenPage />} />
+        <Route path="/order-status/:orderId" element={<TrackOrder />} />
 <Route path="/staff" element={<StaffTokenPage />} />
       </Routes>
     </Router>

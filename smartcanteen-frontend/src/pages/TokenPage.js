@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-
+import { useNavigate } from "react-router-dom";
 function TokenPage() {
   const { orderId } = useParams();
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
-
+const navigate = useNavigate();
   useEffect(() => {
     generateToken();
   }, []);
@@ -39,6 +39,9 @@ function TokenPage() {
           <p>Please show this token at the counter.</p>
         </>
       )}
+      <button onClick={() => navigate(`/order-status/${orderId}`)}>
+  📦 Track Order
+</button>
     </div>
   );
 }
