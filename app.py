@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
 import uuid
+from functools import wraps
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +19,21 @@ def get_db_connection():
     )
 
 # ===============================
+# ROLE CHECK DECORATOR
+# ===============================
+def check_role(required_role):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            role = request.headers.get("role")
+            if role != required_role:
+                return jsonify({"message": "Unauthorized"}), 403
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
+# ===============================
 # HOME
 # ===============================
 @app.route("/")
@@ -26,18 +42,17 @@ def home():
 
 
 # ===============================
-# AUTH - REGISTER
+# AUTH REGISTER (STUDENT ONLY)
 # ===============================
 @app.route("/auth/register", methods=["POST"])
 def register():
     db = get_db_connection()
     cursor = db.cursor()
-    data = request.json
 
+    data = request.json
     name = data.get("name")
     email = data.get("email")
     password = data.get("password")
-    role = data.get("role", "STUDENT")
 
     if not name or not email or not password:
         return jsonify({"message": "All fields required"}), 400
@@ -45,11 +60,10 @@ def register():
     try:
         cursor.execute("""
             INSERT INTO users (name, email, password_hash, role)
-            VALUES (%s, %s, %s, %s)
-        """, (name, email, password, role))
-
+            VALUES (%s, %s, %s, 'STUDENT')
+        """, (name, email, password))
         db.commit()
-        return jsonify({"message": "User registered successfully"}), 200
+        return jsonify({"message": "Student registered successfully"})
 
     except mysql.connector.IntegrityError:
         return jsonify({"message": "Email already exists"}), 400
@@ -60,10 +74,10 @@ def register():
 
 
 # ===============================
-# STUDENT LOGIN
+# LOGIN
 # ===============================
 @app.route("/auth/login", methods=["POST"])
-def student_login():
+def login():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -74,11 +88,11 @@ def student_login():
     cursor.execute("SELECT * FROM users WHERE email=%s", (email,))
     user = cursor.fetchone()
 
-    cursor.close()
-    db.close()
-
     if not user:
         return jsonify({"message": "User not found"}), 404
+
+    if user["status"] == "BLOCKED":
+        return jsonify({"message": "User is blocked"}), 403
 
     if user["password_hash"] != password:
         return jsonify({"message": "Invalid password"}), 401
@@ -90,509 +104,373 @@ def student_login():
     })
 
 
-# ===============================
-# SUPER ADMIN LOGIN
-# ===============================
-@app.route("/superadmin/login", methods=["POST"])
-def superadmin_login():
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
-    data = request.json
-    email = data.get("email")
-    password = data.get("password")
-
-    cursor.execute("""
-        SELECT * FROM users 
-        WHERE email=%s AND password_hash=%s AND role='SUPER_ADMIN'
-    """, (email, password))
-
-    user = cursor.fetchone()
-
-    cursor.close()
-    db.close()
-
-    if user:
-        return jsonify({
-            "message": "Super Admin login successful",
-            "user_id": user["user_id"],
-            "role": user["role"]
-        })
-    else:
-        return jsonify({"message": "Invalid credentials"}), 401
+@app.route("/auth/logout", methods=["POST"])
+def logout():
+    return jsonify({"message": "Logged out successfully"})
 
 
 # ===============================
-# CREATE HOTEL ADMIN
-# ===============================
-@app.route("/superadmin/create-hotel-admin", methods=["POST"])
-def create_hotel_admin():
-    db = get_db_connection()
-    cursor = db.cursor()
-
-    data = request.json
-    name = data["name"]
-    email = data["email"]
-    password = data["password"]
-
-    cursor.execute("""
-        INSERT INTO users (name, email, password_hash, role)
-        VALUES (%s, %s, %s, 'HOTEL_ADMIN')
-    """, (name, email, password))
-
-    db.commit()
-    cursor.close()
-    db.close()
-
-    return jsonify({"message": "Hotel Admin created successfully"})
-
-
-# ===============================
-# ASSIGN HOTEL ADMIN
-# ===============================
-@app.route("/superadmin/assign-hotel-admin", methods=["POST"])
-def assign_hotel_admin():
-    db = get_db_connection()
-    cursor = db.cursor()
-
-    data = request.json
-    user_id = data["user_id"]
-    hotel_id = data["hotel_id"]
-
-    cursor.execute("""
-        INSERT INTO hotel_admins (user_id, hotel_id)
-        VALUES (%s, %s)
-    """, (user_id, hotel_id))
-
-    db.commit()
-    cursor.close()
-    db.close()
-
-    return jsonify({"message": "Hotel Admin assigned to hotel"})
-
-
-# ===============================
-# ADD HOTEL
+# SUPER ADMIN
 # ===============================
 @app.route("/superadmin/add-hotel", methods=["POST"])
+@check_role("ADMIN")
 def add_hotel():
     db = get_db_connection()
     cursor = db.cursor()
-
     data = request.json
-    hotel_name = data.get("hotel_name")
-    location = data.get("location")
 
     cursor.execute("""
         INSERT INTO hotels (hotel_name, location, is_active)
         VALUES (%s, %s, TRUE)
-    """, (hotel_name, location))
+    """, (data["hotel_name"], data["location"]))
 
     db.commit()
     cursor.close()
     db.close()
-
     return jsonify({"message": "Hotel added successfully"})
 
 
-# ===============================
-# SUPER ADMIN VIEW HOTELS
-# ===============================
-@app.route("/superadmin/hotels", methods=["GET"])
-def view_superadmin_hotels():
+@app.route("/superadmin/create-hotel-admin", methods=["POST"])
+@check_role("ADMIN")
+def create_hotel_admin():
+    db = get_db_connection()
+    cursor = db.cursor()
+    data = request.json
+
+    cursor.execute("""
+        INSERT INTO users (name, email, password_hash, role)
+        VALUES (%s,%s,%s,'HOTEL_ADMIN')
+    """, (data["name"], data["email"], data["password"]))
+
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"message": "Hotel admin created"})
+
+
+@app.route("/superadmin/assign-hotel-admin", methods=["POST"])
+@check_role("ADMIN")
+def assign_hotel_admin():
+    db = get_db_connection()
+    cursor = db.cursor()
+    data = request.json
+
+    cursor.execute("""
+        INSERT INTO hotel_admins (user_id, hotel_id)
+        VALUES (%s,%s)
+    """, (data["user_id"], data["hotel_id"]))
+
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"message": "Assigned successfully"})
+
+
+@app.route("/superadmin/hotels")
+@check_role("ADMIN")
+def view_hotels():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT h.hotel_id, h.hotel_name, h.location, h.is_active,
-               u.name AS admin_name
+        SELECT h.hotel_id, h.hotel_name, h.location, h.is_active, u.name AS admin_name
         FROM hotels h
         LEFT JOIN hotel_admins ha ON h.hotel_id = ha.hotel_id
         LEFT JOIN users u ON ha.user_id = u.user_id
     """)
 
-    hotels = cursor.fetchall()
+    data = cursor.fetchall()
     cursor.close()
     db.close()
-
-    return jsonify(hotels)
-
-
-# ===============================
-# GET HOTEL ADMINS
-# ===============================
-@app.route("/superadmin/hotel-admins", methods=["GET"])
-def get_hotel_admins():
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
-    cursor.execute("""
-        SELECT user_id, name, email 
-        FROM users 
-        WHERE role = 'HOTEL_ADMIN'
-    """)
-
-    admins = cursor.fetchall()
-    cursor.close()
-    db.close()
-
-    return jsonify(admins)
+    return jsonify(data)
 
 
-# ===============================
-# BLOCK USER
-# ===============================
 @app.route("/superadmin/block-user/<int:user_id>", methods=["PUT"])
+@check_role("ADMIN")
 def block_user(user_id):
     db = get_db_connection()
     cursor = db.cursor()
-
-    cursor.execute("""
-        UPDATE users SET status='BLOCKED'
-        WHERE user_id=%s
-    """, (user_id,))
-
+    cursor.execute("UPDATE users SET status='BLOCKED' WHERE user_id=%s", (user_id,))
     db.commit()
     cursor.close()
     db.close()
-
     return jsonify({"message": "User blocked"})
 
 
-# ===============================
-# ADMIN VIEW HOTELS
-# ===============================
-@app.route("/admin/hotels", methods=["GET"])
-def view_admin_hotels():
+@app.route("/superadmin/dashboard")
+@check_role("ADMIN")
+def dashboard():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM hotels")
-    hotels = cursor.fetchall()
+    cursor.execute("SELECT COUNT(*) as users FROM users")
+    users = cursor.fetchone()
+
+    cursor.execute("SELECT COUNT(*) as orders FROM orders")
+    orders = cursor.fetchone()
+
+    cursor.execute("SELECT COUNT(*) as hotels FROM hotels")
+    hotels = cursor.fetchone()
 
     cursor.close()
     db.close()
 
-    return jsonify(hotels)
+    return jsonify({
+        "total_users": users["users"],
+        "total_orders": orders["orders"],
+        "total_hotels": hotels["hotels"]
+    })
 
 
 # ===============================
-# STUDENT MENU
+# STUDENT
 # ===============================
-@app.route("/student/menu/<int:hotel_id>", methods=["GET"])
+@app.route("/student/menu/<int:hotel_id>")
 def get_menu(hotel_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
         SELECT menu_item_id, item_name, price, is_available
-        FROM menu_items
-        WHERE hotel_id = %s
+        FROM menu_items WHERE hotel_id=%s
     """, (hotel_id,))
 
-    menu = cursor.fetchall()
+    data = cursor.fetchall()
     cursor.close()
     db.close()
+    return jsonify(data)
 
-    return jsonify(menu)
 
-
-# ===============================
-# STUDENT ORDERS
-# ===============================
-@app.route("/student/orders/<int:user_id>", methods=["GET"])
-def get_user_orders(user_id):
+@app.route("/student/pickup-slots/<int:hotel_id>")
+def pickup_slots(hotel_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-
-    cursor.execute("""
-        SELECT o.order_id, o.order_date, o.total_amount, o.status,
-               ot.token_code
-        FROM orders o
-        LEFT JOIN order_tokens ot ON o.order_id = ot.order_id
-        WHERE o.user_id = %s
-        ORDER BY o.order_id DESC
-    """, (user_id,))
-
-    orders = cursor.fetchall()
-    cursor.close()
-    db.close()
-
-    return jsonify(orders)
-
-
-# ===============================
-# PICKUP SLOTS
-# ===============================
-@app.route("/student/pickup-slots/<int:hotel_id>", methods=["GET"])
-def view_pickup_slots(hotel_id):
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
-
     cursor.execute("SELECT * FROM pickup_slots WHERE hotel_id=%s", (hotel_id,))
     slots = cursor.fetchall()
-
-    for slot in slots:
-        slot["start_time"] = str(slot["start_time"])
-        slot["end_time"] = str(slot["end_time"])
-
     cursor.close()
     db.close()
-
     return jsonify(slots)
 
 
-# ===============================
-# PLACE ORDER
-# ===============================
 @app.route("/student/order", methods=["POST"])
 def place_order():
     db = get_db_connection()
     cursor = db.cursor()
-
     data = request.json
-    user_id = data.get("user_id")
-    hotel_id = data.get("hotel_id")
-    slot_id = data.get("slot_id")
-    total_amount = data.get("total_amount")
-    items = data.get("items")
 
     cursor.execute("""
         INSERT INTO orders (user_id, hotel_id, slot_id, order_date, total_amount, status)
-        VALUES (%s, %s, %s, CURDATE(), %s, 'PLACED')
-    """, (user_id, hotel_id, slot_id, total_amount))
+        VALUES (%s,%s,%s,CURDATE(),%s,'PLACED')
+    """, (data["user_id"], data["hotel_id"], data["slot_id"], data["total_amount"]))
 
     order_id = cursor.lastrowid
 
-    for item in items:
+    for item in data["items"]:
         cursor.execute("""
             INSERT INTO order_items (order_id, menu_item_id, quantity, price)
-            VALUES (%s, %s, %s, %s)
+            VALUES (%s,%s,%s,%s)
         """, (order_id, item["menu_item_id"], item["quantity"], item["price"]))
 
     db.commit()
     cursor.close()
     db.close()
+    return jsonify({"order_id": order_id})
 
-    return jsonify({"message": "Order placed", "order_id": order_id})
 
-
-# ===============================
-# GET ORDER STATUS
-# ===============================
-@app.route("/student/order/<int:order_id>", methods=["GET"])
-def get_order(order_id):
+@app.route("/student/orders/<int:user_id>")
+def my_orders(user_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT order_id, total_amount, status
-        FROM orders
-        WHERE order_id = %s
-    """, (order_id,))
+        SELECT o.*, ot.token_code
+        FROM orders o
+        LEFT JOIN order_tokens ot ON o.order_id=ot.order_id
+        WHERE o.user_id=%s
+    """, (user_id,))
 
-    order = cursor.fetchone()
-
+    data = cursor.fetchall()
     cursor.close()
     db.close()
-
-    if not order:
-        return jsonify({"message": "Order not found"}), 404
-
-    return jsonify(order)
+    return jsonify(data)
 
 
 # ===============================
-# TOKEN GENERATION
+# TOKEN
 # ===============================
-@app.route("/token/<int:order_id>", methods=["GET"])
-def generate_token(order_id):
+@app.route("/token/<int:order_id>")
+def token(order_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("SELECT token_code FROM order_tokens WHERE order_id=%s", (order_id,))
-    existing = cursor.fetchone()
+    token = cursor.fetchone()
 
-    if existing:
-        token_code = existing["token_code"]
-    else:
-        token_code = str(uuid.uuid4())[:8]
-        cursor.execute("""
-            INSERT INTO order_tokens (order_id, token_code)
-            VALUES (%s, %s)
-        """, (order_id, token_code))
-        db.commit()
+    if token:
+        return jsonify(token)
 
+    token_code = str(uuid.uuid4())[:8]
+    cursor.execute("INSERT INTO order_tokens(order_id, token_code) VALUES(%s,%s)", (order_id, token_code))
+    db.commit()
     cursor.close()
     db.close()
-
     return jsonify({"token": token_code})
 
 
-# ===============================
-# VALIDATE TOKEN
-# ===============================
 @app.route("/token/validate", methods=["POST"])
 def validate_token():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-
     data = request.json
-    token_code = data.get("token_code")
 
     cursor.execute("""
-        SELECT ot.token_code, o.order_id
-        FROM order_tokens ot
-        JOIN orders o ON ot.order_id = o.order_id
-        WHERE ot.token_code = %s
-    """, (token_code,))
+        SELECT ot.token_code, o.order_id FROM order_tokens ot
+        JOIN orders o ON ot.order_id=o.order_id
+        WHERE ot.token_code=%s
+    """, (data["token_code"],))
 
     token = cursor.fetchone()
-
     if not token:
         return jsonify({"message": "Invalid token"}), 404
 
-    cursor.execute("SELECT * FROM collected_tokens WHERE token_code=%s", (token_code,))
-    used = cursor.fetchone()
-
-    if used:
-        return jsonify({"message": "Token already used"}), 400
-
-    cursor.execute("""
-        INSERT INTO collected_tokens (token_code, collected_at)
-        VALUES (%s, NOW())
-    """, (token_code,))
-
-    cursor.execute("""
-        UPDATE orders SET status='COLLECTED' WHERE order_id=%s
-    """, (token["order_id"],))
-
+    cursor.execute("UPDATE orders SET status='COLLECTED' WHERE order_id=%s", (token["order_id"],))
     db.commit()
     cursor.close()
     db.close()
-
-    return jsonify({"message": "Token valid. Order served ✅"})
+    return jsonify({"message": "Order served"})
 
 
 # ===============================
 # PAYMENT
 # ===============================
 @app.route("/payment", methods=["POST"])
-def make_payment():
+def payment():
     db = get_db_connection()
     cursor = db.cursor()
-
     data = request.json
-    order_id = data.get("order_id")
-    amount = data.get("amount")
-    payment_mode = data.get("payment_mode")
 
     cursor.execute("""
-        INSERT INTO payments (order_id, amount, payment_mode)
-        VALUES (%s, %s, %s)
-    """, (order_id, amount, payment_mode))
+        INSERT INTO payments(order_id, amount, payment_mode)
+        VALUES(%s,%s,%s)
+    """, (data["order_id"], data["amount"], data["payment_mode"]))
 
     db.commit()
     cursor.close()
     db.close()
-
     return jsonify({"message": "Payment successful"})
+
+
 # ===============================
-# HOTEL ADMIN - VIEW MENU
+# HOTEL ADMIN
 # ===============================
-@app.route("/hoteladmin/menu/<int:hotel_id>", methods=["GET"])
-def hoteladmin_get_menu(hotel_id):
+@app.route("/hoteladmin/menu/<int:hotel_id>")
+def hotel_menu(hotel_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-
-    cursor.execute("""
-        SELECT menu_item_id, item_name, price, is_available
-        FROM menu_items
-        WHERE hotel_id = %s
-    """, (hotel_id,))
-
-    menu = cursor.fetchall()
-
+    cursor.execute("SELECT * FROM menu_items WHERE hotel_id=%s", (hotel_id,))
+    data = cursor.fetchall()
     cursor.close()
     db.close()
+    return jsonify(data)
 
-    return jsonify(menu)
 
-
-# ===============================
-# HOTEL ADMIN - ADD MENU ITEM
-# ===============================
 @app.route("/hoteladmin/menu", methods=["POST"])
-def hoteladmin_add_menu():
+def add_menu():
     db = get_db_connection()
     cursor = db.cursor()
-
     data = request.json
-    hotel_id = data["hotel_id"]
-    item_name = data["item_name"]
-    price = data["price"]
 
     cursor.execute("""
-        INSERT INTO menu_items (hotel_id, item_name, price)
-        VALUES (%s, %s, %s)
-    """, (hotel_id, item_name, price))
+        INSERT INTO menu_items(hotel_id,item_name,price)
+        VALUES(%s,%s,%s)
+    """, (data["hotel_id"], data["item_name"], data["price"]))
 
     db.commit()
     cursor.close()
     db.close()
+    return jsonify({"message": "Menu item added"})
 
-    return jsonify({"message": "Menu item added successfully"})
 
-
-# ===============================
-# HOTEL ADMIN - VIEW ORDERS
-# ===============================
-@app.route("/hoteladmin/orders/<int:hotel_id>", methods=["GET"])
-def hoteladmin_get_orders(hotel_id):
+@app.route("/hoteladmin/orders/<int:hotel_id>")
+def hotel_orders(hotel_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT o.order_id, u.name AS student_name, o.total_amount, 
-               o.status, o.order_date
-        FROM orders o
-        JOIN users u ON o.user_id = u.user_id
-        WHERE o.hotel_id = %s
-        ORDER BY o.created_at DESC
+        SELECT o.order_id,u.name,o.total_amount,o.status,o.order_date
+        FROM orders o JOIN users u ON o.user_id=u.user_id
+        WHERE o.hotel_id=%s
     """, (hotel_id,))
 
-    orders = cursor.fetchall()
-
+    data = cursor.fetchall()
     cursor.close()
     db.close()
+    return jsonify(data)
 
-    return jsonify(orders)
+
+@app.route("/hoteladmin/order-items/<int:order_id>")
+def order_items(order_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT m.item_name, oi.quantity, oi.price
+        FROM order_items oi JOIN menu_items m
+        ON oi.menu_item_id=m.menu_item_id
+        WHERE oi.order_id=%s
+    """, (order_id,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(data)
 
 
-# ===============================
-# HOTEL ADMIN - UPDATE ORDER STATUS
-# ===============================
 @app.route("/hoteladmin/update-order", methods=["PUT"])
-def hoteladmin_update_order():
+def update_order():
+    db = get_db_connection()
+    cursor = db.cursor()
+    data = request.json
+
+    cursor.execute("UPDATE orders SET status=%s WHERE order_id=%s", (data["status"], data["order_id"]))
+    db.commit()
+    cursor.close()
+    db.close()
+    return jsonify({"message": "Order updated"})
+
+@app.route("/hoteladmin/menu", methods=["PUT"])
+def update_menu_item():
     db = get_db_connection()
     cursor = db.cursor()
 
     data = request.json
-    order_id = data["order_id"]
-    status = data["status"]
+    menu_item_id = data["menu_item_id"]
+    is_available = data["is_available"]
 
     cursor.execute("""
-        UPDATE orders
-        SET status = %s
-        WHERE order_id = %s
-    """, (status, order_id))
+        UPDATE menu_items
+        SET is_available=%s
+        WHERE menu_item_id=%s
+    """, (is_available, menu_item_id))
 
     db.commit()
     cursor.close()
     db.close()
 
-    return jsonify({"message": "Order status updated successfully"})
+    return jsonify({"message": "Menu updated"})
 
+@app.route("/hoteladmin/menu/<int:menu_item_id>", methods=["DELETE"])
+def delete_menu_item(menu_item_id):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("DELETE FROM menu_items WHERE menu_item_id=%s", (menu_item_id,))
+    db.commit()
+
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Menu item deleted"})  
 # ===============================
 # RUN
 # ===============================
