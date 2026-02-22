@@ -32,7 +32,7 @@ function TokenValidate() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/");
+    navigate("/login");
   };
 
   return (
