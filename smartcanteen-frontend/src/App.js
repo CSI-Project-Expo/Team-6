@@ -16,6 +16,10 @@ import AddHotel from "./pages/AddHotel";
 import CreateHotelAdmin from "./pages/CreateHotelAdmin";
 import AssignHotelAdmin from "./pages/AssignHotelAdmin";
 import ViewHotels from "./pages/ViewHotels";
+import HotelAdminDashboard from "./pages/HotelAdminDashboard";
+import HotelMenu from "./pages/HotelMenu";
+import HotelOrders from "./pages/HotelOrders";
+import TokenValidation from "./pages/TokenValidation";
 function App() {
   return (
     <Router>
@@ -38,6 +42,11 @@ function App() {
 <Route path="/superadmin/create-hotel-admin" element={<CreateHotelAdmin />} />
 <Route path="/superadmin/assign-hotel-admin" element={<AssignHotelAdmin />} />
 <Route path="/superadmin/view-hotels" element={<ViewHotels />} />
+
+<Route path="/hoteladmin" element={<HotelAdminDashboard />} />
+<Route path="/hoteladmin/menu" element={<HotelMenu />} />
+<Route path="/hoteladmin/orders" element={<HotelOrders />} />
+<Route path="/hoteladmin/token" element={<TokenValidation />} />
       </Routes>
     </Router>
   );

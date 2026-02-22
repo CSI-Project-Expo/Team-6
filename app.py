@@ -497,7 +497,101 @@ def make_payment():
     db.close()
 
     return jsonify({"message": "Payment successful"})
+# ===============================
+# HOTEL ADMIN - VIEW MENU
+# ===============================
+@app.route("/hoteladmin/menu/<int:hotel_id>", methods=["GET"])
+def hoteladmin_get_menu(hotel_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
 
+    cursor.execute("""
+        SELECT menu_item_id, item_name, price, is_available
+        FROM menu_items
+        WHERE hotel_id = %s
+    """, (hotel_id,))
+
+    menu = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(menu)
+
+
+# ===============================
+# HOTEL ADMIN - ADD MENU ITEM
+# ===============================
+@app.route("/hoteladmin/menu", methods=["POST"])
+def hoteladmin_add_menu():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    data = request.json
+    hotel_id = data["hotel_id"]
+    item_name = data["item_name"]
+    price = data["price"]
+
+    cursor.execute("""
+        INSERT INTO menu_items (hotel_id, item_name, price)
+        VALUES (%s, %s, %s)
+    """, (hotel_id, item_name, price))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Menu item added successfully"})
+
+
+# ===============================
+# HOTEL ADMIN - VIEW ORDERS
+# ===============================
+@app.route("/hoteladmin/orders/<int:hotel_id>", methods=["GET"])
+def hoteladmin_get_orders(hotel_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT o.order_id, u.name AS student_name, o.total_amount, 
+               o.status, o.order_date
+        FROM orders o
+        JOIN users u ON o.user_id = u.user_id
+        WHERE o.hotel_id = %s
+        ORDER BY o.created_at DESC
+    """, (hotel_id,))
+
+    orders = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(orders)
+
+
+# ===============================
+# HOTEL ADMIN - UPDATE ORDER STATUS
+# ===============================
+@app.route("/hoteladmin/update-order", methods=["PUT"])
+def hoteladmin_update_order():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    data = request.json
+    order_id = data["order_id"]
+    status = data["status"]
+
+    cursor.execute("""
+        UPDATE orders
+        SET status = %s
+        WHERE order_id = %s
+    """, (status, order_id))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Order status updated successfully"})
 
 # ===============================
 # RUN

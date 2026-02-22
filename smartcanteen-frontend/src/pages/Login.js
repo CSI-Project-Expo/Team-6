@@ -9,30 +9,34 @@ function Login() {
 
   const navigate = useNavigate();
 
- const handleLogin = async () => {
-  try {
-    const res = await api.post("/auth/login", {
-      email: email,
-      password: password
-    });
+  const handleLogin = async () => {
+    try {
+      const res = await api.post("/auth/login", {
+        email: email,
+        password: password
+      });
 
-    setMessage(res.data.message);
+      setMessage(res.data.message);
 
-    // Redirect based on role after successful login
-localStorage.setItem("user_id", res.data.user_id);
-localStorage.setItem("role", res.data.role);
+      // Save user data
+      localStorage.setItem("user_id", res.data.user_id);
+      localStorage.setItem("role", res.data.role);
 
-    if (res.data.role === "ADMIN") {
-      navigate("/superadmin");
-    } else if (res.data.role === "HOTEL_ADMIN") navigate("/hoteladmin");
-    else {
-      navigate("/student");
+      // Redirect based on role
+      if (res.data.role === "SUPER_ADMIN") {
+        navigate("/superadmin");
+      } 
+      else if (res.data.role === "HOTEL_ADMIN") {
+        navigate("/hoteladmin");
+      } 
+      else {
+        navigate("/student");
+      }
+
+    } catch (err) {
+      setMessage("Login failed. Invalid email or password.");
     }
-
-  } catch (err) {
-    setMessage("Login failed");
-  }
-};
+  };
 
   return (
     <div>
@@ -41,12 +45,14 @@ localStorage.setItem("role", res.data.role);
       <input
         type="email"
         placeholder="Email"
+        value={email}
         onChange={(e) => setEmail(e.target.value)}
       /><br/>
 
       <input
         type="password"
         placeholder="Password"
+        value={password}
         onChange={(e) => setPassword(e.target.value)}
       /><br/>
 
@@ -55,12 +61,10 @@ localStorage.setItem("role", res.data.role);
       <p>{message}</p>
       <hr />
 
-      {/* Register option */}
       <p>Don’t have an account?</p>
       <button onClick={() => navigate("/register")}>
         Register Here
       </button>
-    
     </div>
   );
 }
