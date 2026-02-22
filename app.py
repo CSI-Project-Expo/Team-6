@@ -297,7 +297,29 @@ def validate_token():
 
     return jsonify({"message": "Token valid. Order served ✅"})
 
+# ===============================
+# PAYMENT
+# ===============================
+@app.route("/payment", methods=["POST"])
+def make_payment():
+    db = get_db_connection()
+    cursor = db.cursor()
 
+    data = request.json
+    order_id = data.get("order_id")
+    amount = data.get("amount")
+    payment_mode = data.get("payment_mode")
+
+    cursor.execute("""
+        INSERT INTO payments (order_id, amount, payment_mode)
+        VALUES (%s, %s, %s)
+    """, (order_id, amount, payment_mode))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Payment successful"})
 # ===============================
 # RUN
 # ===============================

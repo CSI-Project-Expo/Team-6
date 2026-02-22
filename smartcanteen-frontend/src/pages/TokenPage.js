@@ -45,6 +45,9 @@ const navigate = useNavigate();
           <p>Please show this token at the counter.</p>
         </>
       )}
+      <button onClick={() => navigate(`/payment/${orderId}`)}>
+  💳 Proceed to Payment
+</button>
       <button onClick={() => navigate(`/order-status/${orderId}`)}>
   📦 Track Order
 </button>

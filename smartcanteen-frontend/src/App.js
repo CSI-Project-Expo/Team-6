@@ -9,6 +9,8 @@ import TokenPage from "./pages/TokenPage";
 import StaffTokenPage from "./pages/StaffTokenPage";
 import TrackOrder from "./pages/TrackOrder";
 import MyOrders from "./pages/MyOrders";
+import PaymentPage from "./pages/PaymentPage";
+
 function App() {
   return (
     <Router>
@@ -20,6 +22,7 @@ function App() {
         <Route path="/order" element={<PlaceOrder />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/token/:orderId" element={<TokenPage />} />
+        <Route path="/payment/:orderId" element={<PaymentPage />} />
         <Route path="/order-status/:orderId" element={<TrackOrder />} />
 <Route path="/my-orders" element={<MyOrders />} />
 
