@@ -210,8 +210,10 @@ def generate_token(order_id):
     db.close()
     return jsonify({"token": token_code})
 
+
+
 # ===============================
-# VALIDATE TOKEN
+# VALIDATE TOKEN (STAFF)
 # ===============================
 @app.route("/token/validate", methods=["POST"])
 def validate_token():
@@ -221,36 +223,38 @@ def validate_token():
     data = request.json
     token_code = data.get("token_code")
 
-    if not token_code:
-        return jsonify({"message": "Token is required"}), 400
-
     cursor.execute("""
-        SELECT ot.token_code, ot.collected, o.order_id, o.user_id, o.hotel_id, o.slot_id, o.total_amount
+        SELECT ot.token_code, o.order_id
         FROM order_tokens ot
         JOIN orders o ON ot.order_id = o.order_id
         WHERE ot.token_code = %s
     """, (token_code,))
 
-    order = cursor.fetchone()
+    token = cursor.fetchone()
 
-    if not order:
-        cursor.close()
-        db.close()
+    if not token:
         return jsonify({"message": "Invalid token"}), 404
 
-    if order["collected"]:
-        cursor.close()
-        db.close()
+    # check if already collected
+    cursor.execute("""
+        SELECT * FROM collected_tokens WHERE token_code = %s
+    """, (token_code,))
+    used = cursor.fetchone()
+
+    if used:
         return jsonify({"message": "Token already used"}), 400
 
-    # Mark token as collected
-    cursor.execute("UPDATE order_tokens SET collected = TRUE WHERE token_code = %s", (token_code,))
-    db.commit()
+    # mark token as collected
+    cursor.execute("""
+        INSERT INTO collected_tokens (token_code, collected_at)
+        VALUES (%s, NOW())
+    """, (token_code,))
 
+    db.commit()
     cursor.close()
     db.close()
 
-    return jsonify({"message": "Token valid and marked as collected", "order": order})
+    return jsonify({"message": "Token valid. Order served ✅"})
 # ===============================
 # RUN
 # ===============================

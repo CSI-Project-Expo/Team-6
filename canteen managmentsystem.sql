@@ -185,3 +185,8 @@ CREATE TABLE admin_actions (
         FOREIGN KEY (admin_id) REFERENCES users(user_id)
 ) ENGINE=InnoDB;
 
+CREATE TABLE collected_tokens (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  token_code VARCHAR(20) UNIQUE,
+  collected_at DATETIME
+);

@@ -6,6 +6,7 @@ import PlaceOrder from "./pages/PlaceOrder";
 import AdminDashboard from "./pages/AdminDashboard";
 import StudentDashboard from "./pages/StudentDashboard";
 import TokenPage from "./pages/TokenPage";
+import StaffTokenPage from "./pages/StaffTokenPage";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/order" element={<PlaceOrder />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/token/:orderId" element={<TokenPage />} />
+<Route path="/staff" element={<StaffTokenPage />} />
       </Routes>
     </Router>
   );
