@@ -125,7 +125,26 @@ def get_menu(hotel_id):
 
     return jsonify(menu)
 
+@app.route("/student/orders/<int:user_id>", methods=["GET"])
+def get_user_orders(user_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
 
+    cursor.execute("""
+        SELECT o.order_id, o.order_date, o.total_amount, o.status,
+               ot.token_code
+        FROM orders o
+        LEFT JOIN order_tokens ot ON o.order_id = ot.order_id
+        WHERE o.user_id = %s
+        ORDER BY o.order_id DESC
+    """, (user_id,))
+
+    orders = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(orders)
 
 # ===============================
 # PICKUP SLOTS

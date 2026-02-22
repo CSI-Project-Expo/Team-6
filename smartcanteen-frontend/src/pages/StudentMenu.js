@@ -103,7 +103,9 @@ function StudentMenu() {
   return (
     <div>
       <h2>Student Menu</h2>
-
+   <button onClick={() => navigate("/my-orders")}>
+  📜 My Orders
+</button>
       <h3>Menu Items</h3>
       {menu.map(item => (
         <div key={item.menu_item_id}>
@@ -132,6 +134,7 @@ function StudentMenu() {
       <h3>Total: ₹{totalAmount}</h3>
 
       <button onClick={handleConfirmOrder}>Confirm Order</button>
+   
     </div>
   );
 }

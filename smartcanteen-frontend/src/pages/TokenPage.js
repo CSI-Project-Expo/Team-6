@@ -42,6 +42,9 @@ const navigate = useNavigate();
       <button onClick={() => navigate(`/order-status/${orderId}`)}>
   📦 Track Order
 </button>
+<button onClick={() => navigate("/my-orders")}>
+  📜 My Orders
+</button>
     </div>
   );
 }

@@ -8,7 +8,7 @@ import StudentDashboard from "./pages/StudentDashboard";
 import TokenPage from "./pages/TokenPage";
 import StaffTokenPage from "./pages/StaffTokenPage";
 import TrackOrder from "./pages/TrackOrder";
-
+import MyOrders from "./pages/MyOrders";
 function App() {
   return (
     <Router>
@@ -21,6 +21,8 @@ function App() {
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/token/:orderId" element={<TokenPage />} />
         <Route path="/order-status/:orderId" element={<TrackOrder />} />
+<Route path="/my-orders" element={<MyOrders />} />
+
 <Route path="/staff" element={<StaffTokenPage />} />
       </Routes>
     </Router>
