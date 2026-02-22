@@ -39,7 +39,7 @@ function StudentMenu() {
       .catch(err => console.log(err));
   }, [hotelId]);
 
-  // Logout ✅ OUTSIDE
+  // Logout 
   const handleLogout = () => {
     localStorage.removeItem("user_id");
     localStorage.removeItem("role");

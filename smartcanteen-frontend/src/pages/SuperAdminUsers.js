@@ -51,13 +51,9 @@ function SuperAdminUsers() {
               <td>{user.status}</td>
               <td>
                 {user.status === "ACTIVE" ? (
-                  <button onClick={() => blockUser(user.user_id)}>
-                    ❌ Block
-                  </button>
+                  <button onClick={() => blockUser(user.user_id)}>Block</button>
                 ) : (
-                  <button onClick={() => unblockUser(user.user_id)}>
-                    ✅ Unblock
-                  </button>
+                  <button onClick={() => unblockUser(user.user_id)}>Unblock</button>
                 )}
               </td>
             </tr>
