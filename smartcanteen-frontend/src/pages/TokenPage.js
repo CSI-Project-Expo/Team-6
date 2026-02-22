@@ -5,6 +5,12 @@ import { useNavigate } from "react-router-dom";
 function TokenPage() {
   const { orderId } = useParams();
   const [token, setToken] = useState("");
+  const handleLogout = () => {
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("role");
+
+  navigate("/");
+};
   const [loading, setLoading] = useState(true);
 const navigate = useNavigate();
   useEffect(() => {
@@ -29,7 +35,7 @@ const navigate = useNavigate();
   return (
     <div>
       <h2>🎟 Order Token</h2>
-
+<button onClick={handleLogout}>🚪 Logout</button>
       {loading ? (
         <p>Generating token...</p>
       ) : (

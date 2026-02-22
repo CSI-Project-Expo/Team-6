@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 function StudentMenu() {
   const navigate = useNavigate();
 
-  //  get user id from localStorage
+  // get user id from localStorage
   const userId = parseInt(localStorage.getItem("user_id"));
 
   const [menu, setMenu] = useState([]);
@@ -19,7 +19,7 @@ function StudentMenu() {
   useEffect(() => {
     if (!userId) {
       alert("Please login again");
-      navigate("/login");
+      navigate("/");
     }
   }, [userId, navigate]);
 
@@ -38,6 +38,13 @@ function StudentMenu() {
       .then(res => setSlots(res.data))
       .catch(err => console.log(err));
   }, [hotelId]);
+
+  // Logout ✅ OUTSIDE
+  const handleLogout = () => {
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("role");
+    navigate("/login");
+  };
 
   // Add to cart
   const addToCart = (item) => {
@@ -92,7 +99,6 @@ function StudentMenu() {
       );
 
       alert("Order placed successfully");
-
       navigate(`/token/${res.data.order_id}`);
     } catch (error) {
       console.log(error);
@@ -103,9 +109,15 @@ function StudentMenu() {
   return (
     <div>
       <h2>Student Menu</h2>
-   <button onClick={() => navigate("/my-orders")}>
-  📜 My Orders
-</button>
+
+      <button onClick={() => navigate("/my-orders")}>
+        📜 My Orders
+      </button>
+
+      <button onClick={handleLogout}>
+        🚪 Logout
+      </button>
+
       <h3>Menu Items</h3>
       {menu.map(item => (
         <div key={item.menu_item_id}>
@@ -134,7 +146,6 @@ function StudentMenu() {
       <h3>Total: ₹{totalAmount}</h3>
 
       <button onClick={handleConfirmOrder}>Confirm Order</button>
-   
     </div>
   );
 }
