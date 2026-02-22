@@ -52,6 +52,14 @@ localStorage.setItem("role", res.data.role);
       <button onClick={handleLogin}>Login</button>
 
       <p>{message}</p>
+      <hr />
+
+      {/* Register option */}
+      <p>Don’t have an account?</p>
+      <button onClick={() => navigate("/register")}>
+        Register Here
+      </button>
+    
     </div>
   );
 }
