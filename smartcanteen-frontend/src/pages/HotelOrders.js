@@ -1,36 +1,92 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import api from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function HotelOrders() {
   const [orders, setOrders] = useState([]);
-  const hotelId = localStorage.getItem("hotel_id");
+  const navigate = useNavigate();
+
+  // TEMP hotel_id (later from login)
+  const hotelId = 1;
 
   useEffect(() => {
-    axios.get(`http://127.0.0.1:5000/hoteladmin/orders/${hotelId}`)
-      .then(res => setOrders(res.data));
-  }, [hotelId]);
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const res = await api.get(`/hoteladmin/orders/${hotelId}`);
+      setOrders(res.data);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to fetch orders");
+    }
+  };
 
   const updateStatus = async (orderId, status) => {
-    await axios.put("http://127.0.0.1:5000/hoteladmin/update-order", {
-      order_id: orderId,
-      status
-    });
-    window.location.reload();
+    try {
+      await api.put("/hoteladmin/update-order", {
+        order_id: orderId,
+        status: status
+      });
+
+      alert("Order status updated");
+      fetchOrders();
+    } catch (error) {
+      console.log(error);
+      alert("Update failed");
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
   };
 
   return (
     <div>
-      <h2>Orders</h2>
+      <h2>🏨 Hotel Admin - Orders</h2>
 
-      {orders.map(o => (
-        <div key={o.order_id}>
-          Order #{o.order_id} - {o.status} - ₹{o.total_amount}
+      <button onClick={handleLogout}>🚪 Logout</button>
 
-          <button onClick={() => updateStatus(o.order_id,"PREPARING")}>Preparing</button>
-          <button onClick={() => updateStatus(o.order_id,"READY")}>Ready</button>
-          <button onClick={() => updateStatus(o.order_id,"COLLECTED")}>Collected</button>
-        </div>
-      ))}
+      <table border="1" cellPadding="8" style={{ marginTop: "20px" }}>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Student</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Order Date</th>
+            <th>Update Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {orders.map(order => (
+            <tr key={order.order_id}>
+              <td>{order.order_id}</td>
+              <td>{order.student_name}</td>
+              <td>₹{order.total_amount}</td>
+              <td>{order.status}</td>
+              <td>{order.order_date}</td>
+              <td>
+                <select
+                  value={order.status}
+                  onChange={(e) =>
+                    updateStatus(order.order_id, e.target.value)
+                  }
+                >
+                  <option value="PLACED">PLACED</option>
+                  <option value="PREPARING">PREPARING</option>
+                  <option value="READY">READY</option>
+                  <option value="COLLECTED">COLLECTED</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                </select>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

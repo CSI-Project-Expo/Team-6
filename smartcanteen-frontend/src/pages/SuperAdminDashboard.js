@@ -2,6 +2,10 @@ import { useNavigate } from "react-router-dom";
 
 function SuperAdminDashboard() {
   const navigate = useNavigate();
+  const handleLogout = () => {
+  localStorage.clear();
+  navigate("/login");
+};
 
   return (
     <div>
@@ -25,7 +29,8 @@ function SuperAdminDashboard() {
 
       <button onClick={() => navigate("/superadmin/view-hotels")}>
         🏨 View Hotels
-      </button>
+      </button><br></br>
+      <button onClick={handleLogout}>🚪 Logout</button>
     </div>
   );
 }
