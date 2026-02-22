@@ -12,11 +12,15 @@ import MyOrders from "./pages/MyOrders";
 import PaymentPage from "./pages/PaymentPage";
 import SuperAdminLogin from "./pages/SuperAdminLogin";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import AddHotel from "./pages/AddHotel";
+import CreateHotelAdmin from "./pages/CreateHotelAdmin";
+import AssignHotelAdmin from "./pages/AssignHotelAdmin";
+import ViewHotels from "./pages/ViewHotels";
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/student" element={<StudentDashboard />} />
         <Route path="/menu" element={<StudentMenu />} />
@@ -30,6 +34,10 @@ function App() {
 <Route path="/staff" element={<StaffTokenPage />} />
 <Route path="/superadmin/login" element={<SuperAdminLogin />} />
 <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+<Route path="/superadmin/add-hotel" element={<AddHotel />} />
+<Route path="/superadmin/create-hotel-admin" element={<CreateHotelAdmin />} />
+<Route path="/superadmin/assign-hotel-admin" element={<AssignHotelAdmin />} />
+<Route path="/superadmin/view-hotels" element={<ViewHotels />} />
       </Routes>
     </Router>
   );

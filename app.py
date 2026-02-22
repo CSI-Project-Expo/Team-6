@@ -63,7 +63,7 @@ def register():
 # STUDENT LOGIN
 # ===============================
 @app.route("/auth/login", methods=["POST"])
-def login():
+def student_login():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -121,8 +121,10 @@ def superadmin_login():
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
-# Hotel Adminn user
 
+# ===============================
+# CREATE HOTEL ADMIN
+# ===============================
 @app.route("/superadmin/create-hotel-admin", methods=["POST"])
 def create_hotel_admin():
     db = get_db_connection()
@@ -144,8 +146,10 @@ def create_hotel_admin():
 
     return jsonify({"message": "Hotel Admin created successfully"})
 
-#Assign Hotel Admin to Hotel
 
+# ===============================
+# ASSIGN HOTEL ADMIN
+# ===============================
 @app.route("/superadmin/assign-hotel-admin", methods=["POST"])
 def assign_hotel_admin():
     db = get_db_connection()
@@ -166,7 +170,10 @@ def assign_hotel_admin():
 
     return jsonify({"message": "Hotel Admin assigned to hotel"})
 
-# Super Admin -- Add Hotel
+
+# ===============================
+# ADD HOTEL
+# ===============================
 @app.route("/superadmin/add-hotel", methods=["POST"])
 def add_hotel():
     db = get_db_connection()
@@ -187,9 +194,12 @@ def add_hotel():
 
     return jsonify({"message": "Hotel added successfully"})
 
-#View All Hotels - Super Admin
+
+# ===============================
+# SUPER ADMIN VIEW HOTELS
+# ===============================
 @app.route("/superadmin/hotels", methods=["GET"])
-def view_hotels():
+def view_superadmin_hotels():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -207,7 +217,10 @@ def view_hotels():
 
     return jsonify(hotels)
 
-#Get all the hotels assigned to a Hotel Admin
+
+# ===============================
+# GET HOTEL ADMINS
+# ===============================
 @app.route("/superadmin/hotel-admins", methods=["GET"])
 def get_hotel_admins():
     db = get_db_connection()
@@ -225,7 +238,10 @@ def get_hotel_admins():
 
     return jsonify(admins)
 
-#Block /Unblock Users (status column)
+
+# ===============================
+# BLOCK USER
+# ===============================
 @app.route("/superadmin/block-user/<int:user_id>", methods=["PUT"])
 def block_user(user_id):
     db = get_db_connection()
@@ -242,26 +258,12 @@ def block_user(user_id):
 
     return jsonify({"message": "User blocked"})
 
-#Admin Action Log
-
-def log_admin_action(admin_id, action):
-    db = get_db_connection()
-    cursor = db.cursor()
-
-    cursor.execute("""
-        INSERT INTO admin_actions (admin_id, action_description)
-        VALUES (%s, %s)
-    """, (admin_id, action))
-
-    db.commit()
-    cursor.close()
-    db.close()
 
 # ===============================
-# ADMIN - VIEW HOTELS
+# ADMIN VIEW HOTELS
 # ===============================
 @app.route("/admin/hotels", methods=["GET"])
-def view_hotels():
+def view_admin_hotels():
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
@@ -289,7 +291,6 @@ def get_menu(hotel_id):
     """, (hotel_id,))
 
     menu = cursor.fetchall()
-
     cursor.close()
     db.close()
 
@@ -314,7 +315,6 @@ def get_user_orders(user_id):
     """, (user_id,))
 
     orders = cursor.fetchall()
-
     cursor.close()
     db.close()
 

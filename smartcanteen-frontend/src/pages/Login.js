@@ -23,8 +23,9 @@ localStorage.setItem("user_id", res.data.user_id);
 localStorage.setItem("role", res.data.role);
 
     if (res.data.role === "ADMIN") {
-      navigate("/admin");
-    } else {
+      navigate("/superadmin");
+    } else if (res.data.role === "HOTEL_ADMIN") navigate("/hoteladmin");
+    else {
       navigate("/student");
     }
 

@@ -19,7 +19,7 @@ function StudentMenu() {
   useEffect(() => {
     if (!userId) {
       alert("Please login again");
-      navigate("/");
+      navigate("/login");
     }
   }, [userId, navigate]);
 
