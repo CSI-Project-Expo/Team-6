@@ -197,6 +197,22 @@ def block_user(user_id):
     return jsonify({"message": "User blocked"})
 
 
+@app.route("/superadmin/unblock-user/<int:user_id>", methods=["PUT"])
+def unblock_user(user_id):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE users SET status='ACTIVE'
+        WHERE user_id=%s
+    """, (user_id,))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "User unblocked"})
+
 @app.route("/superadmin/dashboard")
 @check_role("ADMIN")
 def dashboard():
@@ -221,6 +237,23 @@ def dashboard():
         "total_hotels": hotels["hotels"]
     })
 
+
+@app.route("/superadmin/users", methods=["GET"])
+def get_all_users():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT user_id, name, email, role, status, created_at
+        FROM users
+        ORDER BY created_at DESC
+    """)
+    users = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(users)
 
 # ===============================
 # STUDENT

@@ -19,6 +19,10 @@ function SuperAdminDashboard() {
         🔗 Assign Hotel Admin
       </button><br/><br/>
 
+      <button onClick={() => navigate("/superadmin/users")}>
+  👥 Manage Users
+</button><br/><br/>
+
       <button onClick={() => navigate("/superadmin/view-hotels")}>
         🏨 View Hotels
       </button>
