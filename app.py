@@ -26,7 +26,7 @@ def home():
 
 
 # ===============================
-# AUTH
+# AUTH - REGISTER
 # ===============================
 @app.route("/auth/register", methods=["POST"])
 def register():
@@ -59,6 +59,9 @@ def register():
         db.close()
 
 
+# ===============================
+# STUDENT LOGIN
+# ===============================
 @app.route("/auth/login", methods=["POST"])
 def login():
     db = get_db_connection()
@@ -88,7 +91,39 @@ def login():
 
 
 # ===============================
-# ADMIN
+# SUPER ADMIN LOGIN
+# ===============================
+@app.route("/superadmin/login", methods=["POST"])
+def superadmin_login():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    data = request.json
+    email = data.get("email")
+    password = data.get("password")
+
+    cursor.execute("""
+        SELECT * FROM users 
+        WHERE email=%s AND password_hash=%s AND role='SUPER_ADMIN'
+    """, (email, password))
+
+    user = cursor.fetchone()
+
+    cursor.close()
+    db.close()
+
+    if user:
+        return jsonify({
+            "message": "Super Admin login successful",
+            "user_id": user["user_id"],
+            "role": user["role"]
+        })
+    else:
+        return jsonify({"message": "Invalid credentials"}), 401
+
+
+# ===============================
+# ADMIN - VIEW HOTELS
 # ===============================
 @app.route("/admin/hotels", methods=["GET"])
 def view_hotels():
@@ -125,6 +160,10 @@ def get_menu(hotel_id):
 
     return jsonify(menu)
 
+
+# ===============================
+# STUDENT ORDERS
+# ===============================
 @app.route("/student/orders/<int:user_id>", methods=["GET"])
 def get_user_orders(user_id):
     db = get_db_connection()
@@ -145,6 +184,7 @@ def get_user_orders(user_id):
     db.close()
 
     return jsonify(orders)
+
 
 # ===============================
 # PICKUP SLOTS
@@ -176,11 +216,11 @@ def place_order():
     cursor = db.cursor()
 
     data = request.json
-    user_id = data["user_id"]
-    hotel_id = data["hotel_id"]
-    slot_id = data["slot_id"]
-    total_amount = data["total_amount"]
-    items = data["items"]
+    user_id = data.get("user_id")
+    hotel_id = data.get("hotel_id")
+    slot_id = data.get("slot_id")
+    total_amount = data.get("total_amount")
+    items = data.get("items")
 
     cursor.execute("""
         INSERT INTO orders (user_id, hotel_id, slot_id, order_date, total_amount, status)
@@ -250,11 +290,12 @@ def generate_token(order_id):
 
     cursor.close()
     db.close()
+
     return jsonify({"token": token_code})
 
 
 # ===============================
-# VALIDATE TOKEN (STAFF)
+# VALIDATE TOKEN
 # ===============================
 @app.route("/token/validate", methods=["POST"])
 def validate_token():
@@ -297,6 +338,7 @@ def validate_token():
 
     return jsonify({"message": "Token valid. Order served ✅"})
 
+
 # ===============================
 # PAYMENT
 # ===============================
@@ -320,6 +362,8 @@ def make_payment():
     db.close()
 
     return jsonify({"message": "Payment successful"})
+
+
 # ===============================
 # RUN
 # ===============================

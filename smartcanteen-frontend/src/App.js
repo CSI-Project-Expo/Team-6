@@ -10,7 +10,8 @@ import StaffTokenPage from "./pages/StaffTokenPage";
 import TrackOrder from "./pages/TrackOrder";
 import MyOrders from "./pages/MyOrders";
 import PaymentPage from "./pages/PaymentPage";
-
+import SuperAdminLogin from "./pages/SuperAdminLogin";
+import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 function App() {
   return (
     <Router>
@@ -27,6 +28,8 @@ function App() {
 <Route path="/my-orders" element={<MyOrders />} />
 
 <Route path="/staff" element={<StaffTokenPage />} />
+<Route path="/superadmin/login" element={<SuperAdminLogin />} />
+<Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
       </Routes>
     </Router>
   );

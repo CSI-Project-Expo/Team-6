@@ -6,18 +6,24 @@ function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState("STUDENT"); // default role
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
 
   const handleRegister = async () => {
+    if (!name || !email || !password) {
+      setMessage("All fields are required");
+      return;
+    }
+
     try {
       // 1. Register user
       await api.post("/auth/register", {
         name,
         email,
         password,
-        role: "STUDENT"
+        role
       });
 
       // 2. Auto login after register
@@ -32,9 +38,9 @@ function Register() {
 
       setMessage("Registered & logged in successfully!");
 
-      // 4. Redirect
-      if (loginRes.data.role === "ADMIN") {
-        navigate("/admin");
+      // 4. Redirect based on role
+      if (loginRes.data.role === "HOTEL_ADMIN") {
+        navigate("/hotel-admin");
       } else {
         navigate("/student");
       }
@@ -69,6 +75,13 @@ function Register() {
         placeholder="Password"
         onChange={(e) => setPassword(e.target.value)}
       /><br/>
+
+      {/* Role selection */}
+      <select onChange={(e) => setRole(e.target.value)}>
+        <option value="STUDENT">Student</option>
+        <option value="HOTEL_ADMIN">Hotel Admin</option>
+      </select>
+      <br/><br/>
 
       <button onClick={handleRegister}>Register</button>
 
