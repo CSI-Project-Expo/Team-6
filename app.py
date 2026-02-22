@@ -121,6 +121,141 @@ def superadmin_login():
     else:
         return jsonify({"message": "Invalid credentials"}), 401
 
+# Hotel Adminn user
+
+@app.route("/superadmin/create-hotel-admin", methods=["POST"])
+def create_hotel_admin():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    data = request.json
+    name = data["name"]
+    email = data["email"]
+    password = data["password"]
+
+    cursor.execute("""
+        INSERT INTO users (name, email, password_hash, role)
+        VALUES (%s, %s, %s, 'HOTEL_ADMIN')
+    """, (name, email, password))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Hotel Admin created successfully"})
+
+#Assign Hotel Admin to Hotel
+
+@app.route("/superadmin/assign-hotel-admin", methods=["POST"])
+def assign_hotel_admin():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    data = request.json
+    user_id = data["user_id"]
+    hotel_id = data["hotel_id"]
+
+    cursor.execute("""
+        INSERT INTO hotel_admins (user_id, hotel_id)
+        VALUES (%s, %s)
+    """, (user_id, hotel_id))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Hotel Admin assigned to hotel"})
+
+# Super Admin -- Add Hotel
+@app.route("/superadmin/add-hotel", methods=["POST"])
+def add_hotel():
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    data = request.json
+    hotel_name = data.get("hotel_name")
+    location = data.get("location")
+
+    cursor.execute("""
+        INSERT INTO hotels (hotel_name, location, is_active)
+        VALUES (%s, %s, TRUE)
+    """, (hotel_name, location))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Hotel added successfully"})
+
+#View All Hotels - Super Admin
+@app.route("/superadmin/hotels", methods=["GET"])
+def view_hotels():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT h.hotel_id, h.hotel_name, h.location, h.is_active,
+               u.name AS admin_name
+        FROM hotels h
+        LEFT JOIN hotel_admins ha ON h.hotel_id = ha.hotel_id
+        LEFT JOIN users u ON ha.user_id = u.user_id
+    """)
+
+    hotels = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(hotels)
+
+#Get all the hotels assigned to a Hotel Admin
+@app.route("/superadmin/hotel-admins", methods=["GET"])
+def get_hotel_admins():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT user_id, name, email 
+        FROM users 
+        WHERE role = 'HOTEL_ADMIN'
+    """)
+
+    admins = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(admins)
+
+#Block /Unblock Users (status column)
+@app.route("/superadmin/block-user/<int:user_id>", methods=["PUT"])
+def block_user(user_id):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        UPDATE users SET status='BLOCKED'
+        WHERE user_id=%s
+    """, (user_id,))
+
+    db.commit()
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "User blocked"})
+
+#Admin Action Log
+
+def log_admin_action(admin_id, action):
+    db = get_db_connection()
+    cursor = db.cursor()
+
+    cursor.execute("""
+        INSERT INTO admin_actions (admin_id, action_description)
+        VALUES (%s, %s)
+    """, (admin_id, action))
+
+    db.commit()
+    cursor.close()
+    db.close()
 
 # ===============================
 # ADMIN - VIEW HOTELS
