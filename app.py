@@ -211,6 +211,47 @@ def generate_token(order_id):
     return jsonify({"token": token_code})
 
 # ===============================
+# VALIDATE TOKEN
+# ===============================
+@app.route("/token/validate", methods=["POST"])
+def validate_token():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    data = request.json
+    token_code = data.get("token_code")
+
+    if not token_code:
+        return jsonify({"message": "Token is required"}), 400
+
+    cursor.execute("""
+        SELECT ot.token_code, ot.collected, o.order_id, o.user_id, o.hotel_id, o.slot_id, o.total_amount
+        FROM order_tokens ot
+        JOIN orders o ON ot.order_id = o.order_id
+        WHERE ot.token_code = %s
+    """, (token_code,))
+
+    order = cursor.fetchone()
+
+    if not order:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Invalid token"}), 404
+
+    if order["collected"]:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Token already used"}), 400
+
+    # Mark token as collected
+    cursor.execute("UPDATE order_tokens SET collected = TRUE WHERE token_code = %s", (token_code,))
+    db.commit()
+
+    cursor.close()
+    db.close()
+
+    return jsonify({"message": "Token valid and marked as collected", "order": order})
+# ===============================
 # RUN
 # ===============================
 if __name__ == "__main__":

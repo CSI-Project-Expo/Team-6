@@ -125,7 +125,8 @@ CREATE TABLE order_tokens (
     CONSTRAINT fk_token_order
         FOREIGN KEY (order_id) REFERENCES orders(order_id)
 ) ENGINE=InnoDB;
-
+ALTER TABLE order_tokens
+ADD COLUMN collected BOOLEAN DEFAULT FALSE;
 /* ===============================
    PAYMENTS
    =============================== */
