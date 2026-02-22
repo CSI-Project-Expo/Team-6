@@ -1,38 +1,49 @@
 import React, { useEffect, useState } from "react";
-import api from "../services/api";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function SuperAdminUsers() {
   const [users, setUsers] = useState([]);
+  const navigate = useNavigate();
 
+  // fetch users
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
-    const res = await api.get("/superadmin/users");
-    setUsers(res.data);
+    try {
+      const res = await axios.get("http://127.0.0.1:5000/superadmin/users");
+      setUsers(res.data);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to fetch users");
+    }
   };
 
-  const blockUser = async (id) => {
-    await api.put(`/superadmin/block-user/${id}`);
-    alert("User blocked");
-    fetchUsers();
-  };
+  const blockUser = async (userId) => {
+    if (!window.confirm("Are you sure to block this user?")) return;
 
-  const unblockUser = async (id) => {
-    await api.put(`/superadmin/unblock-user/${id}`);
-    alert("User unblocked");
-    fetchUsers();
+    try {
+      await axios.put(`http://127.0.0.1:5000/superadmin/block-user/${userId}`);
+      alert("User blocked ✅");
+      fetchUsers();
+    } catch (error) {
+      console.log(error);
+      alert("Failed to block user");
+    }
   };
 
   return (
     <div>
-      <h2>👑 Super Admin - Manage Users</h2>
+      <h2>👥 Manage Users</h2>
 
-      <table border="1" cellPadding="8">
+      <button onClick={() => navigate("/superadmin")}>⬅ Back</button>
+
+      <table border="1" cellPadding="10" style={{ marginTop: "20px" }}>
         <thead>
           <tr>
-            <th>ID</th>
+            <th>User ID</th>
             <th>Name</th>
             <th>Email</th>
             <th>Role</th>
@@ -42,7 +53,7 @@ function SuperAdminUsers() {
         </thead>
 
         <tbody>
-          {users.map(user => (
+          {users.map((user) => (
             <tr key={user.user_id}>
               <td>{user.user_id}</td>
               <td>{user.name}</td>
@@ -51,16 +62,17 @@ function SuperAdminUsers() {
               <td>{user.status}</td>
               <td>
                 {user.status === "ACTIVE" ? (
-                  <button onClick={() => blockUser(user.user_id)}>Block</button>
+                  <button onClick={() => blockUser(user.user_id)}>
+                    🚫 Block
+                  </button>
                 ) : (
-                  <button onClick={() => unblockUser(user.user_id)}>Unblock</button>
+                  "Blocked"
                 )}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-
     </div>
   );
 }

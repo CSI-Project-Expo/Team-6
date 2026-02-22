@@ -12,6 +12,7 @@ import MyOrders from "./pages/MyOrders";
 import PaymentPage from "./pages/PaymentPage";
 import SuperAdminLogin from "./pages/SuperAdminLogin";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
+import SuperAdminHotels from "./pages/SuperAdminHotels";
 import AddHotel from "./pages/AddHotel";
 import CreateHotelAdmin from "./pages/CreateHotelAdmin";
 import AssignHotelAdmin from "./pages/AssignHotelAdmin";
@@ -41,11 +42,13 @@ function App() {
 <Route path="/staff" element={<StaffTokenPage />} />
 <Route path="/superadmin/login" element={<SuperAdminLogin />} />
 <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
+
 <Route path="/superadmin/add-hotel" element={<AddHotel />} />
 <Route path="/superadmin/create-hotel-admin" element={<CreateHotelAdmin />} />
 <Route path="/superadmin/assign-hotel-admin" element={<AssignHotelAdmin />} />
 <Route path="/superadmin/view-hotels" element={<ViewHotels />} />
 <Route path="/superadmin/users" element={<SuperAdminUsers />} />
+<Route path="/superadmin/view-hotels" element={<SuperAdminHotels />} />
 <Route path="/hoteladmin/add-menu" element={<AddMenuItem />} />
 <Route path="/hoteladmin/update-order" element={<UpdateOrderStatus />} />
 
