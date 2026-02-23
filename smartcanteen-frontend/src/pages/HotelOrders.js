@@ -48,7 +48,7 @@ function HotelOrders() {
       <h2>🏨 Hotel Admin - Orders</h2>
 
       <button onClick={handleLogout}>🚪 Logout</button>
-
+<button onClick={() => navigate(-1)}>⬅ Back</button>
       <table border="1" cellPadding="8" style={{ marginTop: "20px" }}>
         <thead>
           <tr>

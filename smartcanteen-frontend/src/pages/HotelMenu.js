@@ -39,7 +39,7 @@ function HotelMenu() {
         price: price
       });
 
-      alert("Menu item added");
+      alert("Menu item added ✅");
       setItemName("");
       setPrice("");
       fetchMenu();
@@ -51,14 +51,15 @@ function HotelMenu() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/");
+    navigate("/login");
   };
 
   return (
     <div>
       <h2>🏨 Hotel Admin - Menu Management</h2>
 
-      <button onClick={() => navigate("/hotel/orders")}>📦 View Orders</button>
+      <button onClick={() => navigate("/hoteladmin/orders")}>📦 View Orders</button>
+      <button onClick={() => navigate(-1)}>⬅ Back</button>
       <button onClick={handleLogout}>🚪 Logout</button>
 
       <h3>Add New Item</h3>
