@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route ,Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import StudentMenu from "./pages/StudentMenu";
@@ -28,10 +28,11 @@ function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/student" element={<StudentDashboard />} />
-        <Route path="/menu" element={<StudentMenu />} />
+        <Route path="/student/menu" element={<StudentMenu />} />
         <Route path="/order" element={<PlaceOrder />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/token/:orderId" element={<TokenPage />} />
