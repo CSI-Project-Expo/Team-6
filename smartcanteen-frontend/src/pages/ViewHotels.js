@@ -6,11 +6,26 @@ function ViewHotels() {
   const [hotels, setHotels] = useState([]);
   const navigate = useNavigate();
 
+  const role = localStorage.getItem("role"); // 👈 get role from login
+
   useEffect(() => {
-    axios.get("http://127.0.0.1:5000/superadmin/hotels")
-      .then(res => setHotels(res.data))
-      .catch(err => console.log(err));
+    fetchHotels();
   }, []);
+
+  const fetchHotels = async () => {
+    try {
+      const res = await axios.get(
+        "http://127.0.0.1:5000/superadmin/hotels",
+        {
+          headers: { role: role }
+        }
+      );
+      setHotels(res.data);
+    } catch (err) {
+      console.log(err);
+      alert("Failed to fetch hotels ❌");
+    }
+  };
 
   return (
     <div>
@@ -26,8 +41,9 @@ function ViewHotels() {
             <th>Assigned Admin</th>
           </tr>
         </thead>
+
         <tbody>
-          {hotels.map(hotel => (
+          {hotels.map((hotel) => (
             <tr key={hotel.hotel_id}>
               <td>{hotel.hotel_id}</td>
               <td>{hotel.hotel_name}</td>
@@ -40,7 +56,7 @@ function ViewHotels() {
       </table>
 
       <br />
-      <button onClick={() => navigate("/superadmin")}>⬅ Back</button>
+      <button onClick={() => navigate("/superadmin/dashboard")}>⬅ Back</button>
     </div>
   );
 }

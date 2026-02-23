@@ -6,14 +6,17 @@ function SuperAdminUsers() {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
-  // fetch users
+  const role = localStorage.getItem("role"); // 👈 get role
+
   useEffect(() => {
     fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:5000/superadmin/users");
+      const res = await axios.get("http://127.0.0.1:5000/superadmin/users", {
+        headers: { role: role }
+      });
       setUsers(res.data);
     } catch (error) {
       console.log(error);
@@ -25,7 +28,13 @@ function SuperAdminUsers() {
     if (!window.confirm("Are you sure to block this user?")) return;
 
     try {
-      await axios.put(`http://127.0.0.1:5000/superadmin/block-user/${userId}`);
+      await axios.put(
+        `http://127.0.0.1:5000/superadmin/block-user/${userId}`,
+        {},
+        {
+          headers: { role: role }
+        }
+      );
       alert("User blocked ✅");
       fetchUsers();
     } catch (error) {
@@ -34,11 +43,30 @@ function SuperAdminUsers() {
     }
   };
 
+  const unblockUser = async (userId) => {
+    if (!window.confirm("Unblock this user?")) return;
+
+    try {
+      await axios.put(
+        `http://127.0.0.1:5000/superadmin/unblock-user/${userId}`,
+        {},
+        {
+          headers: { role: role }
+        }
+      );
+      alert("User unblocked ✅");
+      fetchUsers();
+    } catch (error) {
+      console.log(error);
+      alert("Failed to unblock user");
+    }
+  };
+
   return (
     <div>
       <h2>👥 Manage Users</h2>
 
-      <button onClick={() => navigate("/superadmin")}>⬅ Back</button>
+      <button onClick={() => navigate("/superadmin/dashboard")}>⬅ Back</button>
 
       <table border="1" cellPadding="10" style={{ marginTop: "20px" }}>
         <thead>
@@ -66,7 +94,9 @@ function SuperAdminUsers() {
                     🚫 Block
                   </button>
                 ) : (
-                  "Blocked"
+                  <button onClick={() => unblockUser(user.user_id)}>
+                    ✅ Unblock
+                  </button>
                 )}
               </td>
             </tr>
