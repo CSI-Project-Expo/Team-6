@@ -5,17 +5,16 @@ import { useNavigate } from "react-router-dom";
 function StudentMenu() {
   const navigate = useNavigate();
 
-  // Retrieve user ID
-  const userId = parseInt(localStorage.getItem("user_id"));
+  const userId = Number(localStorage.getItem("user_id"));
 
   const [menu, setMenu] = useState([]);
   const [slots, setSlots] = useState([]);
-  const [selectedSlot, setSelectedSlot] = useState(""); // This tracks the user's choice
+  const [selectedSlot, setSelectedSlot] = useState("");
   const [cartItems, setCartItems] = useState([]);
 
-  const hotelId = 1; // Temporary ID
+  const hotelId = 1; // temp
 
-  // Safety check for login session
+  // Check login
   useEffect(() => {
     if (!userId) {
       alert("Please login again");
@@ -23,7 +22,7 @@ function StudentMenu() {
     }
   }, [userId, navigate]);
 
-  // Fetch Menu Data
+  // Fetch menu
   useEffect(() => {
     axios
       .get(`http://127.0.0.1:5000/student/menu/${hotelId}`)
@@ -31,7 +30,7 @@ function StudentMenu() {
       .catch(err => console.error("Menu fetch error:", err));
   }, [hotelId]);
 
-  // Fetch Pickup Slots Data
+  // Fetch pickup slots
   useEffect(() => {
     axios
       .get(`http://127.0.0.1:5000/student/pickup-slots/${hotelId}`)
@@ -40,21 +39,19 @@ function StudentMenu() {
   }, [hotelId]);
 
   const handleLogout = () => {
-    localStorage.removeItem("user_id");
-    localStorage.removeItem("role");
+    localStorage.clear();
     navigate("/login");
   };
 
   const addToCart = (item) => {
     const exists = cartItems.find(i => i.menu_item_id === item.menu_item_id);
+
     if (exists) {
-      setCartItems(
-        cartItems.map(i =>
-          i.menu_item_id === item.menu_item_id
-            ? { ...i, quantity: i.quantity + 1 }
-            : i
-        )
-      );
+      setCartItems(cartItems.map(i =>
+        i.menu_item_id === item.menu_item_id
+          ? { ...i, quantity: i.quantity + 1 }
+          : i
+      ));
     } else {
       setCartItems([...cartItems, { ...item, quantity: 1 }]);
     }
@@ -66,7 +63,6 @@ function StudentMenu() {
   );
 
   const handleConfirmOrder = async () => {
-    // Check if slot is chosen
     if (!selectedSlot) {
       alert("Please select a pickup slot");
       return;
@@ -80,7 +76,7 @@ function StudentMenu() {
     const orderData = {
       user_id: userId,
       hotel_id: hotelId,
-      slot_id: parseInt(selectedSlot), // Convert string from <select> back to number
+      slot_id: Number(selectedSlot),
       total_amount: totalAmount,
       items: cartItems.map(item => ({
         menu_item_id: item.menu_item_id,
@@ -90,9 +86,14 @@ function StudentMenu() {
     };
 
     try {
-      const res = await axios.post("http://127.0.0.1:5000/student/order", orderData);
+      const res = await axios.post(
+        "http://127.0.0.1:5000/student/order",
+        orderData
+      );
+
       alert("Order placed successfully");
       navigate(`/token/${res.data.order_id}`);
+
     } catch (error) {
       console.error("Order error:", error);
       alert("Order failed");
@@ -101,7 +102,7 @@ function StudentMenu() {
 
   return (
     <div>
-      <h2>Student Menu</h2>
+      <h2>🍽 Student Menu</h2>
 
       <button onClick={() => navigate("/my-orders")}>My Orders</button>
       <button onClick={handleLogout}>Logout</button>
@@ -109,15 +110,14 @@ function StudentMenu() {
       <h3>Menu</h3>
       {menu.map(item => (
         <div key={item.menu_item_id}>
-          <span>{item.item_name} - ₹{item.price}</span>
-          <button onClick={() => addToCart(item)}>Add to Cart</button>
+          {item.item_name} - ₹{item.price}
+          <button onClick={() => addToCart(item)}>Add</button>
         </div>
       ))}
 
       <h3>Select Pickup Slot</h3>
-      {/* The onChange updates selectedSlot state with the slot_id */}
       <select value={selectedSlot} onChange={(e) => setSelectedSlot(e.target.value)}>
-        <option value="">-- Choose a Slot --</option>
+        <option value="">-- Choose Slot --</option>
         {slots.map(slot => (
           <option key={slot.slot_id} value={slot.slot_id}>
             {slot.start_time} to {slot.end_time}
@@ -125,16 +125,16 @@ function StudentMenu() {
         ))}
       </select>
 
-      <h3>Cart Summary</h3>
+      <h3>Cart</h3>
       {cartItems.map(item => (
         <div key={item.menu_item_id}>
-          {item.item_name} (x{item.quantity}) - ₹{item.price * item.quantity}
+          {item.item_name} (x{item.quantity}) = ₹{item.price * item.quantity}
         </div>
       ))}
-      
+
       <h4>Total: ₹{totalAmount}</h4>
 
-      <button onClick={handleConfirmOrder}>Confirm and Pay</button>
+      <button onClick={handleConfirmOrder}>Confirm Order</button>
     </div>
   );
 }

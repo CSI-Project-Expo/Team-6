@@ -308,10 +308,23 @@ def get_menu(hotel_id):
 def pickup_slots(hotel_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM pickup_slots WHERE hotel_id=%s", (hotel_id,))
+
+    cursor.execute("""
+        SELECT slot_id, start_time, end_time
+        FROM pickup_slots
+        WHERE hotel_id = %s
+    """, (hotel_id,))
+
     slots = cursor.fetchall()
+
+    # Convert timedelta to string
+    for slot in slots:
+        slot["start_time"] = str(slot["start_time"])
+        slot["end_time"] = str(slot["end_time"])
+
     cursor.close()
     db.close()
+
     return jsonify(slots)
 
 
