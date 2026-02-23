@@ -9,7 +9,7 @@ function TokenPage() {
   localStorage.removeItem("user_id");
   localStorage.removeItem("role");
 
-  navigate("/");
+  navigate("/login");
 };
   const [loading, setLoading] = useState(true);
 const navigate = useNavigate();
@@ -36,6 +36,7 @@ const navigate = useNavigate();
     <div>
       <h2>🎟 Order Token</h2>
 <button onClick={handleLogout}>🚪 Logout</button>
+<button onClick={() => navigate(-1)}>⬅ Back</button>
       {loading ? (
         <p>Generating token...</p>
       ) : (

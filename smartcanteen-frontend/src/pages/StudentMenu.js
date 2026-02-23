@@ -106,7 +106,7 @@ function StudentMenu() {
 
       <button onClick={() => navigate("/my-orders")}>My Orders</button>
       <button onClick={handleLogout}>Logout</button>
-
+<button onClick={() => navigate(-1)}>⬅ Back</button>
       <h3>Menu</h3>
       {menu.map(item => (
         <div key={item.menu_item_id}>
