@@ -190,3 +190,7 @@ CREATE TABLE collected_tokens (
   token_code VARCHAR(20) UNIQUE,
   collected_at DATETIME
 );
+
+
+INSERT INTO users (name, email, password_hash, role)
+VALUES ('Super Admin', 'admin@canteen.com', 'admin123', 'ADMIN');

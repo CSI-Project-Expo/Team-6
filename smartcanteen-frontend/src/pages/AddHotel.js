@@ -9,30 +9,42 @@ function AddHotel() {
 
   const navigate = useNavigate();
 
-  const handleAddHotel = async () => {
-    if (!hotelName || !location) {
-      alert("Please fill all fields");
-      return;
-    }
+const handleAddHotel = async () => {
+  if (!hotelName || !location) {
+    alert("Please fill all fields");
+    return;
+  }
 
-    try {
-      const res = await axios.post(
-        "http://127.0.0.1:5000/superadmin/add-hotel",
-        {
-          hotel_name: hotelName,
-          location: location
+  const role = localStorage.getItem("role");
+
+  if (role !== "ADMIN") {
+    alert("Access denied. Only Super Admin can add hotels.");
+    return;
+  }
+
+  try {
+    const res = await axios.post(
+      "http://127.0.0.1:5000/superadmin/add-hotel",
+      {
+        hotel_name: hotelName,
+        location: location
+      },
+      {
+        headers: {
+          role: role   // 👈 send role
         }
-      );
+      }
+    );
 
-      setMessage(res.data.message);
-      setHotelName("");
-      setLocation("");
+    setMessage(res.data.message);
+    setHotelName("");
+    setLocation("");
 
-    } catch (error) {
-      console.log(error);
-      setMessage("Failed to add hotel");
-    }
-  };
+  } catch (error) {
+    console.log(error);
+    setMessage("Failed to add hotel");
+  }
+};
 
   return (
     <div>
@@ -59,7 +71,7 @@ function AddHotel() {
 
       <p>{message}</p>
 
-      <button onClick={() => navigate("/superadmin")}>⬅ Back</button>
+      <button onClick={() => navigate("/superadmin/dashboard")}>⬅ Back</button>
     </div>
   );
 }

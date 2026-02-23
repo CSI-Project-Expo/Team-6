@@ -23,8 +23,8 @@ function Login() {
       localStorage.setItem("role", res.data.role);
 
       // Redirect based on role
-      if (res.data.role === "SUPER_ADMIN") {
-        navigate("/superadmin");
+      if (res.data.role === "ADMIN") {
+        navigate("/superadmin/dashboard");
       } 
       else if (res.data.role === "HOTEL_ADMIN") {
         navigate("/hoteladmin");

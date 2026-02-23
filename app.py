@@ -26,8 +26,11 @@ def check_role(required_role):
         @wraps(func)
         def wrapper(*args, **kwargs):
             role = request.headers.get("role")
+            print("ROLE FROM HEADER:", role)   # 👈 DEBUG LINE
+
             if role != required_role:
                 return jsonify({"message": "Unauthorized"}), 403
+
             return func(*args, **kwargs)
         return wrapper
     return decorator
@@ -131,22 +134,30 @@ def add_hotel():
 
 
 @app.route("/superadmin/create-hotel-admin", methods=["POST"])
-@check_role("ADMIN")
 def create_hotel_admin():
+
+    role = request.headers.get("role")
+    if role != "ADMIN":
+        return jsonify({"message": "Forbidden"}), 403
+
     db = get_db_connection()
     cursor = db.cursor()
+
     data = request.json
+    name = data["name"]
+    email = data["email"]
+    password = data["password"]
 
     cursor.execute("""
         INSERT INTO users (name, email, password_hash, role)
-        VALUES (%s,%s,%s,'HOTEL_ADMIN')
-    """, (data["name"], data["email"], data["password"]))
+        VALUES (%s, %s, %s, 'HOTEL_ADMIN')
+    """, (name, email, password))
 
     db.commit()
     cursor.close()
     db.close()
-    return jsonify({"message": "Hotel admin created"})
 
+    return jsonify({"message": "Hotel Admin created successfully"})
 
 @app.route("/superadmin/assign-hotel-admin", methods=["POST"])
 @check_role("ADMIN")
@@ -163,8 +174,27 @@ def assign_hotel_admin():
     db.commit()
     cursor.close()
     db.close()
+
     return jsonify({"message": "Assigned successfully"})
 
+@app.route("/superadmin/hotel-admins", methods=["GET"])
+@check_role("ADMIN")
+def get_hotel_admins():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT user_id, name, email 
+        FROM users 
+        WHERE role='HOTEL_ADMIN'
+    """)
+
+    admins = cursor.fetchall()
+
+    cursor.close()
+    db.close()
+
+    return jsonify(admins)
 
 @app.route("/superadmin/hotels")
 @check_role("ADMIN")

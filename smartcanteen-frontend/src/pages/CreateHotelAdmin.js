@@ -16,6 +16,13 @@ function CreateHotelAdmin() {
       return;
     }
 
+    const role = localStorage.getItem("role");
+
+    if (role !== "ADMIN") {
+      alert("Access denied. Only Super Admin can create hotel admins.");
+      return;
+    }
+
     try {
       const res = await axios.post(
         "http://127.0.0.1:5000/superadmin/create-hotel-admin",
@@ -23,6 +30,11 @@ function CreateHotelAdmin() {
           name,
           email,
           password
+        },
+        {
+          headers: {
+            role: role   // 👈 IMPORTANT
+          }
         }
       );
 
@@ -66,7 +78,7 @@ function CreateHotelAdmin() {
 
       <p>{message}</p>
 
-      <button onClick={() => navigate("/superadmin")}>⬅ Back</button>
+      <button onClick={() => navigate("/superadmin/dashboard")}>⬅ Back</button>
     </div>
   );
 }

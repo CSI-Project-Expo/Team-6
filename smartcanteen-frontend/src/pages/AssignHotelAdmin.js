@@ -11,23 +11,48 @@ function AssignHotelAdmin() {
 
   const navigate = useNavigate();
 
-  // Fetch hotel admins
+  const role = localStorage.getItem("role");
+
   useEffect(() => {
-    axios.get("http://127.0.0.1:5000/superadmin/hotel-admins")
-      .then(res => setAdmins(res.data))
-      .catch(err => console.log(err));
+    fetchAdmins();
+    fetchHotels();
   }, []);
 
-  // Fetch hotels
-  useEffect(() => {
-    axios.get("http://127.0.0.1:5000/superadmin/hotels")
-      .then(res => setHotels(res.data))
-      .catch(err => console.log(err));
-  }, []);
+  const fetchAdmins = async () => {
+    try {
+      const res = await axios.get(
+        "http://127.0.0.1:5000/superadmin/hotel-admins",
+        {
+          headers: {
+            role: role
+          }
+        }
+      );
+      setAdmins(res.data);
+    } catch (error) {
+      console.error("Error fetching admins:", error);
+    }
+  };
+
+  const fetchHotels = async () => {
+    try {
+      const res = await axios.get(
+        "http://127.0.0.1:5000/superadmin/hotels",
+        {
+          headers: {
+            role: role
+          }
+        }
+      );
+      setHotels(res.data);
+    } catch (error) {
+      console.error("Error fetching hotels:", error);
+    }
+  };
 
   const handleAssign = async () => {
     if (!selectedAdmin || !selectedHotel) {
-      alert("Please select both admin and hotel");
+      alert("Select admin and hotel");
       return;
     }
 
@@ -37,46 +62,54 @@ function AssignHotelAdmin() {
         {
           user_id: selectedAdmin,
           hotel_id: selectedHotel
+        },
+        {
+          headers: {
+            role: role
+          }
         }
       );
 
       setMessage(res.data.message);
     } catch (error) {
-      console.log(error);
+      console.error("Error assigning:", error);
       setMessage("Assignment failed");
     }
   };
 
   return (
     <div>
-      <h2>🔗 Assign Hotel Admin</h2>
+      <h2>Assign Hotel Admin</h2>
 
-      <h4>Select Hotel Admin</h4>
       <select onChange={(e) => setSelectedAdmin(e.target.value)}>
         <option value="">Select Admin</option>
-        {admins.map(admin => (
-          <option key={admin.user_id} value={admin.user_id}>
-            {admin.name} ({admin.email})
+        {admins.map((admin) => (
+          <option key={admin.id} value={admin.id}>
+            {admin.name}
           </option>
         ))}
       </select>
 
-      <h4>Select Hotel</h4>
+      <br /><br />
+
       <select onChange={(e) => setSelectedHotel(e.target.value)}>
         <option value="">Select Hotel</option>
-        {hotels.map(hotel => (
-          <option key={hotel.hotel_id} value={hotel.hotel_id}>
+        {hotels.map((hotel) => (
+          <option key={hotel.id} value={hotel.id}>
             {hotel.hotel_name}
           </option>
         ))}
       </select>
 
       <br /><br />
+
       <button onClick={handleAssign}>Assign</button>
 
       <p>{message}</p>
 
-      <button onClick={() => navigate("/superadmin")}>⬅ Back</button>
+      <button onClick={() => navigate("/superadmin/dashboard")}>
+        ⬅ Back
+      </button>
     </div>
   );
 }
