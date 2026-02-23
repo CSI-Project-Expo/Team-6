@@ -196,3 +196,5 @@ INSERT INTO users (name, email, password_hash, role)
 VALUES ('Super Admin', 'admin@canteen.com', 'admin123', 'ADMIN');
 
 SELECT * from users;
+
+select * from order_tokens;

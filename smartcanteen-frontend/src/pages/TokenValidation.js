@@ -1,20 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 
 function TokenValidate() {
   const [token, setToken] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const role = localStorage.getItem("role");
+
+  // 🔐 Protect page
+  useEffect(() => {
+    if (!role || role !== "HOTEL_ADMIN") {
+      alert("Unauthorized access");
+      navigate("/login");
+    }
+  }, [role, navigate]);
 
   const validateToken = async () => {
-    if (!token) {
+    if (!token.trim()) {
       alert("Enter token code");
       return;
     }
 
     try {
+      setLoading(true);
+
       const res = await api.post("/token/validate", {
         token_code: token
       });
@@ -27,6 +39,8 @@ function TokenValidate() {
       } else {
         setMessage("Validation failed");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -36,13 +50,13 @@ function TokenValidate() {
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px" }}>
       <h2>🎟 Token Validation</h2>
 
-      <button onClick={() => navigate("/hotel/menu")}>🏨 Menu</button>
+      <button onClick={() => navigate("/hoteladmin/menu")}>🏨 Menu</button>
       <button onClick={handleLogout}>🚪 Logout</button>
 
-      <br /><br />
+      <hr />
 
       <input
         type="text"
@@ -51,9 +65,11 @@ function TokenValidate() {
         onChange={(e) => setToken(e.target.value)}
       />
 
-      <button onClick={validateToken}>Validate Token</button>
+      <button onClick={validateToken} disabled={loading}>
+        {loading ? "Validating..." : "Validate Token"}
+      </button>
 
-      <h3>{message}</h3>
+      {message && <h3>{message}</h3>}
     </div>
   );
 }

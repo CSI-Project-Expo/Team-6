@@ -18,6 +18,10 @@ function HotelAdminDashboard() {
         🍽 Manage Menu
       </button>
       <br /><br />
+      <button onClick={() => navigate("/hoteladmin/validate-token")}>
+  🎟 Validate Token
+</button>
+<br/><br/>
 
       <button onClick={() => navigate("/hoteladmin/orders")}>
         📦 View Orders

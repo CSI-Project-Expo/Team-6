@@ -353,69 +353,117 @@ def place_order():
     return jsonify({"order_id": order_id})
 
 
-@app.route("/student/orders/<int:user_id>")
-def my_orders(user_id):
+@app.route("/student/order/<int:order_id>", methods=["GET"])
+def track_order(order_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT o.*, ot.token_code
-        FROM orders o
-        LEFT JOIN order_tokens ot ON o.order_id=ot.order_id
-        WHERE o.user_id=%s
-    """, (user_id,))
+        SELECT order_id, status, total_amount 
+        FROM orders WHERE order_id=%s
+    """, (order_id,))
+    order = cursor.fetchone()
 
-    data = cursor.fetchall()
     cursor.close()
     db.close()
-    return jsonify(data)
+
+    if not order:
+        return jsonify({"message": "Order not found"}), 404
+
+    return jsonify(order)
 
 
 # ===============================
 # TOKEN
 # ===============================
-@app.route("/token/<int:order_id>")
-def token(order_id):
+@app.route("/token/<int:order_id>", methods=["GET"])
+def generate_token(order_id):
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    cursor.execute("SELECT token_code FROM order_tokens WHERE order_id=%s", (order_id,))
-    token = cursor.fetchone()
+    cursor.execute("""
+        SELECT token_code FROM order_tokens WHERE order_id=%s
+    """, (order_id,))
+    existing = cursor.fetchone()
 
-    if token:
-        return jsonify(token)
+    if existing:
+        return jsonify({"token": existing["token_code"]})
 
-    token_code = str(uuid.uuid4())[:8]
-    cursor.execute("INSERT INTO order_tokens(order_id, token_code) VALUES(%s,%s)", (order_id, token_code))
+    token_code = str(random.randint(1000, 9999))
+
+    cursor.execute("""
+        INSERT INTO order_tokens (order_id, token_code)
+        VALUES (%s, %s)
+    """, (order_id, token_code))
+
     db.commit()
     cursor.close()
     db.close()
+
     return jsonify({"token": token_code})
 
 
 @app.route("/token/validate", methods=["POST"])
 def validate_token():
-    db = get_db_connection()
-    cursor = db.cursor(dictionary=True)
     data = request.json
 
-    cursor.execute("""
-        SELECT ot.token_code, o.order_id FROM order_tokens ot
-        JOIN orders o ON ot.order_id=o.order_id
-        WHERE ot.token_code=%s
-    """, (data["token_code"],))
+    if not data or "token_code" not in data:
+        return jsonify({"message": "Token code is required"}), 400
 
+    token_code = data["token_code"]
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    # 1. Check token exists
+    cursor.execute("SELECT * FROM order_tokens WHERE token_code=%s", (token_code,))
     token = cursor.fetchone()
-    if not token:
-        return jsonify({"message": "Invalid token"}), 404
 
-    cursor.execute("UPDATE orders SET status='COLLECTED' WHERE order_id=%s", (token["order_id"],))
+    if not token:
+        return jsonify({"message": "❌ Invalid token"}), 400
+
+    if token["is_used"]:
+        return jsonify({"message": "⚠️ Token already used"}), 400
+
+    # 2. Get order
+    cursor.execute("SELECT * FROM orders WHERE order_id=%s", (token["order_id"],))
+    order = cursor.fetchone()
+
+    if not order:
+        return jsonify({"message": "Order not found"}), 400
+
+    # 3. Only READY orders can be collected
+    if order["status"] != "READY":
+        return jsonify({
+            "message": f"Order not ready. Current status: {order['status']}"
+        }), 400
+
+    # 4. Mark token used
+    cursor.execute(
+        "UPDATE order_tokens SET is_used=1, collected=1 WHERE token_code=%s",
+        (token_code,)
+    )
+
+    # 5. Update order status to COLLECTED
+    cursor.execute(
+        "UPDATE orders SET status='COLLECTED' WHERE order_id=%s",
+        (order["order_id"],)
+    )
+
+    # 6. Log collection time (optional table)
+    cursor.execute(
+        "INSERT INTO collected_tokens (token_code, collected_at) VALUES (%s, %s)",
+        (token_code, datetime.now())
+    )
+
     db.commit()
     cursor.close()
     db.close()
-    return jsonify({"message": "Order served"})
 
-
+    return jsonify({
+        "message": "✅ Token validated successfully. Order collected.",
+        "order_id": order["order_id"]
+    }), 200
 # ===============================
 # PAYMENT
 # ===============================

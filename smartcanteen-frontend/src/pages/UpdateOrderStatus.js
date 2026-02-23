@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -7,22 +7,35 @@ function UpdateOrderStatus() {
   const [status, setStatus] = useState("");
   const navigate = useNavigate();
 
+  const role = localStorage.getItem("role");
+
+  // 🔐 Protect page
+  useEffect(() => {
+    if (role !== "HOTEL_ADMIN") {
+      alert("Unauthorized access");
+      navigate("/login");
+    }
+  }, [role, navigate]);
+
   const handleUpdate = async () => {
     if (!orderId || !status) {
-      alert("Fill all fields");
+      alert("Please fill all fields");
       return;
     }
 
     try {
       await axios.put("http://127.0.0.1:5000/hoteladmin/update-order", {
-        order_id: orderId,
+        order_id: Number(orderId),
         status: status
       });
 
       alert("Order status updated ✅");
+      setOrderId("");
+      setStatus("");
       navigate("/hoteladmin/orders");
+
     } catch (error) {
-      console.log(error);
+      console.error(error);
       alert("Update failed");
     }
   };
@@ -33,14 +46,16 @@ function UpdateOrderStatus() {
 
       <input
         type="number"
-        placeholder="Order ID"
+        placeholder="Enter Order ID"
         value={orderId}
         onChange={(e) => setOrderId(e.target.value)}
       />
+
       <br /><br />
 
-      <select onChange={(e) => setStatus(e.target.value)}>
-        <option value="">Select Status</option>
+      {/* ✅ Controlled select */}
+      <select value={status} onChange={(e) => setStatus(e.target.value)}>
+        <option value="">-- Select Status --</option>
         <option value="PREPARING">PREPARING</option>
         <option value="READY">READY</option>
         <option value="COLLECTED">COLLECTED</option>
@@ -48,10 +63,12 @@ function UpdateOrderStatus() {
       </select>
 
       <br /><br />
+
       <button onClick={handleUpdate}>Update Status</button>
+
       <br /><br />
 
-      <button onClick={() => navigate("/admin")}>⬅ Back</button>
+      <button onClick={() => navigate("/hoteladmin/orders")}>⬅ Back</button>
     </div>
   );
 }
