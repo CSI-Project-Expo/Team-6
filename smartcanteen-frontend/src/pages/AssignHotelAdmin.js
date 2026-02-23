@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 
 function AssignHotelAdmin() {
   const [admins, setAdmins] = useState([]);
   const [hotels, setHotels] = useState([]);
-  const [selectedAdmin, setSelectedAdmin] = useState("");
-  const [selectedHotel, setSelectedHotel] = useState("");
-  const [message, setMessage] = useState("");
 
-  const navigate = useNavigate();
+  const [userId, setUserId] = useState("");
+  const [hotelId, setHotelId] = useState("");
+
+  const [message, setMessage] = useState("");
 
   const role = localStorage.getItem("role");
 
@@ -20,39 +19,29 @@ function AssignHotelAdmin() {
 
   const fetchAdmins = async () => {
     try {
-      const res = await axios.get(
-        "http://127.0.0.1:5000/superadmin/hotel-admins",
-        {
-          headers: {
-            role: role
-          }
-        }
-      );
+      const res = await axios.get("http://127.0.0.1:5000/superadmin/hotel-admins", {
+        headers: { role: role }
+      });
       setAdmins(res.data);
-    } catch (error) {
-      console.error("Error fetching admins:", error);
+    } catch (err) {
+      console.error("Error fetching admins:", err);
     }
   };
 
   const fetchHotels = async () => {
     try {
-      const res = await axios.get(
-        "http://127.0.0.1:5000/superadmin/hotels",
-        {
-          headers: {
-            role: role
-          }
-        }
-      );
+      const res = await axios.get("http://127.0.0.1:5000/superadmin/hotels", {
+        headers: { role: role }
+      });
       setHotels(res.data);
-    } catch (error) {
-      console.error("Error fetching hotels:", error);
+    } catch (err) {
+      console.error("Error fetching hotels:", err);
     }
   };
 
   const handleAssign = async () => {
-    if (!selectedAdmin || !selectedHotel) {
-      alert("Select admin and hotel");
+    if (!userId || !hotelId) {
+      alert("Please select both admin and hotel");
       return;
     }
 
@@ -60,13 +49,11 @@ function AssignHotelAdmin() {
       const res = await axios.post(
         "http://127.0.0.1:5000/superadmin/assign-hotel-admin",
         {
-          user_id: selectedAdmin,
-          hotel_id: selectedHotel
+          user_id: userId,
+          hotel_id: hotelId
         },
         {
-          headers: {
-            role: role
-          }
+          headers: { role: role }
         }
       );
 
@@ -81,10 +68,10 @@ function AssignHotelAdmin() {
     <div>
       <h2>Assign Hotel Admin</h2>
 
-      <select onChange={(e) => setSelectedAdmin(e.target.value)}>
+      <select onChange={(e) => setUserId(e.target.value)}>
         <option value="">Select Admin</option>
         {admins.map((admin) => (
-          <option key={admin.id} value={admin.id}>
+          <option key={admin.user_id} value={admin.user_id}>
             {admin.name}
           </option>
         ))}
@@ -92,10 +79,10 @@ function AssignHotelAdmin() {
 
       <br /><br />
 
-      <select onChange={(e) => setSelectedHotel(e.target.value)}>
+      <select onChange={(e) => setHotelId(e.target.value)}>
         <option value="">Select Hotel</option>
         {hotels.map((hotel) => (
-          <option key={hotel.id} value={hotel.id}>
+          <option key={hotel.hotel_id} value={hotel.hotel_id}>
             {hotel.hotel_name}
           </option>
         ))}
@@ -106,10 +93,6 @@ function AssignHotelAdmin() {
       <button onClick={handleAssign}>Assign</button>
 
       <p>{message}</p>
-
-      <button onClick={() => navigate("/superadmin/dashboard")}>
-        ⬅ Back
-      </button>
     </div>
   );
 }
