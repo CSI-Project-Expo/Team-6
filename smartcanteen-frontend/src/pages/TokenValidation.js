@@ -55,7 +55,7 @@ function TokenValidate() {
 
       <button onClick={() => navigate("/hoteladmin/menu")}>🏨 Menu</button>
       <button onClick={handleLogout}>🚪 Logout</button>
-
+<button onClick={() => navigate(-1)}>⬅ Back</button>
       <hr />
 
       <input

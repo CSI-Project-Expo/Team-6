@@ -66,7 +66,7 @@ function HotelAdminValidateToken() {
 
       <button onClick={() => navigate("/hoteladmin/orders")}>📦 Orders</button>
       <button onClick={handleLogout}>🚪 Logout</button>
-
+<button onClick={() => navigate(-1)}>⬅ Back</button>
       <br /><br />
 
       <input

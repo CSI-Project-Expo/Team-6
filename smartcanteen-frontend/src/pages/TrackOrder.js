@@ -82,7 +82,7 @@ function TrackOrder() {
       >
         🚪 Logout
       </button>
-
+<button onClick={() => navigate(-1)}>⬅ Back</button>
       <hr />
 
       {loading && <p>Loading order status...</p>}
