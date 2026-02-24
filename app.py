@@ -365,21 +365,43 @@ def track_order(order_id):
             o.status,
             o.total_amount,
             o.order_date,
+            ot.token_code,
             CONCAT(ps.start_time, ' - ', ps.end_time) AS slot_time
         FROM orders o
         LEFT JOIN pickup_slots ps ON o.slot_id = ps.slot_id
+        LEFT JOIN order_tokens ot ON o.order_id = ot.order_id
         WHERE o.order_id = %s
     """, (order_id,))
 
     order = cursor.fetchone()
-
     cursor.close()
     db.close()
 
-    if not order:
-        return jsonify({"message": "Order not found"}), 404
-
     return jsonify(order)
+
+@app.route("/student/orders/<int:user_id>", methods=["GET"])
+def get_user_orders(user_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT 
+            o.order_id,
+            o.order_date,
+            o.total_amount,
+            o.status,
+            ot.token_code
+        FROM orders o
+        LEFT JOIN order_tokens ot ON o.order_id = ot.order_id
+        WHERE o.user_id = %s
+        ORDER BY o.order_id DESC
+    """, (user_id,))
+
+    orders = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(orders)
 
 
 # ===============================

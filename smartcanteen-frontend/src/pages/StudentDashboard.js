@@ -13,43 +13,62 @@ function StudentDashboard() {
   return (
     <div className="dashboard-wrapper">
 
-      {/* HERO SECTION */}
-      <div className="hero-section">
-        <h1>🍽 SmartCanteen</h1>
-        <p>Skip the Queue. Order Smart. Track Your Food in Real Time.</p>
-      </div>
+      {/* HEADER */}
+      <header className="dashboard-header">
+        <h1>👩‍🎓 Student Portal</h1>
+        <div className="header-actions">
+          <button onClick={() => navigate("/my-orders")}>📜 My Orders</button>
+          <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
+        </div>
+      </header>
 
-      {/* MAIN DASHBOARD CARDS */}
-      <div className="dashboard-cards">
+      {/* HERO */}
+      <section className="hero-section">
+        <h2>Welcome to SmartCanteen 👋</h2>
+        <p>
+          Order your food digitally, get a token, and skip long queues!
+        </p>
+        <button className="hero-btn" onClick={() => navigate("/student/menu")}>
+          🍽 Start Ordering
+        </button>
+      </section>
+
+      {/* STUDENT FEATURES */}
+      <section className="dashboard-cards">
 
         <div className="card" onClick={() => navigate("/student/menu")}>
-          <h2>🍔 Order Food</h2>
-          <p>Browse menu and place your order instantly</p>
+          <h3>🍔 Order Food</h3>
+          <p>Choose from today’s menu and place your order</p>
         </div>
 
         <div className="card" onClick={() => navigate("/my-orders")}>
-          <h2>📜 My Orders</h2>
-          <p>Track your order status and token number</p>
+          <h3>📦 Track My Orders</h3>
+          <p>Check food status and token number</p>
         </div>
 
         <div className="card logout-card" onClick={handleLogout}>
-          <h2>🚪 Logout</h2>
-          <p>Securely logout from your account</p>
+          <h3>🚪 Logout</h3>
+          <p>Exit from Student Portal securely</p>
         </div>
 
-      </div>
+      </section>
 
-      {/* HOW IT WORKS SECTION */}
-      <div className="how-it-works">
-        <h2>⚙️ How SmartCanteen Works</h2>
+      {/* HOW IT WORKS */}
+      <section className="how-it-works">
+        <h2>How Students Use SmartCanteen ⚙️</h2>
 
         <div className="steps">
-          <div className="step">1️⃣ Choose Food</div>
-          <div className="step">2️⃣ Get Token</div>
-          <div className="step">3️⃣ Track Order</div>
-          <div className="step">4️⃣ Pick Up</div>
+          <div className="step">1️⃣ Select Food</div>
+          <div className="step">2️⃣ Place Order</div>
+          <div className="step">3️⃣ Receive Token</div>
+          <div className="step">4️⃣ Collect Food</div>
         </div>
-      </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <p>© 2026 🍽 SmartCanteen – Student Module | CSI Project Expo</p>
+      </footer>
 
     </div>
   );
