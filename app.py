@@ -5,7 +5,7 @@ import uuid
 from functools import wraps
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # ===============================
 # DATABASE CONNECTION
@@ -403,67 +403,42 @@ def generate_token(order_id):
     return jsonify({"token": token_code})
 
 
-@app.route("/token/validate", methods=["POST"])
+@app.route("/token/validate", methods=["POST", "OPTIONS"])
 def validate_token():
-    data = request.json
-
-    if not data or "token_code" not in data:
-        return jsonify({"message": "Token code is required"}), 400
-
-    token_code = data["token_code"]
+    if request.method == "OPTIONS":
+        return jsonify({"message": "OK"}), 200
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    # 1. Check token exists
-    cursor.execute("SELECT * FROM order_tokens WHERE token_code=%s", (token_code,))
+    data = request.json
+    token_code = data.get("token_code")
+
+    cursor.execute("""
+        SELECT order_id FROM order_tokens WHERE token_code = %s
+    """, (token_code,))
     token = cursor.fetchone()
 
     if not token:
-        return jsonify({"message": "❌ Invalid token"}), 400
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Invalid or already used token"}), 400
 
-    if token["is_used"]:
-        return jsonify({"message": "⚠️ Token already used"}), 400
+    order_id = token["order_id"]
 
-    # 2. Get order
-    cursor.execute("SELECT * FROM orders WHERE order_id=%s", (token["order_id"],))
-    order = cursor.fetchone()
+    cursor.execute("""
+        UPDATE orders SET status='COLLECTED' WHERE order_id=%s
+    """, (order_id,))
 
-    if not order:
-        return jsonify({"message": "Order not found"}), 400
-
-    # 3. Only READY orders can be collected
-    if order["status"] != "READY":
-        return jsonify({
-            "message": f"Order not ready. Current status: {order['status']}"
-        }), 400
-
-    # 4. Mark token used
-    cursor.execute(
-        "UPDATE order_tokens SET is_used=1, collected=1 WHERE token_code=%s",
-        (token_code,)
-    )
-
-    # 5. Update order status to COLLECTED
-    cursor.execute(
-        "UPDATE orders SET status='COLLECTED' WHERE order_id=%s",
-        (order["order_id"],)
-    )
-
-    # 6. Log collection time (optional table)
-    cursor.execute(
-        "INSERT INTO collected_tokens (token_code, collected_at) VALUES (%s, %s)",
-        (token_code, datetime.now())
-    )
+    cursor.execute("""
+        DELETE FROM order_tokens WHERE token_code=%s
+    """, (token_code,))
 
     db.commit()
     cursor.close()
     db.close()
 
-    return jsonify({
-        "message": "✅ Token validated successfully. Order collected.",
-        "order_id": order["order_id"]
-    }), 200
+    return jsonify({"message": "Token validated and removed. Order served ✅"})
 # ===============================
 # PAYMENT
 # ===============================
