@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import "./TrackOrder.css";
 
 function TrackOrder() {
   const { orderId } = useParams();
@@ -13,7 +14,6 @@ function TrackOrder() {
   const userId = localStorage.getItem("user_id");
   const role = localStorage.getItem("role");
 
-  // 🔐 Protect page
   useEffect(() => {
     if (!userId || role !== "STUDENT") {
       alert("Please login as student");
@@ -23,10 +23,7 @@ function TrackOrder() {
 
   useEffect(() => {
     fetchOrderStatus();
-
-    // 🔄 Auto refresh every 10 seconds
     const interval = setInterval(fetchOrderStatus, 10000);
-
     return () => clearInterval(interval);
   }, [orderId]);
 
@@ -51,60 +48,81 @@ function TrackOrder() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusClass = (status) => {
     switch (status) {
       case "PLACED":
-        return "blue";
+        return "status placed";
       case "PREPARING":
-        return "orange";
+        return "status preparing";
       case "READY":
-        return "green";
+        return "status ready";
       case "COLLECTED":
-        return "gray";
+        return "status collected";
       case "CANCELLED":
-        return "red";
+        return "status cancelled";
       default:
-        return "black";
+        return "status";
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>📦 Track Your Order</h2>
+    <div className="track-wrapper">
 
-      <button onClick={() => navigate("/my-orders")}>📜 My Orders</button>
-      <button onClick={() => navigate(-1)}>⬅ Back</button>
-      <button
-        onClick={() => {
-          localStorage.clear();
-          navigate("/login");
-        }}
-      >
-        🚪 Logout
-      </button>
-<button onClick={() => navigate(-1)}>⬅ Back</button>
-      <hr />
+      {/* HERO */}
+      <div className="track-hero">
+        <h1>📦 Track Your Order</h1>
+        <p>Real-time food status with token system</p>
+      </div>
 
-      {loading && <p>Loading order status...</p>}
+      {/* ACTION BAR */}
+      <div className="action-bar">
+        <button onClick={() => navigate("/my-orders")}>📜 My Orders</button>
+        <button onClick={() => navigate(-1)}>⬅ Back</button>
+        <button
+          className="logout-btn"
+          onClick={() => {
+            localStorage.clear();
+            navigate("/login");
+          }}
+        >
+          🚪 Logout
+        </button>
+      </div>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      {/* CONTENT */}
+      <div className="track-content">
 
-      {order && !loading && (
-        <>
-          <p><b>Order ID:</b> {order.order_id}</p>
-          <p>
-            <b>Status:</b>{" "}
-            <span style={{ color: getStatusColor(order.status) }}>
+        {loading && <p className="info-text">⏳ Loading order status...</p>}
+        {error && <p className="error-text">{error}</p>}
+
+        {order && !loading && (
+          <div className="order-card">
+
+            <h2>🎫 Token #{order.order_id}</h2>
+
+            <div className={getStatusClass(order.status)}>
               {order.status}
-            </span>
-          </p>
-          <p><b>Total Amount:</b> ₹{order.total_amount}</p>
-          <p><b>Pickup Slot:</b> {order.slot_time}</p>
-          <p><b>Order Date:</b> {order.order_date}</p>
+            </div>
 
-          <button onClick={fetchOrderStatus}>🔄 Refresh Status</button>
-        </>
-      )}
+            <div className="order-details">
+              <p><b>💰 Amount:</b> ₹{order.total_amount}</p>
+              <p><b>⏰ Pickup Slot:</b> {order.slot_time}</p>
+              <p><b>📅 Date:</b> {order.order_date}</p>
+            </div>
+
+            <button className="refresh-btn" onClick={fetchOrderStatus}>
+              🔄 Refresh Status
+            </button>
+          </div>
+        )}
+
+      </div>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <p>© 2026 🍽 SmartCanteen – Digital Food Ordering & Token System | CSI Project Expo</p>
+      </footer>
+
     </div>
   );
 }

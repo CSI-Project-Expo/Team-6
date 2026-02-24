@@ -198,3 +198,6 @@ VALUES ('Super Admin', 'admin@canteen.com', 'admin123', 'ADMIN');
 SELECT * from users;
 
 select * from order_tokens;
+
+SELECT * from order_items;
+SELECT order_id, slot_id, order_date FROM orders;

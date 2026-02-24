@@ -360,9 +360,17 @@ def track_order(order_id):
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT order_id, status, total_amount 
-        FROM orders WHERE order_id=%s
+        SELECT 
+            o.order_id,
+            o.status,
+            o.total_amount,
+            o.order_date,
+            CONCAT(ps.start_time, ' - ', ps.end_time) AS slot_time
+        FROM orders o
+        LEFT JOIN pickup_slots ps ON o.slot_id = ps.slot_id
+        WHERE o.order_id = %s
     """, (order_id,))
+
     order = cursor.fetchone()
 
     cursor.close()

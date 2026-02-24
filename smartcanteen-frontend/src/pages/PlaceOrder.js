@@ -1,25 +1,44 @@
 import React, { useState } from "react";
 import api from "../services/api";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 function PlaceOrder() {
   const [total, setTotal] = useState("");
   const [params] = useSearchParams();
+  const navigate = useNavigate();
 
   const hotel_id = params.get("hotel_id");
   const slot_id = params.get("slot_id");
   const user_id = localStorage.getItem("user_id");
 
   const placeOrder = async () => {
-    const res = await api.post("/student/order", {
-      user_id,
-      hotel_id,
-      slot_id,
-      total_amount: total,
-      items: []
-    });
+    if (!slot_id) {
+      alert("Please select pickup slot first");
+      return;
+    }
 
-    alert("Order placed. ID = " + res.data.order_id);
+    try {
+      const res = await api.post("/student/order", {
+        user_id,
+        hotel_id,
+        slot_id,
+        total_amount: total,
+        items: [
+          {
+            menu_item_id: 1,
+            quantity: 1,
+            price: total
+          }
+        ]
+      });
+
+      alert("Order placed. ID = " + res.data.order_id);
+      navigate(`/track-order/${res.data.order_id}`);
+
+    } catch (err) {
+      console.error(err);
+      alert("Failed to place order");
+    }
   };
 
   return (
@@ -27,6 +46,7 @@ function PlaceOrder() {
       <h2>Place Order</h2>
 
       <input
+        type="number"
         placeholder="Enter Total Amount"
         onChange={(e) => setTotal(e.target.value)}
       />
