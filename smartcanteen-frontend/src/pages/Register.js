@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import "./Register.css";
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("STUDENT"); // default role
+  const [role, setRole] = useState("STUDENT");
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
@@ -18,33 +19,28 @@ function Register() {
     }
 
     try {
-      // 1. Register user
       await api.post("/auth/register", {
         name,
         email,
         password,
-        role
+        role,
       });
 
-      // 2. Auto login after register
       const loginRes = await api.post("/auth/login", {
         email,
-        password
+        password,
       });
 
-      // 3. Save user info
       localStorage.setItem("user_id", loginRes.data.user_id);
       localStorage.setItem("role", loginRes.data.role);
 
       setMessage("Registered & logged in successfully!");
 
-      // 4. Redirect based on role
       if (loginRes.data.role === "HOTEL_ADMIN") {
         navigate("/hotel-admin");
       } else {
         navigate("/student");
       }
-
     } catch (error) {
       if (error.response && error.response.data.message) {
         setMessage(error.response.data.message);
@@ -55,47 +51,58 @@ function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
+    <div className="register-page">
+      {/* HEADER */}
+      <div className="register-header">
+        <h1>Smart Canteen</h1>
+        <p>Create your account</p>
+      </div>
 
-      <input
-        type="text"
-        placeholder="Name"
-        onChange={(e) => setName(e.target.value)}
-      /><br/>
+      {/* CARD */}
+      <div className="register-wrapper">
+        <div className="register-card">
+          <h2>Register ✨</h2>
 
-      <input
-        type="email"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      /><br/>
+          <input
+            type="text"
+            placeholder="Full Name"
+            onChange={(e) => setName(e.target.value)}
+          />
 
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      /><br/>
+          <input
+            type="email"
+            placeholder="Email Address"
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      {/* Role selection */}
-      <select onChange={(e) => setRole(e.target.value)}>
-        <option value="STUDENT">Student</option>
-        <option value="HOTEL_ADMIN">Hotel Admin</option>
-      </select>
-      <br/><br/>
+          <input
+            type="password"
+            placeholder="Password"
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-      <button onClick={handleRegister}>Register</button>
+          <select onChange={(e) => setRole(e.target.value)}>
+            <option value="STUDENT">Student</option>
+            <option value="HOTEL_ADMIN">Hotel Admin</option>
+          </select>
 
-      <p>{message}</p>
+          <button className="register-btn" onClick={handleRegister}>
+            Create Account
+          </button>
 
-      <p>
-        Already have an account?{" "}
-        <span 
-          style={{ color: "blue", cursor: "pointer" }}
-          onClick={() => navigate("/login")}
-        >
-          Login here
-        </span>
-      </p>
+          {message && <p className="register-message">{message}</p>}
+
+          <p className="login-link">
+            Already have an account?{" "}
+            <span onClick={() => navigate("/login")}>Login here</span>
+          </p>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className="footer">
+        © 2026 Smart Canteen System | All Rights Reserved
+      </div>
     </div>
   );
 }
