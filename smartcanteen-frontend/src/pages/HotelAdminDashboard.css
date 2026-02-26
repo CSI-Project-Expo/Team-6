@@ -1,0 +1,89 @@
+:root {
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
+}
+
+/* PAGE */
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  font-family: "Poppins", sans-serif;
+}
+
+/* HEADER */
+.dashboard-header {
+  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
+  color: white;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.dashboard-header p {
+  margin-top: 6px;
+  opacity: 0.9;
+}
+
+/* ACTION CARDS */
+.dashboard-actions {
+  padding: 40px 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+.dashboard-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px 20px;
+  text-align: center;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-card h3 {
+  margin-top: 12px;
+  color: var(--dark);
+}
+
+.dashboard-card p {
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: gray;
+}
+
+/* FOOTER */
+.dashboard-footer {
+  margin-top: auto;
+  text-align: center;
+  padding: 20px;
+}
+
+.logout-btn {
+  padding: 10px 22px;
+  border-radius: 22px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
+}

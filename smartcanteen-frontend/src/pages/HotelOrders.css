@@ -1,0 +1,135 @@
+:root {
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
+}
+
+/* PAGE */
+.hotel-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  font-family: "Poppins", sans-serif;
+}
+
+/* HEADER */
+.hotel-header {
+  background: linear-gradient(135deg, #FF6B35, #eaf1f0);
+  color: white;
+  padding: 25px 20px;
+  text-align: center;
+}
+
+.hotel-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.hotel-actions button {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  background: white;
+  color: var(--primary);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logout-btn {
+  background: #ef4444 !important;
+  color: white !important;
+}
+
+/* TABLE */
+.table-wrapper {
+  padding: 25px;
+  overflow-x: auto;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 14px;
+  text-align: center;
+}
+
+.orders-table th {
+  background: #f3f4f6;
+  color: var(--dark);
+  font-weight: bold;
+}
+
+.orders-table tr:nth-child(even) {
+  background: #fafafa;
+}
+
+/* STATUS BADGES */
+.status {
+  padding: 6px 12px;
+  border-radius: 14px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.status.placed {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.status.preparing {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status.ready {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status.collected {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.status.cancelled {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* SELECT */
+.orders-table select {
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+}
+
+/* FOOTER */
+.footer {
+  margin-top: auto;
+  background: #1F2933;
+  color: white;
+  text-align: center;
+  padding: 12px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .orders-table th,
+  .orders-table td {
+    font-size: 0.85rem;
+    padding: 10px;
+  }
+}

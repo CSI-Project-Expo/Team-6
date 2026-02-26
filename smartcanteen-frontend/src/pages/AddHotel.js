@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./AddHotel.css"; // make sure CSS is imported
 
 function AddHotel() {
   const [hotelName, setHotelName] = useState("");
@@ -9,69 +10,68 @@ function AddHotel() {
 
   const navigate = useNavigate();
 
-const handleAddHotel = async () => {
-  if (!hotelName || !location) {
-    alert("Please fill all fields");
-    return;
-  }
+  const handleAddHotel = async () => {
+    if (!hotelName || !location) {
+      alert("Please fill all fields");
+      return;
+    }
 
-  const role = localStorage.getItem("role");
+    const role = localStorage.getItem("role");
 
-  if (role !== "ADMIN") {
-    alert("Access denied. Only Super Admin can add hotels.");
-    return;
-  }
+    if (role !== "ADMIN") {
+      alert("Access denied. Only Super Admin can add hotels.");
+      return;
+    }
 
-  try {
-    const res = await axios.post(
-      "http://127.0.0.1:5000/superadmin/add-hotel",
-      {
-        hotel_name: hotelName,
-        location: location
-      },
-      {
-        headers: {
-          role: role   // 👈 send role
-        }
-      }
-    );
+    try {
+      const res = await axios.post(
+        "http://127.0.0.1:5000/superadmin/add-hotel",
+        { hotel_name: hotelName, location: location },
+        { headers: { role: role } }
+      );
 
-    setMessage(res.data.message);
-    setHotelName("");
-    setLocation("");
-
-  } catch (error) {
-    console.log(error);
-    setMessage("Failed to add hotel");
-  }
-};
+      setMessage(res.data.message);
+      setHotelName("");
+      setLocation("");
+    } catch (error) {
+      console.log(error);
+      setMessage("Failed to add hotel");
+    }
+  };
 
   return (
-    <div>
-      <h2>➕ Add Hotel</h2>
+    <div className="superadmin-page">
+      <div className="superadmin-card add-hotel-card">
+        <h2>➕ Add Hotel</h2>
 
-      <input
-        type="text"
-        placeholder="Hotel Name"
-        value={hotelName}
-        onChange={(e) => setHotelName(e.target.value)}
-      />
-      <br /><br />
+        <div className="form-group">
+          <label>Hotel Name</label>
+          <input
+            type="text"
+            placeholder="Enter hotel name"
+            value={hotelName}
+            onChange={(e) => setHotelName(e.target.value)}
+          />
+        </div>
 
-      <input
-        type="text"
-        placeholder="Location"
-        value={location}
-        onChange={(e) => setLocation(e.target.value)}
-      />
-      <br /><br />
+        <div className="form-group">
+          <label>Location</label>
+          <input
+            type="text"
+            placeholder="Enter location"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
 
-      <button onClick={handleAddHotel}>Add Hotel</button>
-      <br /><br />
+        <button onClick={handleAddHotel}>Add Hotel</button>
 
-      <p>{message}</p>
+        {message && <p className="status-msg">{message}</p>}
 
-      <button onClick={() => navigate("/superadmin/dashboard")}>⬅ Back</button>
+        <button className="back-btn" onClick={() => navigate("/superadmin/dashboard")}>
+          ⬅ Back
+        </button>
+      </div>
     </div>
   );
 }

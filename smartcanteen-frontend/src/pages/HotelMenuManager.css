@@ -1,0 +1,150 @@
+:root {
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
+}
+
+/* PAGE */
+.hotel-menu-manager-page {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* HEADER */
+.hotel-menu-manager-header {
+  background: linear-gradient(135deg, #FF6B35, #eaf1f0);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 16px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* ACTION BUTTONS */
+.hotel-menu-manager-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.hotel-menu-manager-actions button {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.hotel-menu-manager-actions button:not(.logout-btn) {
+  background: var(--primary);
+  color: white;
+}
+
+.hotel-menu-manager-actions .logout-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.hotel-menu-manager-actions button:hover {
+  opacity: 0.85;
+}
+
+/* ADD ITEM FORM */
+.add-menu-manager-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  flex-direction: column;
+  width: 100%;
+  max-width: 400px;
+}
+
+.add-menu-manager-form input {
+  padding: 10px 15px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  outline: none;
+  font-size: 1rem;
+  width: 100%;
+}
+
+.add-menu-manager-form input:focus {
+  border-color: var(--primary);
+}
+
+.add-menu-manager-form button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background: var(--secondary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.add-menu-manager-form button:hover {
+  background: #25b4a6;
+}
+
+/* MENU ITEM CARD */
+.menu-item-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 15px 20px;
+  margin: 10px 0;
+  width: 100%;
+  max-width: 500px;
+}
+
+.menu-item-card b {
+  font-size: 1.1rem;
+}
+
+.menu-item-card button {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 8px;
+}
+
+.menu-item-card .toggle-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.menu-item-card .delete-btn {
+  background: #ef4444;
+  color: white;
+  margin-left: 10px;
+}
+
+.menu-item-card button:hover {
+  opacity: 0.85;
+}
+
+/* RESPONSIVE */
+@media (max-width: 500px) {
+  .add-menu-manager-form {
+    gap: 10px;
+  }
+
+  .menu-item-card {
+    padding: 12px 15px;
+  }
+}

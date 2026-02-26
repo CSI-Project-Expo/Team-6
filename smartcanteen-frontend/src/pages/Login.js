@@ -7,21 +7,24 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       const res = await api.post("/auth/login", {
-        email: email,
-        password: password
+        email,
+        password,
       });
 
+      setIsError(false);
       setMessage(res.data.message);
 
       localStorage.setItem("user_id", res.data.user_id);
       localStorage.setItem("role", res.data.role);
 
+      // Redirect based on role
       if (res.data.role === "ADMIN") {
         navigate("/superadmin/dashboard");
       } 
@@ -33,52 +36,37 @@ function Login() {
       }
 
     } catch (err) {
-      setMessage("❌ Login failed. Invalid email or password.");
+      setMessage("Login failed. Invalid email or password.");
     }
   };
 
   return (
-    <div className="login-wrapper">
-      <div className="login-card">
+    <div>
+      <h2>Login</h2>
 
-        <h1>🍽 SmartCanteen</h1>
-        <p className="subtitle">Login to continue</p>
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      /><br/>
 
-        <div className="input-group">
-          <input
-            type="email"
-            placeholder="Enter Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      /><br/>
 
-          <input
-            type="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
+      <button onClick={handleLogin}>Login</button>
 
-        <button className="login-btn" onClick={handleLogin}>
-          🔐 Login
-        </button>
+      <p>{message}</p>
+      <hr />
 
-        {message && <p className="message">{message}</p>}
-
-        <hr />
-
-        <p className="register-text">Don’t have an account?</p>
-
-        <button className="register-btn" onClick={() => navigate("/register")}>
-          ✍ Register Here
-        </button>
-
-        <div className="role-info">
-          <p>👩‍🎓 Student | 🏨 Hotel Admin | 🛡 Admin</p>
-        </div>
-
-      </div>
+      <p>Don’t have an account?</p>
+      <button onClick={() => navigate("/register")}>
+        Register Here
+      </button>
     </div>
   );
 }

@@ -1,0 +1,187 @@
+:root {
+  --primary: #efb9a6;
+  --secondary: #2EC4B6;
+  --dark: #1F2933;
+}
+
+/* ================= BODY ================= */
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: white;
+}
+
+/* ================= WRAPPER ================= */
+.dashboard-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+/* ================= HEADER ================= */
+.dashboard-header {
+  background: white;
+  color: var(--dark);
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.dashboard-header h1 {
+  color: var(--dark);
+  font-weight: bold;
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.header-actions button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  background: var(--secondary);
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.header-actions button.logout-btn {
+  background: #EF4444 !important;
+}
+
+.header-actions button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* ================= HERO SECTION ================= */
+.hero-section {
+  background: linear-gradient(135deg, #fdb59b, #2EC4B6);
+  color: white;
+  text-align: center;
+  padding: 70px 20px;
+  position: relative;
+  border-radius: 0 0 20px 20px;
+  z-index: 1;
+}
+
+.hero-section::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.15);
+  z-index: 0;
+}
+
+.hero-section h2,
+.hero-section p,
+.hero-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section h2 {
+  font-size: 2.8rem;
+  margin-bottom: 10px;
+}
+
+.hero-section p {
+  margin-top: 10px;
+  font-size: 1.2rem;
+}
+
+.hero-btn {
+  margin-top: 20px;
+  padding: 14px 30px;
+  border-radius: 30px;
+  border: none;
+  font-size: 1rem;
+  background: white;
+  color: var(--primary);
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: bold;
+}
+
+.hero-btn:hover {
+  transform: scale(1.05);
+}
+
+/* ================= DASHBOARD CARDS ================= */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+  padding: 40px;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+
+.card h3 {
+  color: var(--primary);
+  margin-top: 12px;
+  font-size: 1.1rem;
+}
+
+.card-emoji {
+  font-size: 2rem;
+}
+
+/* Logout card */
+.logout-card {
+  background: #ffe5e5;
+}
+
+/* ================= FOOTER ================= */
+.footer {
+  margin-top: auto;
+  background: var(--dark);
+  color: white;
+  text-align: center;
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 600px) {
+  .hero-section h2 {
+    font-size: 2rem;
+  }
+
+  .dashboard-cards {
+    padding: 20px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-actions {
+    margin-top: 10px;
+  }
+}
