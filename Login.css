@@ -1,0 +1,150 @@
+:root {
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
+}
+
+/* PAGE */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  font-family: "Poppins", sans-serif;
+}
+
+/* HEADER STRIP */
+.login-header {
+  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
+  color: white;
+  text-align: center;
+  padding: 30px 10px;
+}
+
+.login-header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.login-header p {
+  margin-top: 6px;
+  opacity: 0.9;
+}
+
+/* CENTER CARD */
+.login-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CARD */
+.login-card {
+  background: white;
+  width: 360px;
+  padding: 30px 25px;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  animation: fadeUp 0.6s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card h2 {
+  margin-bottom: 20px;
+  color: var(--dark);
+}
+
+/* INPUTS */
+.login-card input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  font-size: 0.95rem;
+  outline: none;
+  transition: 0.2s;
+}
+
+.login-card input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+/* BUTTONS */
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
+}
+
+/* MESSAGE */
+.msg {
+  margin-top: 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.msg.success {
+  color: #16a34a;
+}
+
+.msg.error {
+  color: #ef4444;
+}
+
+/* REGISTER */
+.register-text {
+  margin-top: 22px;
+  font-size: 0.9rem;
+  color: gray;
+}
+
+.register-btn {
+  margin-top: 8px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: none;
+  background: var(--secondary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.register-btn:hover {
+  background: #25b3a7;
+}
+
+/* FOOTER */
+.footer {
+  background: #1F2933;
+  color: white;
+  text-align: center;
+  padding: 12px;
+}
