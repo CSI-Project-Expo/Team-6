@@ -65,10 +65,10 @@ function StudentDashboard() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="footer">
-        <p>© 2026 🍽 SmartCanteen – Student Module | CSI Project Expo</p>
+     <footer className="footer">
+        <p>© 2026 🍽 SmartCanteen – Digital Food Ordering & Token System | CSI Project Expo</p>
       </footer>
+
 
     </div>
   );
