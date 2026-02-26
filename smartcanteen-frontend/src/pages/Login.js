@@ -1,70 +1,96 @@
 import React, { useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import "./Login.css";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       const res = await api.post("/auth/login", {
-        email: email,
-        password: password
+        email,
+        password,
       });
 
+      setIsError(false);
       setMessage(res.data.message);
 
-      // Save user data
       localStorage.setItem("user_id", res.data.user_id);
       localStorage.setItem("role", res.data.role);
 
-      // Redirect based on role
-      if (res.data.role === "ADMIN") {
-        navigate("/superadmin/dashboard");
-      } 
-      else if (res.data.role === "HOTEL_ADMIN") {
-        navigate("/hoteladmin");
-      } 
-      else {
-        navigate("/student");
-      }
+      setTimeout(() => {
+        if (res.data.role === "ADMIN") {
+          navigate("/superadmin/dashboard");
+        } else if (res.data.role === "HOTEL_ADMIN") {
+          navigate("/hoteladmin");
+        } else {
+          navigate("/student");
+        }
+      }, 800);
 
     } catch (err) {
+      setIsError(true);
       setMessage("Login failed. Invalid email or password.");
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className="login-page">
+      {/* HEADER STRIP */}
+      <div className="login-header">
+        <h1>Smart Canteen</h1>
+        <p>Fast • Smart • Cashless</p>
+      </div>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      /><br/>
+      {/* LOGIN CARD */}
+      <div className="login-wrapper">
+        <div className="login-card">
+          <h2>Welcome Back 👋</h2>
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      /><br/>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      <button onClick={handleLogin}>Login</button>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-      <p>{message}</p>
-      <hr />
+          <button className="login-btn" onClick={handleLogin}>
+            Login
+          </button>
 
-      <p>Don’t have an account?</p>
-      <button onClick={() => navigate("/register")}>
-        Register Here
-      </button>
+          {message && (
+            <p className={isError ? "msg error" : "msg success"}>
+              {message}
+            </p>
+          )}
+
+          <p className="register-text">Don’t have an account?</p>
+          <button
+            className="register-btn"
+            onClick={() => navigate("/register")}
+          >
+            Register Here
+          </button>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className="footer">
+        © 2026 Smart Canteen System | All Rights Reserved
+      </div>
     </div>
   );
 }

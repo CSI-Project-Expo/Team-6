@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./HotelMenuManager.css";
 
 function HotelMenuManager() {
   const navigate = useNavigate();
@@ -96,34 +97,38 @@ function HotelMenuManager() {
   };
 
   return (
-    <div>
-      <h2>🍽 Hotel Menu Manager</h2>
+    <div className="hotel-menu-manager-page">
+      <h2 className="hotel-menu-manager-header">🍽 Hotel Menu Manager</h2>
 
-      <button onClick={() => navigate("/hotel-admin-dashboard")}>
-        ⬅ Back
-      </button>
-      <button onClick={handleLogout}>🚪 Logout</button>
+      <div className="hotel-menu-manager-actions">
+        <button onClick={() => navigate("/hotel-admin-dashboard")}>
+          ⬅ Back
+        </button>
+        <button className="logout-btn" onClick={handleLogout}>
+          🚪 Logout
+        </button>
+      </div>
 
       <hr />
 
       <h3>Add New Item</h3>
-      <input
-        type="text"
-        placeholder="Item Name"
-        value={itemName}
-        onChange={(e) => setItemName(e.target.value)}
-      />
-      <br />
+      <div className="add-menu-manager-form">
+        <input
+          type="text"
+          placeholder="Item Name"
+          value={itemName}
+          onChange={(e) => setItemName(e.target.value)}
+        />
 
-      <input
-        type="number"
-        placeholder="Price"
-        value={price}
-        onChange={(e) => setPrice(e.target.value)}
-      />
-      <br />
+        <input
+          type="number"
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+        />
 
-      <button onClick={handleAddItem}>➕ Add Item</button>
+        <button onClick={handleAddItem}>➕ Add Item</button>
+      </div>
 
       <hr />
 
@@ -132,21 +137,14 @@ function HotelMenuManager() {
       {menu.length === 0 && <p>No menu items found</p>}
 
       {menu.map((item) => (
-        <div
-          key={item.menu_item_id}
-          style={{
-            border: "1px solid gray",
-            padding: "10px",
-            margin: "10px"
-          }}
-        >
+        <div key={item.menu_item_id} className="menu-item-card">
           <b>{item.item_name}</b> - ₹{item.price}
           <br />
-          Status:{" "}
-          {item.is_available ? "Available ✅" : "Not Available ❌"}
+          Status: {item.is_available ? "Available ✅" : "Not Available ❌"}
           <br />
 
           <button
+            className="toggle-btn"
             onClick={() =>
               toggleAvailability(item.menu_item_id, item.is_available)
             }
@@ -155,8 +153,8 @@ function HotelMenuManager() {
           </button>
 
           <button
+            className="delete-btn"
             onClick={() => deleteItem(item.menu_item_id)}
-            style={{ marginLeft: "10px" }}
           >
             🗑 Delete
           </button>

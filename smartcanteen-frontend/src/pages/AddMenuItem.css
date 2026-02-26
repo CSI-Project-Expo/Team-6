@@ -1,0 +1,96 @@
+:root {
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
+}
+
+/* PAGE */
+.add-menu-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 20px;
+  background: var(--bg);
+  font-family: "Poppins", sans-serif;
+}
+
+/* HEADER */
+.add-menu-header {
+  background: linear-gradient(135deg, #FF6B35, #eaf1f0);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 16px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+/* FORM */
+.add-menu-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.add-menu-form input {
+  padding: 12px 15px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s;
+}
+
+.add-menu-form input:focus {
+  border-color: var(--primary);
+}
+
+/* BUTTONS */
+.add-menu-form button {
+  padding: 12px 20px;
+  border-radius: 20px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.add-menu-form button:hover {
+  background: #e55a27;
+}
+
+/* BACK BUTTON */
+.back-btn {
+  background: #e0e0e0;
+  color: var(--dark);
+}
+
+.back-btn:hover {
+  background: #d4d4d4;
+}
+
+/* RESPONSIVE */
+@media (max-width: 500px) {
+  .add-menu-form {
+    padding: 20px;
+  }
+
+  .add-menu-header {
+    font-size: 1.3rem;
+    padding: 15px 20px;
+  }
+}

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import "./HotelAdminDashboard.css";
 
 function HotelAdminDashboard() {
   const navigate = useNavigate();
@@ -11,26 +12,51 @@ function HotelAdminDashboard() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>🏨 Hotel Admin Dashboard</h2>
+    <div className="dashboard-page">
+      
+      {/* HEADER */}
+      <div className="dashboard-header">
+        <h2>🏨 Hotel Admin Dashboard</h2>
+        <p>Manage menu, validate tokens & track orders easily</p>
+      </div>
 
-      <button onClick={() => navigate("/hoteladmin/menu")}>
-        🍽 Manage Menu
-      </button>
-      <br /><br />
-      <button onClick={() => navigate("/hoteladmin/validate-token")}>
-  🎟 Validate Token
-</button>
-<br/><br/>
+      {/* ACTION CARDS */}
+      <div className="dashboard-actions">
+        <div
+          className="dashboard-card"
+          onClick={() => navigate("/hoteladmin/menu")}
+        >
+          🍽
+          <h3>Manage Menu</h3>
+          <p>Add, edit and update food items</p>
+        </div>
 
-      <button onClick={() => navigate("/hoteladmin/orders")}>
-        📦 View Orders
-      </button>
-      <br /><br />
+        <div
+          className="dashboard-card"
+          onClick={() => navigate("/hoteladmin/validate-token")}
+        >
+          🎟
+          <h3>Validate Token</h3>
+          <p>Verify customer food tokens</p>
+        </div>
 
-      <button onClick={handleLogout}>
-        🚪 Logout
-      </button>
+        <div
+          className="dashboard-card"
+          onClick={() => navigate("/hoteladmin/orders")}
+        >
+          📦
+          <h3>View Orders</h3>
+          <p>Track and manage incoming orders</p>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className="dashboard-footer">
+        <button className="logout-btn" onClick={handleLogout}>
+          🚪 Logout
+        </button>
+      </div>
+
     </div>
   );
 }

@@ -1,0 +1,151 @@
+:root {
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
+}
+
+/* PAGE */
+.hotel-menu-page {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+/* HEADER */
+.hotel-menu-header {
+  background: linear-gradient(135deg, #FF6B35, #eaf1f0);
+  color: white;
+  padding: 20px 40px;
+  border-radius: 16px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* ACTION BUTTONS */
+.hotel-menu-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.hotel-menu-actions button {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.hotel-menu-actions button:not(.logout-btn) {
+  background: var(--primary);
+  color: white;
+}
+
+.hotel-menu-actions .logout-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.hotel-menu-actions button:hover {
+  opacity: 0.85;
+}
+
+/* ADD ITEM FORM */
+.add-menu-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.add-menu-form input {
+  padding: 10px 15px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  outline: none;
+  font-size: 1rem;
+  min-width: 150px;
+}
+
+.add-menu-form input:focus {
+  border-color: var(--primary);
+}
+
+.add-menu-form button {
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  background: var(--secondary);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.add-menu-form button:hover {
+  background: #25b4a6;
+}
+
+/* MENU TABLE */
+.menu-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.menu-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.menu-table th,
+.menu-table td {
+  padding: 12px;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.menu-table th {
+  background: #f3f4f6;
+  color: var(--dark);
+  font-weight: bold;
+}
+
+.menu-table tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.menu-table tr:hover {
+  background: #f0f0f0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .menu-table th,
+  .menu-table td {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .add-menu-form {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .hotel-menu-actions {
+    flex-direction: column;
+  }
+}

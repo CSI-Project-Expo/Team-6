@@ -1,0 +1,146 @@
+/* Page wrapper */
+.superadmin-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+/* Card */
+.superadmin-card {
+  width: 100%;
+  max-width: 1000px;
+  background: white;
+  border-radius: 25px;
+  padding: 40px 30px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+  transition: transform 0.3s ease;
+}
+
+.superadmin-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Heading */
+.superadmin-card h2 {
+  font-size: 2rem;
+  margin-bottom: 25px;
+  color: #1F2933;
+  text-align: center;
+}
+
+/* Back button */
+.back-btn {
+  background: #374151;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 25px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+/* Table wrapper for horizontal scroll */
+.table-container {
+  overflow-x: auto;
+}
+
+/* Users table */
+.users-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+}
+
+.users-table th,
+.users-table td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.users-table th {
+  background-color: #F3F4F6;
+  font-weight: 600;
+  color: #1F2933;
+}
+
+.users-table tr:hover {
+  background-color: #F9FAFB;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: white;
+  display: inline-block;
+}
+
+.status-badge.active {
+  background-color: #10B981; /* green */
+}
+
+.status-badge.blocked {
+  background-color: #EF4444; /* red */
+}
+
+/* Block / Unblock buttons */
+.block-btn,
+.unblock-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.block-btn {
+  background-color: #EF4444;
+  color: white;
+}
+
+.block-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+.unblock-btn {
+  background-color: #10B981;
+  color: white;
+}
+
+.unblock-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .superadmin-card {
+    padding: 25px 15px;
+  }
+
+  .users-table th,
+  .users-table td {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  .back-btn {
+    padding: 10px 14px;
+  }
+}
