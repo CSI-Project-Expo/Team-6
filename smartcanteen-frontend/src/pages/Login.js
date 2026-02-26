@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
+import "./Login.css";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -18,11 +19,9 @@ function Login() {
 
       setMessage(res.data.message);
 
-      // Save user data
       localStorage.setItem("user_id", res.data.user_id);
       localStorage.setItem("role", res.data.role);
 
-      // Redirect based on role
       if (res.data.role === "ADMIN") {
         navigate("/superadmin/dashboard");
       } 
@@ -34,37 +33,52 @@ function Login() {
       }
 
     } catch (err) {
-      setMessage("Login failed. Invalid email or password.");
+      setMessage("❌ Login failed. Invalid email or password.");
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className="login-wrapper">
+      <div className="login-card">
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      /><br/>
+        <h1>🍽 SmartCanteen</h1>
+        <p className="subtitle">Login to continue</p>
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      /><br/>
+        <div className="input-group">
+          <input
+            type="email"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-      <button onClick={handleLogin}>Login</button>
+          <input
+            type="password"
+            placeholder="Enter Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
 
-      <p>{message}</p>
-      <hr />
+        <button className="login-btn" onClick={handleLogin}>
+          🔐 Login
+        </button>
 
-      <p>Don’t have an account?</p>
-      <button onClick={() => navigate("/register")}>
-        Register Here
-      </button>
+        {message && <p className="message">{message}</p>}
+
+        <hr />
+
+        <p className="register-text">Don’t have an account?</p>
+
+        <button className="register-btn" onClick={() => navigate("/register")}>
+          ✍ Register Here
+        </button>
+
+        <div className="role-info">
+          <p>👩‍🎓 Student | 🏨 Hotel Admin | 🛡 Admin</p>
+        </div>
+
+      </div>
     </div>
   );
 }
