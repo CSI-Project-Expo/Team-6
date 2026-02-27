@@ -47,6 +47,22 @@ def get_hotel_id_for_admin(cursor, user_id):
     return hotel["hotel_id"]
 
 
+def get_request_user_id():
+    raw_user_id = (
+        request.headers.get("user_id")
+        or request.headers.get("user-id")
+        or request.headers.get("x-user-id")
+    )
+
+    if not raw_user_id:
+        return None
+
+    try:
+        return int(raw_user_id)
+    except (TypeError, ValueError):
+        return None
+
+
 # ===============================
 # HOME
 # ===============================
@@ -536,14 +552,14 @@ def payment():
 @app.route("/hoteladmin/menu/my", methods=["GET"])
 @check_role("HOTEL_ADMIN")
 def hotel_menu_my():
-    user_id = request.headers.get("user_id")
-    if not user_id:
-        return jsonify({"message": "Missing user_id"}), 400
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
 
-    hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
     if not hotel_id:
         cursor.close()
         db.close()
@@ -559,13 +575,13 @@ def hotel_menu_my():
 @app.route("/hoteladmin/menu/<int:hotel_id>")
 @check_role("HOTEL_ADMIN")
 def hotel_menu(hotel_id):
-    user_id = request.headers.get("user_id")
-    if not user_id:
-        return jsonify({"message": "Missing user_id"}), 400
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    assigned_hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+    assigned_hotel_id = get_hotel_id_for_admin(cursor, user_id)
     if not assigned_hotel_id:
         cursor.close()
         db.close()
@@ -586,15 +602,15 @@ def hotel_menu(hotel_id):
 @app.route("/hoteladmin/menu", methods=["POST"])
 @check_role("HOTEL_ADMIN")
 def add_menu():
-    user_id = request.headers.get("user_id")
-    if not user_id:
-        return jsonify({"message": "Missing user_id"}), 400
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
     data = request.json
 
-    hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
     if not hotel_id:
         cursor.close()
         db.close()
@@ -617,7 +633,7 @@ def hotel_orders(hotel_id):
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT o.order_id,u.name,o.total_amount,o.status,o.order_date
+        SELECT o.order_id, u.name AS student_name, o.total_amount, o.status, o.order_date
         FROM orders o JOIN users u ON o.user_id=u.user_id
         WHERE o.hotel_id=%s
     """, (hotel_id,))
@@ -661,9 +677,9 @@ def update_order():
 @app.route("/hoteladmin/menu", methods=["PUT"])
 @check_role("HOTEL_ADMIN")
 def update_menu_item():
-    user_id = request.headers.get("user_id")
-    if not user_id:
-        return jsonify({"message": "Missing user_id"}), 400
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
@@ -671,7 +687,7 @@ def update_menu_item():
     data = request.json
     menu_item_id = data["menu_item_id"]
     is_available = data["is_available"]
-    hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
 
     if not hotel_id:
         cursor.close()
@@ -698,13 +714,13 @@ def update_menu_item():
 @app.route("/hoteladmin/menu/<int:menu_item_id>", methods=["DELETE"])
 @check_role("HOTEL_ADMIN")
 def delete_menu_item(menu_item_id):
-    user_id = request.headers.get("user_id")
-    if not user_id:
-        return jsonify({"message": "Missing user_id"}), 400
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
 
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
-    hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
 
     if not hotel_id:
         cursor.close()

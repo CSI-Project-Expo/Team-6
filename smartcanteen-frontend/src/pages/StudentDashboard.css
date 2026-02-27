@@ -158,11 +158,12 @@
 
 .st-footer {
   margin-top: auto;
-  background: #1f2933;
-  color: #ffffff;
+  background: linear-gradient(135deg, #1F2933, #111827);
+  color: white;
   text-align: center;
-  padding: 18px 12px;
-  font-size: 0.96rem;
+  padding: 14px;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
 }
 
 .st-footer p {

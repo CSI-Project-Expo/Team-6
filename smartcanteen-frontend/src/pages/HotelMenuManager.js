@@ -101,7 +101,7 @@ function HotelMenuManager() {
       <h2 className="hotel-menu-manager-header">🍽 Hotel Menu Manager</h2>
 
       <div className="hotel-menu-manager-actions">
-        <button onClick={() => navigate("/hotel-admin-dashboard")}>
+        <button onClick={() => navigate("/hoteladmin")}>
           ⬅ Back
         </button>
         <button className="logout-btn" onClick={handleLogout}>

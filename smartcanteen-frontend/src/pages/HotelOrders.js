@@ -75,7 +75,7 @@ function HotelOrders() {
             {orders.map((order) => (
               <tr key={order.order_id}>
                 <td>{order.order_id}</td>
-                <td>{order.student_name}</td>
+                <td>{order.student_name || order.name || "-"}</td>
                 <td>₹{order.total_amount}</td>
                 <td>
                   <span className={`status ${order.status.toLowerCase()}`}>

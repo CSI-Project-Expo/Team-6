@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import "./HotelMenu.css";
@@ -7,32 +7,57 @@ function HotelMenu() {
   const [menu, setMenu] = useState([]);
   const [itemName, setItemName] = useState("");
   const [price, setPrice] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const role = localStorage.getItem("role");
+  const hotelId = localStorage.getItem("hotel_id");
 
-  useEffect(() => {
-    fetchMenu();
-  }, []);
-
-  const fetchMenu = async () => {
+  const fetchMenu = useCallback(async () => {
+    setLoading(true);
     try {
       const res = await api.get("/hoteladmin/menu/my");
       setMenu(res.data);
     } catch (error) {
+      // Fallback for older backend route shape
+      if (hotelId) {
+        try {
+          const fallbackRes = await api.get(`/hoteladmin/menu/${hotelId}`);
+          setMenu(fallbackRes.data);
+          return;
+        } catch (fallbackError) {
+          console.log(fallbackError);
+        }
+      }
+
       console.log(error);
       alert("Failed to load menu");
+    } finally {
+      setLoading(false);
     }
-  };
+  }, [hotelId]);
+
+  useEffect(() => {
+    if (role !== "HOTEL_ADMIN") {
+      alert("Unauthorized access");
+      navigate("/login");
+      return;
+    }
+
+    fetchMenu();
+  }, [role, navigate, fetchMenu]);
 
   const addMenuItem = async () => {
-    if (!itemName || !price) {
+    const numericPrice = Number(price);
+
+    if (!itemName.trim() || !price || Number.isNaN(numericPrice) || numericPrice <= 0) {
       alert("Fill all fields");
       return;
     }
 
     try {
       await api.post("/hoteladmin/menu", {
-        item_name: itemName,
-        price: price,
+        item_name: itemName.trim(),
+        price: numericPrice,
       });
 
       alert("Menu item added");
@@ -42,6 +67,20 @@ function HotelMenu() {
     } catch (error) {
       console.log(error);
       alert("Failed to add item");
+    }
+  };
+
+  const deleteMenuItem = async (menuItemId) => {
+    if (!window.confirm("Delete this menu item?")) {
+      return;
+    }
+
+    try {
+      await api.delete(`/hoteladmin/menu/${menuItemId}`);
+      fetchMenu();
+    } catch (error) {
+      console.log(error);
+      alert("Failed to delete item");
     }
   };
 
@@ -69,7 +108,7 @@ function HotelMenu() {
 
       <div className="hotel-menu-actions">
         <button onClick={() => navigate("/hoteladmin/orders")}>View Orders</button>
-        <button onClick={() => navigate(-1)}>Back</button>
+        <button onClick={() => navigate("/hoteladmin")}>Back</button>
         <button className="logout-btn" onClick={handleLogout}>
           Logout
         </button>
@@ -101,10 +140,15 @@ function HotelMenu() {
               <th>Item</th>
               <th>Price</th>
               <th>Available</th>
-              <th>Action</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
+            {loading && (
+              <tr>
+                <td colSpan="5">Loading menu...</td>
+              </tr>
+            )}
             {menu.map((item) => (
               <tr key={item.menu_item_id}>
                 <td>{item.menu_item_id}</td>
@@ -119,10 +163,16 @@ function HotelMenu() {
                   >
                     {item.is_available ? "Mark Unavailable" : "Mark Available"}
                   </button>
+                  <button
+                    className="menu-delete-btn"
+                    onClick={() => deleteMenuItem(item.menu_item_id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
-            {menu.length === 0 && (
+            {!loading && menu.length === 0 && (
               <tr>
                 <td colSpan="5">No menu items found.</td>
               </tr>

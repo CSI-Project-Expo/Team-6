@@ -140,10 +140,15 @@
   color: white;
   font-size: 0.9rem;
   cursor: pointer;
+  margin: 0 4px;
 }
 
 .menu-table td button:hover {
   opacity: 0.9;
+}
+
+.menu-table td .menu-delete-btn {
+  background: #ef4444;
 }
 
 /* RESPONSIVE */
