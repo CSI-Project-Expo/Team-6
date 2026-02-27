@@ -1,128 +1,153 @@
 :root {
-  /* EXACT student dashboard colors */
-  --student-primary: #2563eb;
-  --student-secondary: #2ec4b6;
-
-  --card: #ffffff;
-  --text-dark: #1f2933;
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
 }
 
-/* PAGE */
-.page-wrapper {
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: var(--bg);
+}
+
+/* WRAPPER */
+.dashboard-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* HEADER (same as student layout) */
+/* HEADER */
 .dashboard-header {
-  background: #ffffff;
-  padding: 14px 30px;
+  background: white;
+  padding: 15px 25px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .dashboard-header h1 {
-  margin: 0;
-  color: var(--student-primary);
+  color: var(--primary);
 }
 
-.header-logout {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 18px;
+.header-actions button {
+  margin-left: 10px;
+  padding: 8px 16px;
   border-radius: 20px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-/* 🔥 MAIN GRADIENT — SAME AS STUDENT DASHBOARD */
-.dashboard-main {
-  flex: 1;
-  padding: 50px 20px;
-
-  /* ⬇⬇⬇ EXACT GRADIENT ⬇⬇⬇ */
-  background: linear-gradient(
-    135deg,
-    var(--student-primary),
-    var(--student-secondary)
-  );
-}
-
-/* TITLE */
-.dashboard-title {
-  text-align: center;
+  border: none;
+  background: var(--secondary);
   color: white;
-  font-size: 2.2rem;
-  margin-bottom: 35px;
+  cursor: pointer;
 }
 
-/* GRID */
-.dashboard-grid {
-  max-width: 900px;
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 22px;
+.logout-btn {
+  background: #EF4444 !important;
 }
 
-/* CARDS (student-style) */
-.dashboard-card {
-  background: var(--card);
-  padding: 26px 20px;
-  border-radius: 16px;
+/* HERO */
+.hero-section {
+  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
+  color: white;
+  text-align: center;
+  padding: 70px 20px;
+}
+
+.hero-section h2 {
+  font-size: 2.6rem;
+}
+
+.hero-section p {
+  margin-top: 10px;
+  font-size: 1.2rem;
+}
+
+/* CARDS */
 .dashboard-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 25px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
   padding: 40px;
-
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  box-sizing: border-box;
 }
 
 .card {
-  width: 100%;
   background: white;
   border-radius: 20px;
   padding: 25px;
   text-align: center;
-  font-weight: 600;
-  color: var(--student-primary);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   cursor: pointer;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-  transition: 0.25s ease;
+  transition: 0.3s;
 }
 
-.dashboard-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 26px rgba(0,0,0,0.18);
+.card:hover {
+  transform: translateY(-8px);
 }
 
-/* LOGOUT CARD */
+.card h3 {
+  color: var(--primary);
+}
+
 .logout-card {
-  background: #fff5f5;
-  color: #dc2626;
+  background: #ffe5e5;
+}
+
+/* HOW IT WORKS */
+.how-it-works {
+  background: #ffffff;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.how-it-works h2 {
+  margin-bottom: 20px;
+  color: var(--dark);
+}
+
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.step {
+  background: var(--secondary);
+  color: white;
+  padding: 15px 22px;
+  border-radius: 20px;
+  min-width: 140px;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transition: 0.3s;
+}
+
+.step:hover {
+  transform: scale(1.05);
 }
 
 /* FOOTER */
-.dashboard-footer {
-  background: #1f2933;
+.footer {
+  margin-top: auto;
+  background: #1F2933;
   color: white;
   text-align: center;
   padding: 12px;
-  font-size: 0.9rem;
 }
 
-/* MOBILE */
+/* RESPONSIVE */
 @media (max-width: 600px) {
-  .dashboard-title {
-    font-size: 1.8rem;
+  .hero-section h2 {
+    font-size: 2rem;
   }
-  transition: 0.3s;
+
+  .dashboard-cards {
+    padding: 20px;
+  }
+
+  .steps {
+    flex-direction: column;
+  }
 }
