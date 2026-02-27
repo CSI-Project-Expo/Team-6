@@ -63,6 +63,12 @@ def get_request_user_id():
         return None
 
 
+def time_to_str(value):
+    if value is None:
+        return None
+    return str(value)
+
+
 # ===============================
 # HOME
 # ===============================
@@ -370,14 +376,15 @@ def pickup_slots(hotel_id):
         SELECT slot_id, start_time, end_time
         FROM pickup_slots
         WHERE hotel_id = %s
+        ORDER BY start_time ASC
     """, (hotel_id,))
 
     slots = cursor.fetchall()
 
     # Convert timedelta to string
     for slot in slots:
-        slot["start_time"] = str(slot["start_time"])
-        slot["end_time"] = str(slot["end_time"])
+        slot["start_time"] = time_to_str(slot["start_time"])
+        slot["end_time"] = time_to_str(slot["end_time"])
 
     cursor.close()
     db.close()
@@ -385,11 +392,149 @@ def pickup_slots(hotel_id):
     return jsonify(slots)
 
 
+@app.route("/hoteladmin/pickup-slots/my", methods=["GET"])
+@check_role("HOTEL_ADMIN")
+def hoteladmin_pickup_slots_my():
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
+
+    cursor.execute("""
+        SELECT slot_id, start_time, end_time
+        FROM pickup_slots
+        WHERE hotel_id = %s
+        ORDER BY start_time ASC
+    """, (hotel_id,))
+
+    slots = cursor.fetchall()
+
+    for slot in slots:
+        slot["start_time"] = time_to_str(slot["start_time"])
+        slot["end_time"] = time_to_str(slot["end_time"])
+
+    cursor.close()
+    db.close()
+
+    return jsonify(slots)
+
+
+@app.route("/hoteladmin/pickup-slots", methods=["POST"])
+@check_role("HOTEL_ADMIN")
+def add_pickup_slot():
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
+
+    data = request.json or {}
+    start_time = data.get("start_time")
+    end_time = data.get("end_time")
+
+    if not start_time or not end_time:
+        return jsonify({"message": "start_time and end_time are required"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
+
+    # basic validation
+    cursor.execute("SELECT TIME(%s) AS start_time, TIME(%s) AS end_time", (start_time, end_time))
+    parsed = cursor.fetchone()
+    if not parsed or not parsed["start_time"] or not parsed["end_time"]:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Invalid time format. Use HH:MM"}), 400
+
+    if parsed["start_time"] >= parsed["end_time"]:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "End time must be after start time"}), 400
+
+    # prevent overlaps for the same hotel
+    cursor.execute("""
+        SELECT slot_id FROM pickup_slots
+        WHERE hotel_id = %s
+          AND NOT (end_time <= %s OR start_time >= %s)
+        LIMIT 1
+    """, (hotel_id, parsed["start_time"], parsed["end_time"]))
+    overlap = cursor.fetchone()
+    if overlap:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Slot overlaps with existing slot"}), 409
+
+    cursor.execute("""
+        INSERT INTO pickup_slots (hotel_id, start_time, end_time)
+        VALUES (%s, %s, %s)
+    """, (hotel_id, parsed["start_time"], parsed["end_time"]))
+    db.commit()
+
+    cursor.close()
+    db.close()
+    return jsonify({"message": "Pickup slot added"})
+
+
+@app.route("/hoteladmin/pickup-slots/<int:slot_id>", methods=["DELETE"])
+@check_role("HOTEL_ADMIN")
+def delete_pickup_slot(slot_id):
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
+
+    try:
+        cursor.execute(
+            "DELETE FROM pickup_slots WHERE slot_id=%s AND hotel_id=%s",
+            (slot_id, hotel_id),
+        )
+        if cursor.rowcount == 0:
+            cursor.close()
+            db.close()
+            return jsonify({"message": "Slot not found for your hotel"}), 404
+
+        db.commit()
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Pickup slot deleted"})
+    except mysql.connector.Error:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Cannot delete slot that is linked with existing orders"}), 409
+
+
 @app.route("/student/order", methods=["POST"])
 def place_order():
     db = get_db_connection()
     cursor = db.cursor()
     data = request.json
+
+    cursor.execute(
+        "SELECT slot_id FROM pickup_slots WHERE slot_id=%s AND hotel_id=%s",
+        (data["slot_id"], data["hotel_id"]),
+    )
+    slot = cursor.fetchone()
+    if not slot:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Invalid pickup slot for selected hotel"}), 400
 
     cursor.execute("""
         INSERT INTO orders (user_id, hotel_id, slot_id, order_date, total_amount, status)

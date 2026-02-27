@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import "./HotelOrders.css";
@@ -7,14 +7,10 @@ function HotelOrders() {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
 
-  // TEMP hotel_id (later from login)
-  const hotelId = 1;
+  const role = localStorage.getItem("role");
+  const hotelId = localStorage.getItem("hotel_id");
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     try {
       const res = await api.get(`/hoteladmin/orders/${hotelId}`);
       setOrders(res.data);
@@ -22,7 +18,16 @@ function HotelOrders() {
       console.log(error);
       alert("Failed to fetch orders");
     }
-  };
+  }, [hotelId]);
+
+  useEffect(() => {
+    if (role !== "HOTEL_ADMIN" || !hotelId) {
+      alert("Unauthorized access");
+      navigate("/login");
+      return;
+    }
+    fetchOrders();
+  }, [role, hotelId, navigate, fetchOrders]);
 
   const updateStatus = async (orderId, status) => {
     try {

@@ -24,6 +24,7 @@ import HotelAdminValidateToken from "./pages/HotelAdminValidateToken";
 import SuperAdminUsers from "./pages/SuperAdminUsers";
 import AddMenuItem from "./pages/AddMenuItem";
 import UpdateOrderStatus from "./pages/UpdateOrderStatus";
+import HotelPickupSlots from "./pages/HotelPickupSlots";
 function App() {
   return (
     <Router>
@@ -58,6 +59,7 @@ function App() {
 <Route path="/hoteladmin/menu" element={<HotelMenu />} />
 <Route path="/hoteladmin/orders" element={<HotelOrders />} />
 <Route path="/hoteladmin/validate-token" element={<HotelAdminValidateToken />} />
+<Route path="/hoteladmin/pickup-slots" element={<HotelPickupSlots />} />
 
       </Routes>
     </Router>
