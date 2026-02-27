@@ -289,6 +289,25 @@ def get_all_users():
 # ===============================
 # STUDENT
 # ===============================
+@app.route("/student/hotels", methods=["GET"])
+def get_active_hotels():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT hotel_id, hotel_name, location
+        FROM hotels
+        WHERE is_active = 1
+        ORDER BY hotel_name ASC
+    """)
+
+    hotels = cursor.fetchall()
+    cursor.close()
+    db.close()
+
+    return jsonify(hotels)
+
+
 @app.route("/student/menu/<int:hotel_id>")
 def get_menu(hotel_id):
     db = get_db_connection()
