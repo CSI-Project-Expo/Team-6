@@ -6,17 +6,20 @@ import "./StudentMenu.css";
 function StudentMenu() {
   const navigate = useNavigate();
   const userId = Number(localStorage.getItem("user_id"));
+  const userName = localStorage.getItem("username") || "Student";
 
   const [hotels, setHotels] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState("");
+  const [selectedHotelName, setSelectedHotelName] = useState("");
   const [menu, setMenu] = useState([]);
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState("");
   const [cartItems, setCartItems] = useState([]);
+  const [loadingMenu, setLoadingMenu] = useState(false);
 
   useEffect(() => {
     if (!userId) {
-      alert("Please login again");
+      alert("Session expired. Please login again.");
       navigate("/login");
     }
   }, [userId, navigate]);
@@ -29,23 +32,24 @@ function StudentMenu() {
   }, []);
 
   useEffect(() => {
-    if (!selectedHotel) {
-      setMenu([]);
-      setSlots([]);
-      setSelectedSlot("");
-      setCartItems([]);
-      return;
-    }
+    if (!selectedHotel) return;
+
+    setLoadingMenu(true);
+    setMenu([]);
+    setSlots([]);
+    setSelectedSlot("");
+    setCartItems([]);
 
     axios
       .get(`http://127.0.0.1:5000/student/menu/${selectedHotel}`)
       .then((res) => setMenu(res.data))
-      .catch((err) => console.error(err));
+      .catch(() => alert("Failed to load menu"));
 
     axios
       .get(`http://127.0.0.1:5000/student/pickup-slots/${selectedHotel}`)
       .then((res) => setSlots(res.data))
-      .catch((err) => console.error(err));
+      .catch(() => alert("Failed to load slots"))
+      .finally(() => setLoadingMenu(false));
   }, [selectedHotel]);
 
   const handleLogout = () => {
@@ -55,6 +59,7 @@ function StudentMenu() {
 
   const addToCart = (item) => {
     const exists = cartItems.find((i) => i.menu_item_id === item.menu_item_id);
+
     if (exists) {
       setCartItems(
         cartItems.map((i) =>
@@ -74,9 +79,9 @@ function StudentMenu() {
   );
 
   const handleConfirmOrder = async () => {
-    if (!selectedHotel) return alert("Please select a hotel first");
-    if (!selectedSlot) return alert("Please select a pickup slot");
-    if (cartItems.length === 0) return alert("Cart is empty");
+    if (!selectedHotel) return alert("Please select a hotel first 🏨");
+    if (!selectedSlot) return alert("Please select a pickup slot ⏰");
+    if (cartItems.length === 0) return alert("Your cart is empty 🛒");
 
     const orderData = {
       user_id: userId,
@@ -91,42 +96,52 @@ function StudentMenu() {
     };
 
     try {
-      const res = await axios.post("http://127.0.0.1:5000/student/order", orderData);
-      alert("Order placed successfully");
+      const res = await axios.post(
+        "http://127.0.0.1:5000/student/order",
+        orderData
+      );
+      alert("🎉 Order placed successfully!");
       navigate(`/token/${res.data.order_id}`);
-    } catch (error) {
-      alert("Order failed");
+    } catch {
+      alert("❌ Order failed. Try again.");
     }
   };
 
   return (
     <div className="menu-wrapper">
+      {/* HEADER */}
       <header className="menu-header">
-        <h1>SmartCanteen</h1>
-        <p>Order food. Skip the queue.</p>
+        <h1>🍽 SmartCanteen</h1>
+        <p>Welcome {userName}! Order food & skip the queue 🚀</p>
+
         <div className="menu-actions">
-          <button onClick={() => navigate("/my-orders")}>My Orders</button>
-          <button onClick={() => navigate(-1)}>Back</button>
+          <button onClick={() => navigate("/my-orders")}>📦 My Orders</button>
+          <button onClick={() => navigate(-1)}>⬅ Back</button>
           <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
         </div>
       </header>
 
+      {/* HOTEL SELECT */}
       <div className="hotel-select-bar">
-        <h3>Choose Hotel</h3>
+        <h3>🏨 Choose Your Hotel</h3>
+
         {hotels.length === 0 && (
-          <p className="empty-state">No active hotels available right now.</p>
+          <p className="empty-state">No hotels available right now.</p>
         )}
+
         <div className="hotel-cards-grid">
           {hotels.map((hotel) => {
             const isSelected = String(hotel.hotel_id) === selectedHotel;
             return (
               <button
                 key={hotel.hotel_id}
-                type="button"
                 className={`hotel-card ${isSelected ? "active" : ""}`}
-                onClick={() => setSelectedHotel(String(hotel.hotel_id))}
+                onClick={() => {
+                  setSelectedHotel(String(hotel.hotel_id));
+                  setSelectedHotelName(hotel.hotel_name);
+                }}
               >
                 <span className="hotel-name">{hotel.hotel_name}</span>
                 <span className="hotel-location">{hotel.location}</span>
@@ -136,45 +151,70 @@ function StudentMenu() {
         </div>
       </div>
 
+      {/* MAIN LAYOUT */}
       <div className="menu-layout">
+        {/* MENU */}
         <div className="menu-section">
-          <h2>Menu</h2>
+          <h2>
+            🍲 Menu{" "}
+            {selectedHotelName && (
+              <span style={{ color: "#2EC4B6" }}>
+                ({selectedHotelName})
+              </span>
+            )}
+          </h2>
+
           {!selectedHotel && (
-            <p className="empty-state">Select a hotel to view menu items.</p>
+            <p className="empty-state">
+              👆 Please select a hotel to explore delicious food.
+            </p>
           )}
-          {selectedHotel && menu.length === 0 && (
-            <p className="empty-state">No menu items available for this hotel.</p>
+
+          {loadingMenu && <p className="empty-state">Loading menu...</p>}
+
+          {selectedHotel && menu.length === 0 && !loadingMenu && (
+            <p className="empty-state">
+              😔 No menu items available for this hotel.
+            </p>
           )}
+
           <div className="menu-grid">
             {menu.map((item) => (
               <div className="menu-card" key={item.menu_item_id}>
                 <h3>{item.item_name}</h3>
-                <p className="price">Rs {item.price}</p>
-                <button onClick={() => addToCart(item)}>Add</button>
+                <p className="price">₹ {item.price}</p>
+                <button onClick={() => addToCart(item)}>
+                  ➕ Add to Cart
+                </button>
               </div>
             ))}
           </div>
         </div>
 
+        {/* CART */}
         <div className="cart-section">
-          <h2>Your Cart</h2>
+          <h2>🛒 Your Cart ({cartItems.length})</h2>
 
-          {cartItems.length === 0 && <p className="empty-cart">No items added</p>}
+          {cartItems.length === 0 && (
+            <p className="empty-cart">
+              Your cart is empty. Add some tasty food 😋
+            </p>
+          )}
 
           {cartItems.map((item) => (
             <div className="cart-item" key={item.menu_item_id}>
               <span>
-                {item.item_name} x {item.quantity}
+                {item.item_name} × {item.quantity}
               </span>
-              <span>Rs {item.price * item.quantity}</span>
+              <span>₹ {item.price * item.quantity}</span>
             </div>
           ))}
 
           <hr />
 
-          <h3>Total: Rs {totalAmount}</h3>
+          <h3>Total: ₹ {totalAmount}</h3>
 
-          <label>Pickup Slot</label>
+          <label>⏰ Pickup Slot</label>
           <select
             value={selectedSlot}
             onChange={(e) => setSelectedSlot(e.target.value)}
@@ -189,13 +229,14 @@ function StudentMenu() {
           </select>
 
           <button className="confirm-btn" onClick={handleConfirmOrder}>
-            Confirm Order
+            ✅ Confirm Order
           </button>
         </div>
       </div>
 
+      {/* FOOTER */}
       <footer className="footer">
-        <p>2026 SmartCanteen - Digital Food Ordering and Token System</p>
+        <p>© 2026 SmartCanteen | Fast • Simple • Smart Food Ordering</p>
       </footer>
     </div>
   );
