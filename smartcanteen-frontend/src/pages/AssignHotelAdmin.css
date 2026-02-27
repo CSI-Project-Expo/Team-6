@@ -29,10 +29,26 @@
   font-size: 1.8rem;
 }
 
+.aha-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
 /* BACK BUTTON */
 .aha-back-btn {
   background: white;
   color: var(--primary);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.aha-logout-btn {
+  background: #ef4444;
+  color: #ffffff;
   border: none;
   padding: 8px 16px;
   border-radius: 20px;

@@ -6,6 +6,11 @@ function SuperAdminHotels() {
   const [hotels, setHotels] = useState([]);
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   useEffect(() => {
     fetchHotels();
   }, []);
@@ -22,9 +27,10 @@ function SuperAdminHotels() {
 
   return (
     <div>
-      <h2>🏨 Hotels List</h2>
+      <h2>Hotels List</h2>
 
-      <button onClick={() => navigate("/superadmin")}>⬅ Back</button>
+      <button onClick={() => navigate("/superadmin/dashboard")}>Back</button>
+      <button onClick={handleLogout}>Logout</button>
 
       <table border="1" cellPadding="10" style={{ marginTop: "20px" }}>
         <thead>

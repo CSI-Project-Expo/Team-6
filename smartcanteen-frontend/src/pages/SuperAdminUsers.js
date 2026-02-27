@@ -8,6 +8,11 @@ function SuperAdminUsers() {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -21,17 +26,19 @@ function SuperAdminUsers() {
 
   return (
     <div className="dashboard-wrapper">
-      
-      {/* GRADIENT STRIP — SAME AS STUDENT */}
       <div className="hero-section">
-        <h2>👥 Manage Users</h2>
+        <h2>Manage Users</h2>
       </div>
 
-      {/* PAGE CONTENT */}
       <div className="superadmin-card">
-        <button className="back-btn" onClick={() => navigate("/superadmin/dashboard")}>
-          ⬅ Back
-        </button>
+        <div className="users-actions">
+          <button className="back-btn" onClick={() => navigate("/superadmin/dashboard")}>
+            Back
+          </button>
+          <button className="logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
 
         <table className="users-table">
           <thead>
@@ -41,7 +48,7 @@ function SuperAdminUsers() {
             </tr>
           </thead>
           <tbody>
-            {users.map(u => (
+            {users.map((u) => (
               <tr key={u.user_id}>
                 <td>{u.user_id}</td>
                 <td>{u.name}</td>
@@ -55,10 +62,7 @@ function SuperAdminUsers() {
         </table>
       </div>
 
-      {/* ✅ SAME FOOTER CLASS AS STUDENT */}
-      <div className="footer">
-        © 2026 Smart Canteen System
-      </div>
+      <div className="footer">2026 Smart Canteen System</div>
     </div>
   );
 }

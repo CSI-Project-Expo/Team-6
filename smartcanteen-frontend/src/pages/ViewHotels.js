@@ -8,6 +8,11 @@ function ViewHotels() {
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   useEffect(() => {
     fetchHotels();
   }, []);
@@ -21,22 +26,24 @@ function ViewHotels() {
       setHotels(res.data);
     } catch (err) {
       console.error(err);
-      alert("Failed to fetch hotels ❌");
+      alert("Failed to fetch hotels");
     }
   };
 
   return (
     <div className="vhp-page">
-
-      {/* HEADER */}
       <header className="vhp-header">
-        <h1>🏨 SmartCanteen Admin</h1>
-        <button className="vhp-back-btn" onClick={() => navigate("/superadmin/dashboard")}>
-          ⬅ Back to Dashboard
-        </button>
+        <h1>SmartCanteen Admin</h1>
+        <div className="vhp-header-actions">
+          <button className="vhp-back-btn" onClick={() => navigate("/superadmin/dashboard")}>
+            Back to Dashboard
+          </button>
+          <button className="vhp-logout-btn" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
       </header>
 
-      {/* HERO */}
       <section className="vhp-hero">
         <h2>All Registered Hotels</h2>
         <p>
@@ -44,10 +51,9 @@ function ViewHotels() {
         </p>
       </section>
 
-      {/* MAIN */}
       <main className="vhp-main">
         <div className="vhp-card">
-          <h3 className="vhp-table-title">📋 Hotel Directory</h3>
+          <h3 className="vhp-table-title">Hotel Directory</h3>
 
           <table className="vhp-table">
             <thead>
@@ -83,15 +89,12 @@ function ViewHotels() {
           </table>
 
           {hotels.length === 0 && (
-            <p className="vhp-empty">🚫 No hotels found in the system.</p>
+            <p className="vhp-empty">No hotels found in the system.</p>
           )}
         </div>
       </main>
 
-      {/* FOOTER */}
-      <footer className="vhp-footer">
-        © 2026 🍽 Smart Canteen System | Super Admin Module
-      </footer>
+      <footer className="vhp-footer">2026 Smart Canteen System | Super Admin Module</footer>
     </div>
   );
 }

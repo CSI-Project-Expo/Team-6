@@ -10,6 +10,11 @@ function AddHotel() {
 
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   const handleAddHotel = async () => {
     if (!hotelName || !location) {
       alert("Please fill all fields");
@@ -41,18 +46,17 @@ function AddHotel() {
 
   return (
     <div className="ah-page">
-      {/* HEADER */}
       <header className="ah-header">
         <h1>Super Admin</h1>
-        <button onClick={() => navigate("/superadmin/dashboard")}>
-          ⬅ Back
-        </button>
+        <div className="ah-header-actions">
+          <button onClick={() => navigate("/superadmin/dashboard")}>Back</button>
+          <button className="ah-logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
       </header>
 
-      {/* MAIN */}
       <main className="ah-main">
         <div className="superadmin-card">
-          <h2>➕ Add Hotel</h2>
+          <h2>Add Hotel</h2>
 
           <div className="form-group">
             <label>Hotel Name</label>
@@ -80,10 +84,7 @@ function AddHotel() {
         </div>
       </main>
 
-      {/* FOOTER */}
-      <footer className="ah-footer">
-        © 2026 Smart Canteen System
-      </footer>
+      <footer className="ah-footer">2026 Smart Canteen System</footer>
     </div>
   );
 }

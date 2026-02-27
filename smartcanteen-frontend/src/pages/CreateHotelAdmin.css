@@ -29,6 +29,11 @@
   font-size: 1.8rem;
 }
 
+.cha-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
 .cha-header button {
   background: white;
   color: var(--primary);
@@ -42,6 +47,11 @@
 
 .cha-header button:hover {
   transform: scale(1.05);
+}
+
+.cha-header .cha-logout-btn {
+  background: #ef4444;
+  color: #ffffff;
 }
 
 /* HERO (NORMAL COLOR) */

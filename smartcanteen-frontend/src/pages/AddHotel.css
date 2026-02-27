@@ -29,6 +29,11 @@
   font-size: 1.8rem;
 }
 
+.ah-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
 .ah-header button {
   background: white;
   color: var(--primary);
@@ -42,6 +47,11 @@
 
 .ah-header button:hover {
   transform: scale(1.05);
+}
+
+.ah-header .ah-logout-btn {
+  background: #ef4444;
+  color: #ffffff;
 }
 
 /* MAIN */

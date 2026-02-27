@@ -11,6 +11,11 @@ function CreateHotelAdmin() {
 
   const navigate = useNavigate();
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
   const handleCreateAdmin = async () => {
     if (!name || !email || !password) {
       alert("Please fill all fields");
@@ -43,9 +48,10 @@ function CreateHotelAdmin() {
     <div className="cha-page">
       <header className="cha-header">
         <h1>Super Admin</h1>
-        <button onClick={() => navigate("/superadmin/dashboard")}>
-          ⬅ Back
-        </button>
+        <div className="cha-header-actions">
+          <button onClick={() => navigate("/superadmin/dashboard")}>Back</button>
+          <button className="cha-logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
       </header>
 
       <section className="cha-hero">
@@ -80,9 +86,7 @@ function CreateHotelAdmin() {
         </div>
       </main>
 
-      <footer className="cha-footer">
-        © 2026 Smart Canteen System
-      </footer>
+      <footer className="cha-footer">2026 Smart Canteen System</footer>
     </div>
   );
 }
