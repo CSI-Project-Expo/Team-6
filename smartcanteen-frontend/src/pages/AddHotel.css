@@ -1,15 +1,54 @@
-/* Page background */
-.superadmin-page {
+:root {
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
+}
+
+/* PAGE */
+.ah-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
-  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, #e99b26, #59c4b7);
+  font-family: "Poppins", sans-serif;
+}
+
+/* HEADER */
+.ah-header {
+  background: #1F2933;
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.ah-header h1 {
+  margin: 0;
+  color: white;
+}
+
+.ah-header button {
+  background: var(--secondary);
+  border: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* MAIN */
+.ah-main {
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  box-sizing: border-box;
+  padding: 40px 20px;
 }
 
-/* Card */
+/* CARD (your existing styles preserved) */
 .superadmin-card {
   width: 100%;
   max-width: 500px;
@@ -18,21 +57,15 @@
   padding: 40px 30px;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.2);
   text-align: center;
-  transition: transform 0.3s ease;
 }
 
-.superadmin-card:hover {
-  transform: translateY(-5px);
-}
-
-/* Heading */
 .superadmin-card h2 {
   font-size: 2rem;
   margin-bottom: 30px;
   color: #1F2933;
 }
 
-/* Form groups */
+/* FORM */
 .form-group {
   text-align: left;
   margin-bottom: 20px;
@@ -51,16 +84,14 @@
   border-radius: 20px;
   border: 1.5px solid #D1D5DB;
   font-size: 1rem;
-  outline: none;
-  transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-group input:focus {
-  border-color: #FF6B35;
+  border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
 }
 
-/* Buttons */
+/* BUTTON */
 .superadmin-card button {
   width: 100%;
   padding: 14px;
@@ -69,27 +100,22 @@
   font-size: 1.05rem;
   font-weight: bold;
   cursor: pointer;
-  margin: 12px 0;
-  display: block;
-  background: #FF6B35;
+  margin-top: 10px;
+  background: var(--primary);
   color: white;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.superadmin-card button:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
-}
-
-/* Back button */
-.back-btn {
-  background: #374151;
-}
-
-/* Status message */
+/* STATUS */
 .status-msg {
   margin-top: 15px;
   font-weight: 600;
   color: #10B981;
+}
+
+/* FOOTER */
+.ah-footer {
+  background: #1F2933;
+  color: white;
   text-align: center;
+  padding: 30px;
 }

@@ -1,81 +1,59 @@
-import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SuperAdminDashboard.css";
 
 function SuperAdminDashboard() {
   const navigate = useNavigate();
 
-  // Set body background white for this page
-  useEffect(() => {
-    document.body.style.background = "white";
-    return () => {
-      document.body.style.background = ""; // reset when leaving
-    };
-  }, []);
-
   const handleLogout = () => {
-    if (window.confirm("Are you sure you want to logout?")) {
-      localStorage.removeItem("role");
-      localStorage.removeItem("token");
-      navigate("/login");
-    }
+    localStorage.clear();
+    navigate("/login");
   };
 
-  const cards = [
-    { name: "Manage Users", emoji: "👥", route: "/superadmin/users" },
-    { name: "Manage Hotels", emoji: "🏨", route: "/superadmin/hotels" },
-    { name: "Manage Bookings", emoji: "📅", route: "/superadmin/bookings" },
-    { name: "Reports", emoji: "📊", route: "/superadmin/reports" },
-  ];
-
   return (
-    <div className="dashboard-wrapper">
-
+    <div className="page-wrapper">
       {/* HEADER */}
-      <div className="dashboard-header">
-        <h1>Super Admin</h1>
-        <div className="header-actions">
-          <button className="logout-btn" onClick={handleLogout}>Logout</button>
-        </div>
-      </div>
-
-      {/* HERO SECTION */}
-      <div className="hero-section">
-        <h2>🌟 Welcome, Super Admin!</h2>
-        <p>Manage users, hotels, bookings, and view reports effortlessly.</p>
-        <button
-          className="hero-btn"
-          onClick={() => navigate("/superadmin/users")}
-        >
-          Get Started
+      <header className="dashboard-header">
+        <h1>👑 Super Admin</h1>
+        <button className="header-logout" onClick={handleLogout}>
+          Logout
         </button>
-      </div>
+      </header>
 
-      {/* DASHBOARD CARDS */}
-      <div className="dashboard-cards">
-        {cards.map((card) => (
-          <div
-            key={card.name}
-            className="card"
-            onClick={() => navigate(card.route)}
-          >
-            <span className="card-emoji">{card.emoji}</span>
-            <h3>{card.name}</h3>
+      {/* MAIN (SAME AS STUDENT DASHBOARD) */}
+      <main className="dashboard-main">
+        <h2 className="dashboard-title">Dashboard</h2>
+
+        <div className="dashboard-grid">
+          <div className="dashboard-card" onClick={() => navigate("/superadmin/add-hotel")}>
+            ➕ Add Hotel
           </div>
-        ))}
 
-        {/* Logout Card */}
-        <div className="card logout-card" onClick={handleLogout}>
-          <span className="card-emoji">🔒</span>
-          <h3>Logout</h3>
+          <div className="dashboard-card" onClick={() => navigate("/superadmin/create-hotel-admin")}>
+            👨‍🍳 Create Hotel Admin
+          </div>
+
+          <div className="dashboard-card" onClick={() => navigate("/superadmin/assign-hotel-admin")}>
+            🔗 Assign Hotel Admin
+          </div>
+
+          <div className="dashboard-card" onClick={() => navigate("/superadmin/users")}>
+            👥 Manage Users
+          </div>
+
+          <div className="dashboard-card" onClick={() => navigate("/superadmin/view-hotels")}>
+            🏨 View Hotels
+          </div>
+
+          <div className="dashboard-card logout-card" onClick={handleLogout}>
+            🚪 Logout
+          </div>
         </div>
-      </div>
+      </main>
 
       {/* FOOTER */}
-      <div className="footer">
-        &copy; 2026 Smart Canteen System. All rights reserved.
-      </div>
-
+      <footer className="dashboard-footer">
+        © 2026 Smart Canteen System
+      </footer>
     </div>
   );
 }

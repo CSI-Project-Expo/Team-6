@@ -1,0 +1,93 @@
+.cha-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #F7F9FC;
+  font-family: "Poppins", sans-serif;
+}
+
+/* HEADER */
+.cha-header {
+background: #1F2933;
+  
+  padding: 14px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.cha-header h1 {
+  margin: 0;
+  color: #fef6f2;
+}
+
+.cha-header button {
+  background: #2EC4B6;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  color: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+/* HERO */
+.cha-hero {
+  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+}
+
+/* MAIN */
+.cha-main {
+  display: flex;
+  justify-content: center;
+  padding: 30px 16px;
+}
+
+/* CARD */
+.cha-card {
+  background: white;
+  width: 100%;
+  max-width: 420px;
+  padding: 30px;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  text-align: center;
+}
+
+.cha-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  border: 1px solid #D1D5DB;
+}
+
+/* BUTTON */
+.cha-primary {
+  width: 100%;
+  padding: 12px;
+  background: #FF6B35;
+  border: none;
+  border-radius: 22px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cha-msg {
+  margin-top: 12px;
+  font-weight: 600;
+}
+
+/* FOOTER */
+.cha-footer {
+  margin-top: auto;
+  background: #1F2933;
+  color: white;
+  text-align: center;
+  padding: 14px;
+}
