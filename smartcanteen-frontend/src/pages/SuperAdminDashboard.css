@@ -74,6 +74,23 @@
   background: var(--card);
   padding: 26px 20px;
   border-radius: 16px;
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  padding: 40px;
+
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.card {
+  width: 100%;
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
   text-align: center;
   font-weight: 600;
   color: var(--student-primary);
@@ -107,4 +124,5 @@
   .dashboard-title {
     font-size: 1.8rem;
   }
+  transition: 0.3s;
 }

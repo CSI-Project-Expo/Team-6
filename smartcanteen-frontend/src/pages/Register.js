@@ -19,89 +19,59 @@ function Register() {
     }
 
     try {
-      await api.post("/auth/register", {
-        name,
-        email,
-        password,
-        role,
-      });
+      await api.post("/auth/register", { name, email, password, role });
 
-      const loginRes = await api.post("/auth/login", {
-        email,
-        password,
-      });
+      const loginRes = await api.post("/auth/login", { email, password });
 
       localStorage.setItem("user_id", loginRes.data.user_id);
       localStorage.setItem("role", loginRes.data.role);
 
-      setMessage("Registered & logged in successfully!");
+      setMessage("✅ Registered & logged in successfully!");
 
       if (loginRes.data.role === "HOTEL_ADMIN") {
-        navigate("/hotel-admin");
+        navigate("/hoteladmin");
       } else {
         navigate("/student");
       }
     } catch (error) {
-      if (error.response && error.response.data.message) {
+      if (error.response?.data?.message) {
         setMessage(error.response.data.message);
       } else {
-        setMessage("Registration failed");
+        setMessage("❌ Registration failed");
       }
     }
   };
 
   return (
     <div className="register-page">
-      {/* HEADER */}
-      <div className="register-header">
-        <h1>Smart Canteen</h1>
-        <p>Create your account</p>
-      </div>
+      <div className="register-card">
 
-      {/* CARD */}
-      <div className="register-wrapper">
-        <div className="register-card">
-          <h2>Register ✨</h2>
+        <h1 className="app-title">🍽 SmartCanteen</h1>
+        <p className="subtitle">Create your account</p>
 
-          <input
-            type="text"
-            placeholder="Full Name"
-            onChange={(e) => setName(e.target.value)}
-          />
+        <input type="text" placeholder="👤 Full Name" onChange={(e) => setName(e.target.value)} />
+        <input type="email" placeholder="📧 Email Address" onChange={(e) => setEmail(e.target.value)} />
+        <input type="password" placeholder="🔒 Password" onChange={(e) => setPassword(e.target.value)} />
 
-          <input
-            type="email"
-            placeholder="Email Address"
-            onChange={(e) => setEmail(e.target.value)}
-          />
+        <select onChange={(e) => setRole(e.target.value)}>
+          <option value="STUDENT">👩‍🎓 Student</option>
+          <option value="HOTEL_ADMIN">🏨 Hotel Admin</option>
+        </select>
 
-          <input
-            type="password"
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <button className="register-btn" onClick={handleRegister}>
+          🚀 Create Account
+        </button>
 
-          <select onChange={(e) => setRole(e.target.value)}>
-            <option value="STUDENT">Student</option>
-            <option value="HOTEL_ADMIN">Hotel Admin</option>
-          </select>
+        {message && <p className="register-message">{message}</p>}
 
-          <button className="register-btn" onClick={handleRegister}>
-            Create Account
-          </button>
+        <p className="login-link">
+          Already have an account?{" "}
+          <span onClick={() => navigate("/login")}>Login here</span>
+        </p>
 
-          {message && <p className="register-message">{message}</p>}
-
-          <p className="login-link">
-            Already have an account?{" "}
-            <span onClick={() => navigate("/login")}>Login here</span>
-          </p>
-        </div>
-      </div>
-
-      {/* FOOTER */}
-      <div className="footer">
-        © 2026 Smart Canteen System | All Rights Reserved
+        <p className="footer-text">
+          © 2026 SmartCanteen | CSI Project Expo
+        </p>
       </div>
     </div>
   );

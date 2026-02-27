@@ -7,89 +7,72 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [isError, setIsError] = useState(false);
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
-      const res = await api.post("/auth/login", {
-        email,
-        password,
-      });
+      const res = await api.post("/auth/login", { email, password });
 
-      setIsError(false);
       setMessage(res.data.message);
 
       localStorage.setItem("user_id", res.data.user_id);
       localStorage.setItem("role", res.data.role);
 
-      setTimeout(() => {
-        if (res.data.role === "ADMIN") {
-          navigate("/superadmin/dashboard");
-        } else if (res.data.role === "HOTEL_ADMIN") {
-          navigate("/hoteladmin");
-        } else {
-          navigate("/student");
-        }
-      }, 800);
+      if (res.data.role === "ADMIN") navigate("/superadmin/dashboard");
+      else if (res.data.role === "HOTEL_ADMIN") navigate("/hoteladmin");
+      else navigate("/student");
 
-    } catch (err) {
-      setIsError(true);
-      setMessage("Login failed. Invalid email or password.");
+    } catch {
+      setMessage("❌ Login failed. Invalid email or password.");
     }
   };
 
   return (
-    <div className="login-page">
-      {/* HEADER STRIP */}
-      <div className="login-header">
-        <h1>Smart Canteen</h1>
-        <p>Fast • Smart • Cashless</p>
-      </div>
+    <div className="login-wrapper">
+      <div className="login-card">
 
-      {/* LOGIN CARD */}
-      <div className="login-wrapper">
-        <div className="login-card">
-          <h2>Welcome Back 👋</h2>
+        <h1 className="app-title">🍽 SmartCanteen</h1>
+        <p className="subtitle">Smart food ordering for campus</p>
 
+        <div className="input-group">
           <input
             type="email"
-            placeholder="Email"
+            placeholder="📧 Enter Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="🔒 Enter Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
-          <button className="login-btn" onClick={handleLogin}>
-            Login
-          </button>
-
-          {message && (
-            <p className={isError ? "msg error" : "msg success"}>
-              {message}
-            </p>
-          )}
-
-          <p className="register-text">Don’t have an account?</p>
-          <button
-            className="register-btn"
-            onClick={() => navigate("/register")}
-          >
-            Register Here
-          </button>
         </div>
-      </div>
 
-      {/* FOOTER */}
-      <div className="footer">
-        © 2026 Smart Canteen System | All Rights Reserved
+        <button className="login-btn" onClick={handleLogin}>
+          🚀 Login
+        </button>
+
+        {message && <p className="message">{message}</p>}
+
+        <div className="divider">or</div>
+
+        <button className="register-btn" onClick={() => navigate("/register")}>
+          ✍ Create New Account
+        </button>
+
+        <div className="role-info">
+          <span>👩‍🎓 Student</span>
+          <span>🏨 Hotel Admin</span>
+          <span>🛡 Super Admin</span>
+        </div>
+
+        <p className="footer-text">
+          © 2026 SmartCanteen | CSI Project Expo
+        </p>
+
       </div>
     </div>
   );
