@@ -1,114 +1,169 @@
 :root {
-  --primary: #ff6b35;
-  --secondary: #2ec4b6;
-  --bg: #f7f9fc;
-  --dark: #1f2933;
-  --light: #ffffff;
+  --su-primary: #ff6b35;
+  --su-secondary: #2ec4b6;
+  --su-bg: #edf1f5;
+  --su-card: #ffffff;
+  --su-text: #1f2933;
 }
 
-/* PAGE WRAPPER */
 .dashboard-wrapper {
   min-height: 100vh;
-  background: var(--bg);
   display: flex;
   flex-direction: column;
+  background: var(--su-bg);
+  font-family: "Poppins", sans-serif;
 }
 
-/* ORANGE GRADIENT HEADER */
 .hero-section {
-  background: linear-gradient(135deg, var(--primary), #ff9f1c);
-  padding: 30px;
-  color: white;
+  background: linear-gradient(120deg, var(--su-primary) 0%, var(--su-secondary) 100%);
+  color: #ffffff;
   text-align: center;
+  padding: 72px 20px 66px;
 }
 
 .hero-section h2 {
+  margin: 0 0 10px;
+  font-size: clamp(2rem, 3.5vw, 3rem);
+  font-weight: 700;
+}
+
+.hero-section p {
   margin: 0;
-  font-size: 26px;
-  font-weight: 600;
+  font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+  opacity: 0.96;
 }
 
-/* MAIN CARD */
 .superadmin-card {
-  background: var(--light);
-  width: 90%;
-  max-width: 1100px;
-  margin:40px auto;
-  padding: 30px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-}
-
-/* BACK BUTTON */
-.back-btn {
-  background: var(--secondary);
-  border: none;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  margin-bottom: 20px;
-}
-
-.back-btn:hover {
-  opacity: 0.9;
+  width: min(1200px, calc(100% - 32px));
+  margin: -32px auto 28px;
+  background: var(--su-card);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
 }
 
 .users-actions {
   display: flex;
+  justify-content: flex-end;
   gap: 10px;
-  margin-bottom: 20px;
+  margin-bottom: 14px;
+}
+
+.back-btn,
+.logout-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 9px 16px;
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.back-btn {
+  background: var(--su-secondary);
 }
 
 .logout-btn {
   background: #ef4444;
-  border: none;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
 }
 
-.logout-btn:hover {
-  opacity: 0.9;
+.users-table-wrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
 }
 
-/* USERS TABLE */
 .users-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  min-width: 760px;
 }
 
 .users-table th,
 .users-table td {
-  padding: 14px 12px;
+  padding: 12px 10px;
   text-align: center;
+  border-bottom: 1px solid #edf2f7;
+  color: var(--su-text);
 }
 
 .users-table th {
-  background: var(--primary);
-  color: white;
-  font-weight: 500;
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 700;
 }
 
-.users-table tr:nth-child(even) {
-  background: #f4f6fa;
+.users-table tbody tr:nth-child(even) {
+  background: #fbfcfe;
 }
 
-.users-table tr:hover {
-  background: #eef2f7;
+.users-table tbody tr:hover {
+  background: #f1f5f9;
 }
 
-/* FOOTER */
+.status-badge {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.status-badge.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-badge.blocked {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.action-btn {
+  border: none;
+  color: #ffffff;
+  padding: 7px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.block-btn {
+  background: #ef4444;
+}
+
+.unblock-btn {
+  background: #16a34a;
+}
+
+.action-na {
+  color: #64748b;
+  font-weight: 600;
+}
+
 .footer {
   margin-top: auto;
+  background: linear-gradient(135deg, #1f2933, #111827);
+  color: #ffffff;
   text-align: center;
-  padding: 14px;
-  background: white;
-  color: #666;
-  font-size: 14px;
-  border-top: 1px solid #eee;
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 54px 16px 58px;
+  }
+
+  .superadmin-card {
+    width: calc(100% - 20px);
+    padding: 16px;
+    margin-top: -24px;
+  }
+
+  .users-actions {
+    justify-content: space-between;
+  }
 }
