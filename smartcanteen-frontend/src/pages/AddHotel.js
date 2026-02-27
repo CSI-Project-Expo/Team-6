@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./AddHotel.css"; // make sure CSS is imported
+import "./AddHotel.css";
 
 function AddHotel() {
   const [hotelName, setHotelName] = useState("");
@@ -26,8 +26,8 @@ function AddHotel() {
     try {
       const res = await axios.post(
         "http://127.0.0.1:5000/superadmin/add-hotel",
-        { hotel_name: hotelName, location: location },
-        { headers: { role: role } }
+        { hotel_name: hotelName, location },
+        { headers: { role } }
       );
 
       setMessage(res.data.message);
@@ -40,38 +40,50 @@ function AddHotel() {
   };
 
   return (
-    <div className="superadmin-page">
-      <div className="superadmin-card add-hotel-card">
-        <h2>➕ Add Hotel</h2>
-
-        <div className="form-group">
-          <label>Hotel Name</label>
-          <input
-            type="text"
-            placeholder="Enter hotel name"
-            value={hotelName}
-            onChange={(e) => setHotelName(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Location</label>
-          <input
-            type="text"
-            placeholder="Enter location"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-          />
-        </div>
-
-        <button onClick={handleAddHotel}>Add Hotel</button>
-
-        {message && <p className="status-msg">{message}</p>}
-
-        <button className="back-btn" onClick={() => navigate("/superadmin/dashboard")}>
+    <div className="ah-page">
+      {/* HEADER */}
+      <header className="ah-header">
+        <h1>Super Admin</h1>
+        <button onClick={() => navigate("/superadmin/dashboard")}>
           ⬅ Back
         </button>
-      </div>
+      </header>
+
+      {/* MAIN */}
+      <main className="ah-main">
+        <div className="superadmin-card">
+          <h2>➕ Add Hotel</h2>
+
+          <div className="form-group">
+            <label>Hotel Name</label>
+            <input
+              type="text"
+              placeholder="Enter hotel name"
+              value={hotelName}
+              onChange={(e) => setHotelName(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Location</label>
+            <input
+              type="text"
+              placeholder="Enter location"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+
+          <button onClick={handleAddHotel}>Add Hotel</button>
+
+          {message && <p className="status-msg">{message}</p>}
+        </div>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="ah-footer">
+        © 2026 Smart Canteen System
+      </footer>
     </div>
   );
 }

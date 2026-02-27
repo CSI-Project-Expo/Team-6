@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./CreateHotelAdmin.css";
 
 function CreateHotelAdmin() {
   const [name, setName] = useState("");
@@ -17,68 +18,71 @@ function CreateHotelAdmin() {
     }
 
     const role = localStorage.getItem("role");
-
     if (role !== "ADMIN") {
-      alert("Access denied. Only Super Admin can create hotel admins.");
+      alert("Access denied");
       return;
     }
 
     try {
       const res = await axios.post(
         "http://127.0.0.1:5000/superadmin/create-hotel-admin",
-        {
-          name,
-          email,
-          password
-        },
-        {
-          headers: {
-            role: role   // 👈 IMPORTANT
-          }
-        }
+        { name, email, password },
+        { headers: { role } }
       );
 
       setMessage(res.data.message);
       setName("");
       setEmail("");
       setPassword("");
-
-    } catch (error) {
-      console.log(error);
+    } catch {
       setMessage("Failed to create hotel admin");
     }
   };
 
   return (
-    <div>
-      <h2>👨‍🍳 Create Hotel Admin</h2>
+    <div className="cha-page">
+      <header className="cha-header">
+        <h1>Super Admin</h1>
+        <button onClick={() => navigate("/superadmin/dashboard")}>
+          ⬅ Back
+        </button>
+      </header>
 
-      <input
-        type="text"
-        placeholder="Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      /><br /><br />
+      <section className="cha-hero">
+        <h2>Create Hotel Admin</h2>
+        <p>Add a new hotel administrator</p>
+      </section>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      /><br /><br />
+      <main className="cha-main">
+        <div className="cha-card">
+          <input
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      /><br /><br />
+          <button className="cha-primary" onClick={handleCreateAdmin}>
+            Create Hotel Admin
+          </button>
 
-      <button onClick={handleCreateAdmin}>Create Hotel Admin</button>
+          {message && <p className="cha-msg">{message}</p>}
+        </div>
+      </main>
 
-      <p>{message}</p>
-
-      <button onClick={() => navigate("/superadmin/dashboard")}>⬅ Back</button>
+      <footer className="cha-footer">
+        © 2026 Smart Canteen System
+      </footer>
     </div>
   );
 }

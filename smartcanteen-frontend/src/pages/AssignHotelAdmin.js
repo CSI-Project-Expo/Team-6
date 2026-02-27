@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import "./AssignHotelAdmin.css";
 
 function AssignHotelAdmin() {
   const [admins, setAdmins] = useState([]);
   const [hotels, setHotels] = useState([]);
-
   const [userId, setUserId] = useState("");
   const [hotelId, setHotelId] = useState("");
-
   const [message, setMessage] = useState("");
 
   const role = localStorage.getItem("role");
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchAdmins();
@@ -19,23 +20,25 @@ function AssignHotelAdmin() {
 
   const fetchAdmins = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:5000/superadmin/hotel-admins", {
-        headers: { role: role }
-      });
+      const res = await axios.get(
+        "http://127.0.0.1:5000/superadmin/hotel-admins",
+        { headers: { role } }
+      );
       setAdmins(res.data);
     } catch (err) {
-      console.error("Error fetching admins:", err);
+      console.error(err);
     }
   };
 
   const fetchHotels = async () => {
     try {
-      const res = await axios.get("http://127.0.0.1:5000/superadmin/hotels", {
-        headers: { role: role }
-      });
+      const res = await axios.get(
+        "http://127.0.0.1:5000/superadmin/hotels",
+        { headers: { role } }
+      );
       setHotels(res.data);
     } catch (err) {
-      console.error("Error fetching hotels:", err);
+      console.error(err);
     }
   };
 
@@ -52,47 +55,65 @@ function AssignHotelAdmin() {
           user_id: userId,
           hotel_id: hotelId
         },
-        {
-          headers: { role: role }
-        }
+        { headers: { role } }
       );
-
       setMessage(res.data.message);
     } catch (error) {
-      console.error("Error assigning:", error);
+      console.error(error);
       setMessage("Assignment failed");
     }
   };
 
   return (
-    <div>
-      <h2>Assign Hotel Admin</h2>
+    <div className="assign-page">
+      {/* HEADER */}
+      <header className="dashboard-header">
+        <h1>Super Admin</h1>
+        <button
+          className="small-back-btn"
+          onClick={() => navigate("/superadmin/dashboard")}
+        >
+          ⬅ Back
+        </button>
+      </header>
 
-      <select onChange={(e) => setUserId(e.target.value)}>
-        <option value="">Select Admin</option>
-        {admins.map((admin) => (
-          <option key={admin.user_id} value={admin.user_id}>
-            {admin.name}
-          </option>
-        ))}
-      </select>
+      {/* HERO */}
+      <section className="hero-section">
+        <h2>Assign Hotel Admin</h2>
+        <p>Link hotel admins to hotels</p>
+      </section>
 
-      <br /><br />
+      {/* CARD */}
+      <div className="assign-card">
+        <select value={userId} onChange={(e) => setUserId(e.target.value)}>
+          <option value="">Select Admin</option>
+          {admins.map((admin) => (
+            <option key={admin.user_id} value={admin.user_id}>
+              {admin.name}
+            </option>
+          ))}
+        </select>
 
-      <select onChange={(e) => setHotelId(e.target.value)}>
-        <option value="">Select Hotel</option>
-        {hotels.map((hotel) => (
-          <option key={hotel.hotel_id} value={hotel.hotel_id}>
-            {hotel.hotel_name}
-          </option>
-        ))}
-      </select>
+        <select value={hotelId} onChange={(e) => setHotelId(e.target.value)}>
+          <option value="">Select Hotel</option>
+          {hotels.map((hotel) => (
+            <option key={hotel.hotel_id} value={hotel.hotel_id}>
+              {hotel.hotel_name}
+            </option>
+          ))}
+        </select>
 
-      <br /><br />
+        <button className="primary-btn" onClick={handleAssign}>
+          Assign
+        </button>
 
-      <button onClick={handleAssign}>Assign</button>
+        {message && <p className="msg">{message}</p>}
+      </div>
 
-      <p>{message}</p>
+      {/* FOOTER */}
+      <footer className="footer">
+        © 2026 Smart Canteen System
+      </footer>
     </div>
   );
 }

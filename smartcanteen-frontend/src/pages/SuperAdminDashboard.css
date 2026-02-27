@@ -1,3 +1,79 @@
+:root {
+  /* EXACT student dashboard colors */
+  --student-primary: #2563eb;
+  --student-secondary: #2ec4b6;
+
+  --card: #ffffff;
+  --text-dark: #1f2933;
+}
+
+/* PAGE */
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER (same as student layout) */
+.dashboard-header {
+  background: #ffffff;
+  padding: 14px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.dashboard-header h1 {
+  margin: 0;
+  color: var(--student-primary);
+}
+
+.header-logout {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* 🔥 MAIN GRADIENT — SAME AS STUDENT DASHBOARD */
+.dashboard-main {
+  flex: 1;
+  padding: 50px 20px;
+
+  /* ⬇⬇⬇ EXACT GRADIENT ⬇⬇⬇ */
+  background: linear-gradient(
+    135deg,
+    var(--student-primary),
+    var(--student-secondary)
+  );
+}
+
+/* TITLE */
+.dashboard-title {
+  text-align: center;
+  color: white;
+  font-size: 2.2rem;
+  margin-bottom: 35px;
+}
+
+/* GRID */
+.dashboard-grid {
+  max-width: 900px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+}
+
+/* CARDS (student-style) */
+.dashboard-card {
+  background: var(--card);
+  padding: 26px 20px;
+  border-radius: 16px;
 .dashboard-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -16,7 +92,37 @@
   border-radius: 20px;
   padding: 25px;
   text-align: center;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  font-weight: 600;
+  color: var(--student-primary);
   cursor: pointer;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  transition: 0.25s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.18);
+}
+
+/* LOGOUT CARD */
+.logout-card {
+  background: #fff5f5;
+  color: #dc2626;
+}
+
+/* FOOTER */
+.dashboard-footer {
+  background: #1f2933;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  font-size: 0.9rem;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .dashboard-title {
+    font-size: 1.8rem;
+  }
   transition: 0.3s;
 }
