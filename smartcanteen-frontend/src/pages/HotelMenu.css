@@ -132,6 +132,20 @@
   background: #f0f0f0;
 }
 
+.menu-table td button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 14px;
+  background: var(--primary);
+  color: white;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.menu-table td button:hover {
+  opacity: 0.9;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .menu-table th,

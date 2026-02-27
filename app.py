@@ -36,6 +36,16 @@ def check_role(required_role):
         return wrapper
     return decorator
 
+def get_hotel_id_for_admin(cursor, user_id):
+    cursor.execute(
+        "SELECT hotel_id FROM hotel_admins WHERE user_id=%s",
+        (user_id,),
+    )
+    hotel = cursor.fetchone()
+    if not hotel:
+        return None
+    return hotel["hotel_id"]
+
 
 # ===============================
 # HOME
@@ -101,11 +111,21 @@ def login():
     if user["password_hash"] != password:
         return jsonify({"message": "Invalid password"}), 401
 
-    return jsonify({
+    response = {
         "message": "Login successful",
         "user_id": user["user_id"],
         "role": user["role"]
-    })
+    }
+
+    if user["role"] == "HOTEL_ADMIN":
+        cursor.execute(
+            "SELECT hotel_id FROM hotel_admins WHERE user_id=%s",
+            (user["user_id"],),
+        )
+        hotel_data = cursor.fetchone()
+        response["hotel_id"] = hotel_data["hotel_id"] if hotel_data else None
+
+    return jsonify(response)
 
 
 @app.route("/auth/logout", methods=["POST"])
@@ -315,7 +335,8 @@ def get_menu(hotel_id):
 
     cursor.execute("""
         SELECT menu_item_id, item_name, price, is_available
-        FROM menu_items WHERE hotel_id=%s
+        FROM menu_items
+        WHERE hotel_id=%s AND is_available=1
     """, (hotel_id,))
 
     data = cursor.fetchall()
@@ -512,10 +533,22 @@ def payment():
 # ===============================
 # HOTEL ADMIN
 # ===============================
-@app.route("/hoteladmin/menu/<int:hotel_id>")
-def hotel_menu(hotel_id):
+@app.route("/hoteladmin/menu/my", methods=["GET"])
+@check_role("HOTEL_ADMIN")
+def hotel_menu_my():
+    user_id = request.headers.get("user_id")
+    if not user_id:
+        return jsonify({"message": "Missing user_id"}), 400
+
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
+
+    hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
+
     cursor.execute("SELECT * FROM menu_items WHERE hotel_id=%s", (hotel_id,))
     data = cursor.fetchall()
     cursor.close()
@@ -523,16 +556,54 @@ def hotel_menu(hotel_id):
     return jsonify(data)
 
 
-@app.route("/hoteladmin/menu", methods=["POST"])
-def add_menu():
+@app.route("/hoteladmin/menu/<int:hotel_id>")
+@check_role("HOTEL_ADMIN")
+def hotel_menu(hotel_id):
+    user_id = request.headers.get("user_id")
+    if not user_id:
+        return jsonify({"message": "Missing user_id"}), 400
+
     db = get_db_connection()
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
+    assigned_hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+    if not assigned_hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
+
+    if hotel_id != assigned_hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "You can only access your own hotel menu"}), 403
+
+    cursor.execute("SELECT * FROM menu_items WHERE hotel_id=%s", (assigned_hotel_id,))
+    data = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(data)
+
+
+@app.route("/hoteladmin/menu", methods=["POST"])
+@check_role("HOTEL_ADMIN")
+def add_menu():
+    user_id = request.headers.get("user_id")
+    if not user_id:
+        return jsonify({"message": "Missing user_id"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
     data = request.json
+
+    hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
 
     cursor.execute("""
         INSERT INTO menu_items(hotel_id,item_name,price)
         VALUES(%s,%s,%s)
-    """, (data["hotel_id"], data["item_name"], data["price"]))
+    """, (hotel_id, data["item_name"], data["price"]))
 
     db.commit()
     cursor.close()
@@ -588,19 +659,35 @@ def update_order():
     return jsonify({"message": "Order updated"})
 
 @app.route("/hoteladmin/menu", methods=["PUT"])
+@check_role("HOTEL_ADMIN")
 def update_menu_item():
+    user_id = request.headers.get("user_id")
+    if not user_id:
+        return jsonify({"message": "Missing user_id"}), 400
+
     db = get_db_connection()
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
 
     data = request.json
     menu_item_id = data["menu_item_id"]
     is_available = data["is_available"]
+    hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
 
     cursor.execute("""
         UPDATE menu_items
         SET is_available=%s
-        WHERE menu_item_id=%s
-    """, (is_available, menu_item_id))
+        WHERE menu_item_id=%s AND hotel_id=%s
+    """, (is_available, menu_item_id, hotel_id))
+
+    if cursor.rowcount == 0:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Menu item not found for your hotel"}), 404
 
     db.commit()
     cursor.close()
@@ -609,11 +696,30 @@ def update_menu_item():
     return jsonify({"message": "Menu updated"})
 
 @app.route("/hoteladmin/menu/<int:menu_item_id>", methods=["DELETE"])
+@check_role("HOTEL_ADMIN")
 def delete_menu_item(menu_item_id):
-    db = get_db_connection()
-    cursor = db.cursor()
+    user_id = request.headers.get("user_id")
+    if not user_id:
+        return jsonify({"message": "Missing user_id"}), 400
 
-    cursor.execute("DELETE FROM menu_items WHERE menu_item_id=%s", (menu_item_id,))
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    hotel_id = get_hotel_id_for_admin(cursor, int(user_id))
+
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
+
+    cursor.execute(
+        "DELETE FROM menu_items WHERE menu_item_id=%s AND hotel_id=%s",
+        (menu_item_id, hotel_id),
+    )
+
+    if cursor.rowcount == 0:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Menu item not found for your hotel"}), 404
     db.commit()
 
     cursor.close()
