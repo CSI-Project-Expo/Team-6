@@ -51,10 +51,7 @@ function AssignHotelAdmin() {
     try {
       const res = await axios.post(
         "http://127.0.0.1:5000/superadmin/assign-hotel-admin",
-        {
-          user_id: userId,
-          hotel_id: hotelId
-        },
+        { user_id: userId, hotel_id: hotelId },
         { headers: { role } }
       );
       setMessage(res.data.message);
@@ -65,12 +62,13 @@ function AssignHotelAdmin() {
   };
 
   return (
-    <div className="assign-page">
+    <div className="aha-page">
+
       {/* HEADER */}
-      <header className="dashboard-header">
+      <header className="aha-header">
         <h1>Super Admin</h1>
         <button
-          className="small-back-btn"
+          className="aha-back-btn"
           onClick={() => navigate("/superadmin/dashboard")}
         >
           ⬅ Back
@@ -78,14 +76,18 @@ function AssignHotelAdmin() {
       </header>
 
       {/* HERO */}
-      <section className="hero-section">
+      <section className="aha-hero">
         <h2>Assign Hotel Admin</h2>
         <p>Link hotel admins to hotels</p>
       </section>
 
       {/* CARD */}
-      <div className="assign-card">
-        <select value={userId} onChange={(e) => setUserId(e.target.value)}>
+      <div className="aha-card">
+        <select
+          className="aha-select"
+          value={userId}
+          onChange={(e) => setUserId(e.target.value)}
+        >
           <option value="">Select Admin</option>
           {admins.map((admin) => (
             <option key={admin.user_id} value={admin.user_id}>
@@ -94,7 +96,11 @@ function AssignHotelAdmin() {
           ))}
         </select>
 
-        <select value={hotelId} onChange={(e) => setHotelId(e.target.value)}>
+        <select
+          className="aha-select"
+          value={hotelId}
+          onChange={(e) => setHotelId(e.target.value)}
+        >
           <option value="">Select Hotel</option>
           {hotels.map((hotel) => (
             <option key={hotel.hotel_id} value={hotel.hotel_id}>
@@ -103,15 +109,15 @@ function AssignHotelAdmin() {
           ))}
         </select>
 
-        <button className="primary-btn" onClick={handleAssign}>
+        <button className="aha-primary-btn" onClick={handleAssign}>
           Assign
         </button>
 
-        {message && <p className="msg">{message}</p>}
+        {message && <p className="aha-msg">{message}</p>}
       </div>
 
       {/* FOOTER */}
-      <footer className="footer">
+      <footer className="aha-footer">
         © 2026 Smart Canteen System
       </footer>
     </div>

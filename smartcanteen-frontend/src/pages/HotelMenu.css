@@ -5,166 +5,202 @@
   --dark: #1F2933;
 }
 
-/* PAGE */
+/* PAGE LAYOUT */
 .hotel-menu-page {
   min-height: 100vh;
   background: var(--bg);
+  padding: 25px 40px;
   font-family: "Poppins", sans-serif;
+
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 40px 20px;
 }
 
-/* HEADER */
-.hotel-menu-header {
-  background: linear-gradient(135deg, #FF6B35, #eaf1f0);
-  color: white;
-  padding: 20px 40px;
-  border-radius: 16px;
+/* TITLE SECTION (ONLY THIS HAS GRADIENT) */
+.title-section {
+  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
+  padding: 35px 20px;
+  border-radius: 18px;
   text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 30px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  margin-bottom: 25px;
+  color: white;
+}
+
+.hotel-menu-header {
+  font-size: 2rem;
+  margin-bottom: 6px;
+  color: white;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: #f1f5f9;
 }
 
 /* ACTION BUTTONS */
 .hotel-menu-actions {
   display: flex;
+  justify-content: center;
   gap: 12px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .hotel-menu-actions button {
-  padding: 10px 18px;
+  padding: 8px 16px;
   border-radius: 20px;
   border: none;
-  font-weight: bold;
+  background: var(--secondary);
+  color: white;
+  font-size: 0.85rem;
   cursor: pointer;
-  transition: background 0.3s;
-}
-
-.hotel-menu-actions button:not(.logout-btn) {
-  background: var(--primary);
-  color: white;
-}
-
-.hotel-menu-actions .logout-btn {
-  background: #ef4444;
-  color: white;
+  transition: 0.3s;
 }
 
 .hotel-menu-actions button:hover {
-  opacity: 0.85;
+  transform: scale(1.05);
+}
+
+.logout-btn {
+  background: #EF4444 !important;
+}
+
+/* STATS */
+.menu-stats {
+  display: flex;
+  justify-content: space-around;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.menu-stats p {
+  font-size: 0.9rem;
+  font-weight: 600;
 }
 
 /* ADD ITEM FORM */
 .add-menu-form {
   display: flex;
   gap: 12px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
+  margin-bottom: 20px;
 }
 
 .add-menu-form input {
-  padding: 10px 15px;
-  border-radius: 12px;
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
   border: 1px solid #ddd;
-  outline: none;
-  font-size: 1rem;
-  min-width: 150px;
-}
-
-.add-menu-form input:focus {
-  border-color: var(--primary);
+  font-size: 0.9rem;
 }
 
 .add-menu-form button {
-  padding: 10px 20px;
+  padding: 10px 18px;
   border-radius: 20px;
   border: none;
-  background: var(--secondary);
+  background: var(--primary);
   color: white;
-  font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s;
+  font-size: 0.85rem;
 }
 
-.add-menu-form button:hover {
-  background: #25b4a6;
-}
-
-/* MENU TABLE */
-.menu-table-wrapper {
+/* SEARCH */
+.search-box {
   width: 100%;
-  overflow-x: auto;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+/* TABLE */
+.menu-table-wrapper {
+  background: white;
+  padding: 15px;
+  border-radius: 15px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
 }
 
 .menu-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
 }
 
-.menu-table th,
-.menu-table td {
-  padding: 12px;
-  text-align: center;
-  font-size: 1rem;
-}
-
+/* TABLE HEADER SINGLE COLOR */
 .menu-table th {
-  background: #f3f4f6;
-  color: var(--dark);
-  font-weight: bold;
-}
-
-.menu-table tr:nth-child(even) {
-  background: #fafafa;
-}
-
-.menu-table tr:hover {
-  background: #f0f0f0;
-}
-
-.menu-table td button {
-  padding: 8px 12px;
-  border: none;
-  border-radius: 14px;
-  background: var(--primary);
+  background: var(--primary);   /* solid color only */
   color: white;
+  padding: 12px;
   font-size: 0.9rem;
-  cursor: pointer;
-  margin: 0 4px;
 }
 
-.menu-table td button:hover {
-  opacity: 0.9;
+/* TABLE BODY */
+.menu-table td {
+  padding: 10px;
+  text-align: center;
+  font-size: 0.85rem;
+  border-bottom: 1px solid #eee;
 }
 
-.menu-table td .menu-delete-btn {
+/* BADGES */
+.available-badge {
+  background: #22c55e;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.unavailable-badge {
   background: #ef4444;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+/* TABLE BUTTONS */
+.menu-table button {
+  padding: 6px 10px;
+  border-radius: 12px;
+  border: none;
+  font-size: 0.75rem;
+  margin: 2px;
+  cursor: pointer;
+  background: var(--secondary);
+  color: white;
+}
+
+.menu-delete-btn {
+  background: #ef4444 !important;
+}
+
+/* FOOTER (STICKY BOTTOM) */
+.hm-footer {
+  margin-top: auto;
+  background: linear-gradient(120deg, #1f2933, #111827);
+  color: #e5e7eb;
+  text-align: center;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
 }
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-  .menu-table th,
-  .menu-table td {
-    font-size: 0.85rem;
-    padding: 8px;
-  }
-
   .add-menu-form {
     flex-direction: column;
-    gap: 12px;
+  }
+
+  .menu-stats {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
   }
 
   .hotel-menu-actions {
-    flex-direction: column;
+    flex-wrap: wrap;
   }
 }

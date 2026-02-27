@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./HotelAdminValidateToken.css";
 
 function HotelAdminValidateToken() {
   const [token, setToken] = useState("");
@@ -10,7 +11,6 @@ function HotelAdminValidateToken() {
 
   const role = localStorage.getItem("role");
 
-  // 🔐 Protect route
   useEffect(() => {
     if (role !== "HOTEL_ADMIN") {
       alert("Unauthorized access");
@@ -29,9 +29,8 @@ function HotelAdminValidateToken() {
         token_code: token
       });
 
-      setOrder(res.data.order); // backend should return order details
+      setOrder(res.data.order);
       setMessage(res.data.message);
-
     } catch (error) {
       setOrder(null);
       setMessage(error.response?.data?.message || "Validation failed");
@@ -49,8 +48,7 @@ function HotelAdminValidateToken() {
       setOrder(null);
       setToken("");
       setMessage("");
-
-    } catch (error) {
+    } catch {
       alert("Failed to update order status");
     }
   };
@@ -61,40 +59,57 @@ function HotelAdminValidateToken() {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>🎟 Validate Token (Hotel Admin)</h2>
+    <div className="validate-page">
 
-      <button onClick={() => navigate("/hoteladmin/orders")}>📦 Orders</button>
-      <button onClick={handleLogout}>🚪 Logout</button>
-<button onClick={() => navigate(-1)}>⬅ Back</button>
-      <br /><br />
+      {/* HEADER */}
+      <div className="validate-header">
+        <h2>🎟 Token Validation</h2>
+        <p>Verify student tokens and complete orders</p>
+      </div>
 
-      <input
-        type="text"
-        placeholder="Enter Token Number"
-        value={token}
-        onChange={(e) => setToken(e.target.value)}
-      />
+      {/* ACTIONS */}
+      <div className="validate-actions">
+        <button onClick={() => navigate("/hoteladmin/orders")}>📦 Orders</button>
+        <button onClick={() => navigate(-1)}>⬅ Back</button>
+        <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
+      </div>
 
-      <button onClick={handleValidate}>Validate Token</button>
+      {/* CARD */}
+      <div className="validate-card">
+        <input
+          type="text"
+          placeholder="Enter Token Number"
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+        />
 
-      <br /><br />
+        <button onClick={handleValidate}>Validate Token</button>
 
-      {message && <h3>{message}</h3>}
+        {message && <p className="validate-message">{message}</p>}
+      </div>
 
+      {/* ORDER DETAILS */}
       {order && (
-        <div style={{ border: "1px solid #ccc", padding: "15px", marginTop: "20px" }}>
-          <h3>Order Details</h3>
+        <div className="order-card">
+          <h3>📋 Order Details</h3>
           <p><b>Order ID:</b> {order.order_id}</p>
           <p><b>User ID:</b> {order.user_id}</p>
           <p><b>Status:</b> {order.status}</p>
           <p><b>Total Amount:</b> ₹{order.total_amount}</p>
 
           {order.status !== "COLLECTED" && (
-            <button onClick={handleCollect}>✅ Mark as Collected</button>
+            <button className="collect-btn" onClick={handleCollect}>
+              ✅ Mark as Collected
+            </button>
           )}
         </div>
       )}
+
+      {/* FOOTER */}
+      <footer className="validate-footer">
+        <p>© 2026 🍽 SmartCanteen | Token Validation Module</p>
+      </footer>
+
     </div>
   );
 }

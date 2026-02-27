@@ -26,25 +26,30 @@ function ViewHotels() {
   };
 
   return (
-    <div className="vh-page">
+    <div className="vhp-page">
+
       {/* HEADER */}
-      <header className="vh-header">
-        <h1>Super Admin</h1>
-        <button onClick={() => navigate("/superadmin/dashboard")}>
-          ⬅ Back
+      <header className="vhp-header">
+        <h1>🏨 SmartCanteen Admin</h1>
+        <button className="vhp-back-btn" onClick={() => navigate("/superadmin/dashboard")}>
+          ⬅ Back to Dashboard
         </button>
       </header>
 
       {/* HERO */}
-      <section className="vh-hero">
-        <h2>🏨 All Hotels</h2>
-        <p>View all registered hotels and assigned admins</p>
+      <section className="vhp-hero">
+        <h2>All Registered Hotels</h2>
+        <p>
+          View the list of hotels, their locations, current status and assigned administrators.
+        </p>
       </section>
 
       {/* MAIN */}
-      <main className="vh-main">
-        <div className="vh-card">
-          <table className="vh-table">
+      <main className="vhp-main">
+        <div className="vhp-card">
+          <h3 className="vhp-table-title">📋 Hotel Directory</h3>
+
+          <table className="vhp-table">
             <thead>
               <tr>
                 <th>ID</th>
@@ -63,7 +68,9 @@ function ViewHotels() {
                   <td>
                     <span
                       className={
-                        hotel.is_active ? "status active" : "status inactive"
+                        hotel.is_active
+                          ? "vhp-status vhp-active"
+                          : "vhp-status vhp-inactive"
                       }
                     >
                       {hotel.is_active ? "Active" : "Inactive"}
@@ -74,12 +81,16 @@ function ViewHotels() {
               ))}
             </tbody>
           </table>
+
+          {hotels.length === 0 && (
+            <p className="vhp-empty">🚫 No hotels found in the system.</p>
+          )}
         </div>
       </main>
 
       {/* FOOTER */}
-      <footer className="vh-footer">
-        © 2026 Smart Canteen System
+      <footer className="vhp-footer">
+        © 2026 🍽 Smart Canteen System | Super Admin Module
       </footer>
     </div>
   );

@@ -8,6 +8,8 @@ function HotelMenu() {
   const [itemName, setItemName] = useState("");
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   const hotelId = localStorage.getItem("hotel_id");
@@ -18,7 +20,6 @@ function HotelMenu() {
       const res = await api.get("/hoteladmin/menu/my");
       setMenu(res.data);
     } catch (error) {
-      // Fallback for older backend route shape
       if (hotelId) {
         try {
           const fallbackRes = await api.get(`/hoteladmin/menu/${hotelId}`);
@@ -28,8 +29,6 @@ function HotelMenu() {
           console.log(fallbackError);
         }
       }
-
-      console.log(error);
       alert("Failed to load menu");
     } finally {
       setLoading(false);
@@ -42,15 +41,14 @@ function HotelMenu() {
       navigate("/login");
       return;
     }
-
     fetchMenu();
   }, [role, navigate, fetchMenu]);
 
   const addMenuItem = async () => {
     const numericPrice = Number(price);
 
-    if (!itemName.trim() || !price || Number.isNaN(numericPrice) || numericPrice <= 0) {
-      alert("Fill all fields");
+    if (!itemName.trim() || !price || numericPrice <= 0) {
+      alert("⚠ Please enter valid item name and price");
       return;
     }
 
@@ -60,26 +58,22 @@ function HotelMenu() {
         price: numericPrice,
       });
 
-      alert("Menu item added");
+      alert("✅ Menu item added successfully");
       setItemName("");
       setPrice("");
       fetchMenu();
-    } catch (error) {
-      console.log(error);
-      alert("Failed to add item");
+    } catch {
+      alert("❌ Failed to add item");
     }
   };
 
   const deleteMenuItem = async (menuItemId) => {
-    if (!window.confirm("Delete this menu item?")) {
-      return;
-    }
+    if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
       await api.delete(`/hoteladmin/menu/${menuItemId}`);
       fetchMenu();
-    } catch (error) {
-      console.log(error);
+    } catch {
       alert("Failed to delete item");
     }
   };
@@ -91,8 +85,7 @@ function HotelMenu() {
         is_available: !currentStatus,
       });
       fetchMenu();
-    } catch (error) {
-      console.log(error);
+    } catch {
       alert("Failed to update availability");
     }
   };
@@ -102,36 +95,64 @@ function HotelMenu() {
     navigate("/login");
   };
 
+  // Stats
+  const totalItems = menu.length;
+  const availableItems = menu.filter((i) => i.is_available).length;
+  const unavailableItems = totalItems - availableItems;
+
+  // Search filter
+  const filteredMenu = menu.filter((item) =>
+    item.item_name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="hotel-menu-page">
-      <h2 className="hotel-menu-header">Hotel Admin - Menu Management</h2>
-
+      <div className="title-section">
+      <h2 className="hotel-menu-header">🍽 SmartCanteen - Menu Management</h2>
+      <p className="subtitle">Manage your food items, prices and availability</p>
+</div>
       <div className="hotel-menu-actions">
-        <button onClick={() => navigate("/hoteladmin/orders")}>View Orders</button>
-        <button onClick={() => navigate("/hoteladmin")}>Back</button>
-        <button className="logout-btn" onClick={handleLogout}>
-          Logout
-        </button>
+        <button onClick={() => navigate("/hoteladmin/orders")}>📦 View Orders</button>
+        <button onClick={() => navigate("/hoteladmin")}>⬅ Back</button>
+        <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
       </div>
 
-      <h3>Add New Item</h3>
+      {/* Stats */}
+      <div className="menu-stats">
+        <p>📊 Total Items: {totalItems}</p>
+        <p>🟢 Available: {availableItems}</p>
+        <p>🔴 Unavailable: {unavailableItems}</p>
+      </div>
+
+      {/* Add Item */}
+      <h3>➕ Add New Food Item</h3>
       <div className="add-menu-form">
         <input
           type="text"
-          placeholder="Item Name"
+          placeholder="Enter Item Name (eg: Veg Burger)"
           value={itemName}
           onChange={(e) => setItemName(e.target.value)}
         />
         <input
           type="number"
-          placeholder="Price"
+          placeholder="Enter Price (₹)"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
         <button onClick={addMenuItem}>Add Item</button>
       </div>
 
-      <h3>Your Menu Items</h3>
+      {/* Search */}
+      <input
+        className="search-box"
+        type="text"
+        placeholder="🔍 Search menu item..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <h3>📋 Your Menu Items</h3>
+
       <div className="menu-table-wrapper">
         <table className="menu-table">
           <thead>
@@ -139,22 +160,30 @@ function HotelMenu() {
               <th>ID</th>
               <th>Item</th>
               <th>Price</th>
-              <th>Available</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
+
           <tbody>
             {loading && (
               <tr>
-                <td colSpan="5">Loading menu...</td>
+                <td colSpan="5">⏳ Loading your menu...</td>
               </tr>
             )}
-            {menu.map((item) => (
+
+            {filteredMenu.map((item) => (
               <tr key={item.menu_item_id}>
                 <td>{item.menu_item_id}</td>
                 <td>{item.item_name}</td>
-                <td>Rs {item.price}</td>
-                <td>{item.is_available ? "Yes" : "No"}</td>
+                <td>₹ {item.price}</td>
+                <td>
+                  {item.is_available ? (
+                    <span className="available-badge">Available</span>
+                  ) : (
+                    <span className="unavailable-badge">Unavailable</span>
+                  )}
+                </td>
                 <td>
                   <button
                     onClick={() =>
@@ -172,14 +201,19 @@ function HotelMenu() {
                 </td>
               </tr>
             ))}
-            {!loading && menu.length === 0 && (
+
+            {!loading && filteredMenu.length === 0 && (
               <tr>
-                <td colSpan="5">No menu items found.</td>
+                <td colSpan="5">🍔 No menu items found. Add your first item!</td>
               </tr>
             )}
           </tbody>
         </table>
       </div>
+
+      <footer className="hm-footer">
+        <p>© 2026 🍽 SmartCanteen - Digital Food Ordering & Token System | CSI Project Expo</p>
+      </footer>
     </div>
   );
 }

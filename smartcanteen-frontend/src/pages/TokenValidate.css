@@ -1,0 +1,131 @@
+:root {
+  --primary: #FF6B35;
+  --secondary: #2EC4B6;
+  --bg: #F7F9FC;
+  --dark: #1F2933;
+}
+
+/* PAGE */
+.token-page {
+  min-height: 100vh;
+  background: var(--bg);
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+/* HEADER (ONLY GRADIENT HERE) */
+.token-header {
+  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
+  color: white;
+  padding: 30px 20px;
+  border-radius: 18px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.token-header h2 {
+  font-size: 2rem;
+  margin-bottom: 5px;
+}
+
+.token-header p {
+  font-size: 1rem;
+  opacity: 0.95;
+}
+
+/* ACTION BUTTONS */
+.token-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.token-actions button {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: none;
+  background: white;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.logout-btn {
+  background: #EF4444 !important;
+  color: white !important;
+}
+
+/* CARD */
+.token-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px 25px;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.token-card input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+
+.token-card input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  box-shadow: 0 0 5px rgba(46,196,182,0.5);
+}
+
+.token-card button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.token-card button:hover {
+  transform: scale(1.03);
+}
+
+/* MESSAGE */
+.token-message {
+  margin-top: 15px;
+  font-weight: bold;
+  color: var(--dark);
+}
+
+/* FOOTER */
+.token-footer {
+  margin-top: auto;
+  background: #1F2933;
+  color: white;
+  text-align: center;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+}
+
+/* MOBILE */
+@media (max-width: 500px) {
+  .token-card {
+    width: 90%;
+  }
+
+  .token-header h2 {
+    font-size: 1.6rem;
+  }
+}
