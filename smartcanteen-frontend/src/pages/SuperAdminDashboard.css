@@ -1,78 +1,17 @@
-:root {
-  --primary: #FF6B35;
-  --secondary: #2EC4B6;
-  --bg: #F7F9FC;
-  --dark: #1F2933;
-}
-
-body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background: var(--bg);
-}
-
-/* WRAPPER */
-.dashboard-wrapper {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* HEADER */
-.dashboard-header {
-  background: white;
-  padding: 15px 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.dashboard-header h1 {
-  color: var(--primary);
-}
-
-.header-actions button {
-  margin-left: 10px;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: none;
-  background: var(--secondary);
-  color: white;
-  cursor: pointer;
-}
-
-.logout-btn {
-  background: #EF4444 !important;
-}
-
-/* HERO */
-.hero-section {
-  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
-  color: white;
-  text-align: center;
-  padding: 70px 20px;
-}
-
-.hero-section h2 {
-  font-size: 2.6rem;
-}
-
-.hero-section p {
-  margin-top: 10px;
-  font-size: 1.2rem;
-}
-
-/* DASHBOARD CARDS */
 .dashboard-cards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* ALWAYS 3 per row */
+  grid-template-columns: repeat(3, 1fr);
   gap: 25px;
   padding: 40px;
+
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-/* CARD */
 .card {
+  width: 100%;
   background: white;
   border-radius: 20px;
   padding: 25px;
@@ -80,61 +19,4 @@ body {
   box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   cursor: pointer;
   transition: 0.3s;
-}
-
-.card:hover {
-  transform: translateY(-8px);
-}
-
-.card h3 {
-  color: var(--primary);
-}
-
-.logout-card {
-  background: #ffe5e5;
-  border: 1px solid #ffb3b3;
-}
-
-/* HOW IT WORKS */
-.how-it-works {
-  background: #ffffff;
-  padding: 40px 20px;
-  text-align: center;
-}
-
-.how-it-works h2 {
-  margin-bottom: 20px;
-  color: var(--dark);
-}
-
-.steps {
-  display: flex;
-  justify-content: center;
-  gap: 15px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-
-.step {
-  background: var(--secondary);
-  color: white;
-  padding: 15px 22px;
-  border-radius: 20px;
-  min-width: 140px;
-  font-weight: bold;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  transition: 0.3s;
-}
-
-.step:hover {
-  transform: scale(1.05);
-}
-
-/* FOOTER */
-.footer {
-  margin-top: auto;
-  background: #1F2933;
-  color: white;
-  text-align: center;
-  padding: 12px;
 }
