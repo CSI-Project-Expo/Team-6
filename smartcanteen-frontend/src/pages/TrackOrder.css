@@ -8,7 +8,7 @@
 
 * {
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 /* MAIN WRAPPER (sticky footer layout) */
@@ -269,3 +269,4 @@
 .insight-card {
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
+

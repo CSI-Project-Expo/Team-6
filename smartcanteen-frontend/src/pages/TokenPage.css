@@ -1,13 +1,13 @@
 :root {
-  --primary: #6366F1;
-  --secondary: #22C55E;
-  --bg: #F8FAFC;
-  --text: #1F2937;
+  --primary: #ff6b35;
+  --secondary: #2ec4b6;
+  --bg: #f7f9fc;
+  --text: #1f2937;
 }
 
 * {
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 /* WRAPPER */
@@ -15,12 +15,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, #EEF2FF, #ECFEFF);
+  background: linear-gradient(180deg, #fff4ed, #ebfffb);
 }
 
 /* HERO */
 .token-hero {
-  background: linear-gradient(135deg, #6366F1, #22C55E);
+  background: linear-gradient(135deg, #ff6b35, #2ec4b6);
   padding: 50px 20px;
   text-align: center;
   color: white;
@@ -124,7 +124,7 @@
 
 .token-buttons button:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 12px rgba(99,102,241,0.6);
+  box-shadow: 0 0 12px rgba(255, 107, 53, 0.45);
 }
 
 /* INFO TEXT */

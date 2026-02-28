@@ -6,17 +6,13 @@
   --glass: rgba(255,255,255,0.75);
 }
 
-/* BODY */
-body {
-  background: var(--bg);
-  font-family: "Poppins", sans-serif;
-}
-
 /* WRAPPER */
 .menu-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--bg);
+  font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 /* ================= HEADER ================= */
@@ -322,3 +318,4 @@ body {
 .cart-section {
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
+

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./LegacyPages.css";
 
 function UpdateOrderStatus() {
   const [orderId, setOrderId] = useState("");
@@ -9,7 +10,6 @@ function UpdateOrderStatus() {
 
   const role = localStorage.getItem("role");
 
-  // 🔐 Protect page
   useEffect(() => {
     if (role !== "HOTEL_ADMIN") {
       alert("Unauthorized access");
@@ -26,14 +26,13 @@ function UpdateOrderStatus() {
     try {
       await axios.put("http://127.0.0.1:5000/hoteladmin/update-order", {
         order_id: Number(orderId),
-        status: status
+        status: status,
       });
 
-      alert("Order status updated ✅");
+      alert("Order status updated");
       setOrderId("");
       setStatus("");
       navigate("/hoteladmin/orders");
-
     } catch (error) {
       console.error(error);
       alert("Update failed");
@@ -41,34 +40,37 @@ function UpdateOrderStatus() {
   };
 
   return (
-    <div>
-      <h2>🔄 Update Order Status</h2>
+    <div className="lp-page">
+      <div className="lp-card narrow">
+        <h2 className="lp-title">Update Order Status</h2>
+        <p className="lp-subtitle">Change order state for active kitchen workflow.</p>
 
-      <input
-        type="number"
-        placeholder="Enter Order ID"
-        value={orderId}
-        onChange={(e) => setOrderId(e.target.value)}
-      />
+        <div className="lp-form">
+          <input
+            type="number"
+            placeholder="Enter Order ID"
+            value={orderId}
+            onChange={(e) => setOrderId(e.target.value)}
+          />
 
-      <br /><br />
+          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="">-- Select Status --</option>
+            <option value="PREPARING">PREPARING</option>
+            <option value="READY">READY</option>
+            <option value="COLLECTED">COLLECTED</option>
+            <option value="CANCELLED">CANCELLED</option>
+          </select>
 
-      {/* ✅ Controlled select */}
-      <select value={status} onChange={(e) => setStatus(e.target.value)}>
-        <option value="">-- Select Status --</option>
-        <option value="PREPARING">PREPARING</option>
-        <option value="READY">READY</option>
-        <option value="COLLECTED">COLLECTED</option>
-        <option value="CANCELLED">CANCELLED</option>
-      </select>
-
-      <br /><br />
-
-      <button onClick={handleUpdate}>Update Status</button>
-
-      <br /><br />
-
-      <button onClick={() => navigate("/hoteladmin/orders")}>⬅ Back</button>
+          <div className="lp-actions">
+            <button className="lp-btn" onClick={handleUpdate}>
+              Update Status
+            </button>
+            <button className="lp-btn secondary" onClick={() => navigate("/hoteladmin/orders")}>
+              Back
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

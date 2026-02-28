@@ -1,0 +1,125 @@
+.lp-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 16px;
+}
+
+.lp-card {
+  width: min(960px, 100%);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  border-radius: 22px;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.14);
+  backdrop-filter: blur(10px);
+  padding: 24px;
+}
+
+.lp-card.narrow {
+  width: min(460px, 100%);
+}
+
+.lp-title {
+  margin: 0 0 8px;
+  color: #0f172a;
+  font-size: clamp(1.45rem, 2.8vw, 1.95rem);
+}
+
+.lp-subtitle {
+  margin: 0 0 16px;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.lp-form {
+  display: grid;
+  gap: 12px;
+}
+
+.lp-form input,
+.lp-form select {
+  width: 100%;
+  padding: 12px 13px;
+  border-radius: 12px;
+  border: 1px solid #d4deea;
+  font-size: 0.96rem;
+}
+
+.lp-form input:focus,
+.lp-form select:focus {
+  outline: none;
+  border-color: #2ec4b6;
+  box-shadow: 0 0 0 4px rgba(46, 196, 182, 0.16);
+}
+
+.lp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.lp-btn {
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(130deg, #ff6b35, #ff935f);
+  box-shadow: 0 12px 22px rgba(255, 107, 53, 0.28);
+}
+
+.lp-btn:hover {
+  transform: translateY(-1px);
+}
+
+.lp-btn.secondary {
+  background: linear-gradient(130deg, #0ea5a1, #2ec4b6);
+  box-shadow: 0 12px 22px rgba(14, 165, 161, 0.24);
+}
+
+.lp-btn.danger {
+  background: linear-gradient(130deg, #ef4444, #f97316);
+  box-shadow: 0 12px 22px rgba(239, 68, 68, 0.26);
+}
+
+.lp-message {
+  margin-top: 8px;
+  font-weight: 700;
+}
+
+.lp-message.success {
+  color: #15803d;
+}
+
+.lp-message.error {
+  color: #dc2626;
+}
+
+.lp-table-wrap {
+  margin-top: 16px;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+.lp-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 620px;
+  background: #fff;
+}
+
+.lp-table th,
+.lp-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.lp-table th {
+  color: #fff;
+  background: linear-gradient(120deg, #ff6b35, #2ec4b6);
+}

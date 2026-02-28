@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./LegacyPages.css";
 
 function StaffTokenPage() {
   const [token, setToken] = useState("");
@@ -14,13 +15,12 @@ function StaffTokenPage() {
 
     try {
       const res = await axios.post("http://127.0.0.1:5000/token/validate", {
-        token_code: token
+        token_code: token,
       });
 
       setMessage(res.data.message);
       setSuccess(true);
-      setToken(""); // auto clear for next scan
-
+      setToken("");
     } catch (error) {
       if (error.response) {
         setMessage(error.response.data.message);
@@ -32,22 +32,25 @@ function StaffTokenPage() {
   };
 
   return (
-    <div>
-      <h2>🎟 Token Validation</h2>
+    <div className="lp-page">
+      <div className="lp-card narrow">
+        <h2 className="lp-title">Token Validation</h2>
+        <p className="lp-subtitle">Validate issued token IDs quickly at pickup.</p>
 
-      <input
-        type="text"
-        placeholder="Enter token"
-        value={token}
-        onChange={(e) => setToken(e.target.value)}
-      />
-      <br /><br />
+        <div className="lp-form">
+          <input
+            type="text"
+            placeholder="Enter token"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+          />
+          <button className="lp-btn" onClick={handleValidate}>
+            Validate Token
+          </button>
+        </div>
 
-      <button onClick={handleValidate}>Validate Token</button>
-
-      {message && (
-        <p style={{ color: success ? "green" : "red" }}>{message}</p>
-      )}
+        {message && <p className={`lp-message ${success ? "success" : "error"}`}>{message}</p>}
+      </div>
     </div>
   );
 }

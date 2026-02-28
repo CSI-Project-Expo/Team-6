@@ -1,33 +1,44 @@
 .ha-dashboard {
   --ha-primary: #ff6b35;
+  --ha-primary-deep: #e55321;
   --ha-secondary: #2ec4b6;
-  --ha-bg: #edf1f5;
-  --ha-text: #1f2933;
-  --ha-card: #f7f7f8;
-  --ha-danger-bg: #f7dfe0;
-  --ha-danger-border: #f2b3b5;
+  --ha-ink: #0f172a;
+  --ha-muted: #64748b;
+  --ha-stroke: rgba(148, 163, 184, 0.24);
+  --ha-bg: #eef3f9;
+  --ha-panel: rgba(255, 255, 255, 0.84);
+  --ha-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+  --ha-radius: 18px;
 
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--ha-bg);
-  font-family: "Poppins", sans-serif;
+  background:
+    radial-gradient(880px 360px at 6% -10%, rgba(255, 107, 53, 0.2), transparent 55%),
+    radial-gradient(840px 360px at 96% -10%, rgba(46, 196, 182, 0.2), transparent 55%),
+    var(--ha-bg);
+  color: var(--ha-ink);
+  font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 .ha-header {
-  background: #ffffff;
-  padding: 16px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+  border-bottom: 1px solid var(--ha-stroke);
 }
 
 .ha-header h1 {
   margin: 0;
-  color: var(--ha-primary);
-  font-size: clamp(1.75rem, 2.2vw, 2.4rem);
-  font-weight: 700;
+  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+  color: var(--ha-ink);
+  letter-spacing: -0.02em;
 }
 
 .ha-header-actions {
@@ -38,168 +49,268 @@
 .ha-logout-btn {
   border: none;
   border-radius: 999px;
-  padding: 9px 18px;
-  background: #ef4444;
-  color: #ffffff;
-  font-weight: 600;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.01em;
   cursor: pointer;
+  box-shadow: 0 12px 20px rgba(239, 68, 68, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.ha-logout-btn:hover {
+  transform: translateY(-1px);
+  filter: saturate(1.05);
+  box-shadow: 0 16px 24px rgba(239, 68, 68, 0.3);
 }
 
 .ha-hero {
-  background: linear-gradient(120deg, var(--ha-primary) 0%, var(--ha-secondary) 100%);
-  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  margin: 16px auto 0;
+  width: min(1200px, calc(100% - 40px));
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px);
+  color: #fff;
   text-align: center;
-  padding: 94px 20px 86px;
+  padding: 52px 20px 42px;
+  box-shadow: var(--ha-shadow);
 }
 
 .ha-hero h2 {
-  margin: 0 0 16px;
-  font-size: clamp(2.05rem, 3.9vw, 3.3rem);
-  font-weight: 700;
+  margin: 0 0 10px;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  letter-spacing: -0.03em;
 }
 
 .ha-hero p {
   margin: 0;
-  font-size: clamp(1.02rem, 1.55vw, 1.4rem);
-  opacity: 0.96;
+  font-size: clamp(0.95rem, 2vw, 1.08rem);
+  opacity: 0.93;
 }
 
 .ha-cards {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(3, minmax(210px, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: 18px;
-  padding: 34px 30px;
-  background: #e8edf3;
+  width: min(1200px, 100%);
+  margin: 32px auto 12px;
+  padding: 18px 20px 0;
+}
+
+.ha-cards::before {
+  content: "Quick Actions";
+  position: absolute;
+  top: -8px;
+  left: 20px;
+  color: #1e293b;
+  font-size: 0.94rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
 
 .ha-card {
-  background: var(--ha-card);
-  border-radius: 22px;
-  padding: 30px 16px;
-  text-align: center;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  position: relative;
+  overflow: hidden;
+  grid-column: span 4;
+  border-radius: 18px;
+  padding: 22px 18px;
+  text-align: left;
+  background: linear-gradient(135deg, #fff7f3, #f6fffd);
+  border: 1px solid rgba(255, 107, 53, 0.28);
+  border-left: 5px solid var(--ha-primary);
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.14);
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .ha-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.14);
+  transform: translateY(-5px) scale(1.01);
+  border-color: rgba(255, 107, 53, 0.6);
+  box-shadow: 0 24px 40px rgba(15, 23, 42, 0.2);
+}
+
+.ha-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(130deg, rgba(255, 107, 53, 0.09) 0%, rgba(46, 196, 182, 0.08) 100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.ha-card:hover::before {
+  opacity: 0.95;
+}
+
+.ha-card::after {
+  content: "->";
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--ha-primary), #ff8a57);
+  box-shadow: 0 10px 20px rgba(255, 107, 53, 0.35);
+  z-index: 2;
+}
+
+.ha-card h3,
+.ha-card p {
+  position: relative;
+  z-index: 1;
 }
 
 .ha-card h3 {
   margin: 0 0 10px;
-  font-size: clamp(1.2rem, 1.6vw, 1.75rem);
-  color: var(--ha-primary);
+  color: var(--ha-primary-deep);
+  font-size: 1.08rem;
+  letter-spacing: -0.01em;
 }
 
 .ha-card p {
   margin: 0;
-  font-size: 1.02rem;
-  line-height: 1.28;
-  color: #111827;
+  color: #334155;
+  font-size: 0.93rem;
+  line-height: 1.45;
 }
 
 .ha-card-logout {
-  background: var(--ha-danger-bg);
-  border: 1px solid var(--ha-danger-border);
+  border-left-color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.33);
+  background: linear-gradient(135deg, #fff4f4, #fff8f8);
 }
 
 .ha-how {
-  background: #f7f9fb;
-  text-align: center;
-  padding: 54px 18px 50px;
+  width: min(1200px, 100%);
+  margin: 20px auto 26px;
+  padding: 0 20px;
+  text-align: left;
 }
 
 .ha-how h2 {
-  margin: 0 0 26px;
-  color: var(--ha-text);
-  font-size: clamp(1.8rem, 2.6vw, 2.7rem);
-  font-weight: 700;
+  margin: 0 0 12px;
+  color: #1e293b;
+  font-size: clamp(1.35rem, 2.3vw, 1.9rem);
+  letter-spacing: -0.02em;
 }
 
 .ha-steps {
+  background: var(--ha-panel);
+  border-radius: var(--ha-radius);
+  border: 1px solid var(--ha-stroke);
+  box-shadow: var(--ha-shadow);
+  padding: 16px;
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 10px;
 }
 
 .ha-step {
-  background: linear-gradient(120deg, #37c9c2 0%, #2bb6b2 100%);
-  color: #ffffff;
   border-radius: 999px;
-  padding: 12px 24px;
-  min-width: 180px;
-  font-size: 1.04rem;
+  padding: 10px 16px;
+  background: linear-gradient(120deg, #0ea5a1, var(--ha-secondary));
+  color: #ffffff;
+  font-size: 0.9rem;
   font-weight: 700;
-  box-shadow: 0 5px 14px rgba(43, 182, 178, 0.35);
+  box-shadow: 0 7px 15px rgba(14, 165, 161, 0.3);
 }
 
 .ha-footer {
   margin-top: auto;
-  background: linear-gradient(135deg, #1F2933, #111827);
-  color: white;
+  background: linear-gradient(130deg, #1f2933, #111827 58%, #0f172a);
+  color: #fff;
   text-align: center;
-  padding: 14px;
-  letter-spacing: 0.5px;
-  font-size: 0.9rem;
+  padding: 15px;
+  font-size: 0.88rem;
 }
 
 .ha-footer p {
   margin: 0;
 }
 
-@media (max-width: 1280px) {
+.ha-hero::before {
+  content: "";
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  top: -140px;
+  right: -90px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.ha-hero::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  left: -85px;
+  bottom: -120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.ha-card:nth-child(1),
+.ha-card:nth-child(2),
+.ha-card:nth-child(3) {
+  grid-column: span 4;
+}
+
+.ha-card:nth-child(4),
+.ha-card:nth-child(5),
+.ha-card:nth-child(6) {
+  grid-column: span 4;
+}
+
+@media (max-width: 1100px) {
   .ha-cards {
     grid-template-columns: repeat(2, minmax(220px, 1fr));
   }
+
+  .ha-card,
+  .ha-card:nth-child(1),
+  .ha-card:nth-child(2),
+  .ha-card:nth-child(3),
+  .ha-card:nth-child(4),
+  .ha-card:nth-child(5),
+  .ha-card:nth-child(6) {
+    grid-column: auto;
+  }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 700px) {
   .ha-header {
     flex-direction: column;
-    gap: 12px;
-    padding: 14px 14px;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .ha-hero {
+    width: calc(100% - 24px);
+    padding: 42px 14px 38px;
   }
 
   .ha-cards {
     grid-template-columns: 1fr;
-    padding: 24px 16px;
-  }
-
-  .ha-hero {
-    padding: 70px 14px 62px;
-  }
-
-  .ha-step {
-    min-width: unset;
-    width: 100%;
-    max-width: 320px;
   }
 }
 
-/* Modern polish */
-.ha-hero {
-  position: relative;
-  overflow: hidden;
-}
-
-.ha-hero::before {
-  content: "";
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  top: -120px;
-  right: -80px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.ha-card {
-  border: 1px solid rgba(148, 163, 184, 0.2);
-}
-
-.ha-card:hover {
-  transform: translateY(-6px) scale(1.01);
+@media (prefers-reduced-motion: reduce) {
+  .ha-card,
+  .ha-logout-btn {
+    transition: none;
+  }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import api from "../services/api";
 import { useSearchParams, useNavigate } from "react-router-dom";
+import "./PlaceOrder.css";
 
 function PlaceOrder() {
   const [total, setTotal] = useState("");
@@ -42,16 +43,19 @@ function PlaceOrder() {
   };
 
   return (
-    <div>
-      <h2>Place Order</h2>
+    <div className="po-page">
+      <div className="po-card">
+        <h2>Place Order</h2>
+        <p>Confirm your final payable amount to continue.</p>
 
-      <input
-        type="number"
-        placeholder="Enter Total Amount"
-        onChange={(e) => setTotal(e.target.value)}
-      />
+        <input
+          type="number"
+          placeholder="Enter Total Amount"
+          onChange={(e) => setTotal(e.target.value)}
+        />
 
-      <button onClick={placeOrder}>Confirm Order</button>
+        <button onClick={placeOrder}>Confirm Order</button>
+      </div>
     </div>
   );
 }

@@ -171,34 +171,47 @@ function SuperAdminDashboard() {
       </section>
 
       <section className="sa-cards">
-        <div className="sa-card" onClick={() => navigate("/superadmin/add-hotel")}>
+        <button type="button" className="sa-card" onClick={() => navigate("/superadmin/add-hotel")}>
+          <span className="sa-card-kicker">Setup</span>
           <h3>Add Hotel</h3>
           <p>Register new hotels into SmartCanteen</p>
-        </div>
+        </button>
 
-        <div className="sa-card" onClick={() => navigate("/superadmin/create-hotel-admin")}>
+        <button
+          type="button"
+          className="sa-card"
+          onClick={() => navigate("/superadmin/create-hotel-admin")}
+        >
+          <span className="sa-card-kicker">Account</span>
           <h3>Create Hotel Admin</h3>
           <p>Create login accounts for hotel managers</p>
-        </div>
+        </button>
 
-        <div className="sa-card" onClick={() => navigate("/superadmin/assign-hotel-admin")}>
+        <button
+          type="button"
+          className="sa-card"
+          onClick={() => navigate("/superadmin/assign-hotel-admin")}
+        >
+          <span className="sa-card-kicker">Linking</span>
           <h3>Assign Hotel Admin</h3>
           <p>Link hotel admins to hotels</p>
-        </div>
+        </button>
 
-        <div className="sa-card" onClick={() => navigate("/superadmin/users")}>
+        <button type="button" className="sa-card" onClick={() => navigate("/superadmin/users")}>
+          <span className="sa-card-kicker">Control</span>
           <h3>Manage Users</h3>
           <p>View and control all system users</p>
-        </div>
+        </button>
 
-        <div className="sa-card" onClick={() => navigate("/superadmin/view-hotels")}>
+        <button type="button" className="sa-card" onClick={() => navigate("/superadmin/view-hotels")}>
+          <span className="sa-card-kicker">Overview</span>
           <h3>View Hotels</h3>
           <p>Monitor all registered hotels</p>
-        </div>
+        </button>
       </section>
 
       <footer className="sa-footer">
-        <p>© 2026 SmartCanteen - Digital Food Ordering and Token System | CSI Project Expo</p>
+        <p>&copy; 2026 SmartCanteen - Digital Food Ordering and Token System | CSI Project Expo</p>
       </footer>
     </div>
   );

@@ -90,3 +90,445 @@ code {
     transform: translateY(0);
   }
 }
+
+/* Unified Modern UI Layer Across Pages */
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper
+) {
+  color: var(--sc-ink);
+}
+
+:where(
+  .ah-header,
+  .aha-header,
+  .cha-header,
+  .vhp-header,
+  .hotel-header,
+  .payment-header,
+  .validate-header,
+  .token-header,
+  .orders-header,
+  .menu-header,
+  .token-hero,
+  .track-hero,
+  .title-section,
+  .hotel-menu-manager-header,
+  .add-menu-header,
+  .pickup-header
+) {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.14);
+}
+
+:where(
+  .superadmin-card,
+  .aha-card,
+  .cha-card,
+  .vhp-card,
+  .validate-card,
+  .token-card,
+  .order-card,
+  .payment-form,
+  .add-menu-form,
+  .add-menu-manager-form,
+  .slot-table-wrap,
+  .table-wrapper,
+  .users-table-wrap,
+  .menu-table-wrapper,
+  .menu-card,
+  .hotel-card,
+  .insight-card,
+  .login-card,
+  .register-card
+) {
+  background: rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(148, 163, 184, 0.26);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(9px);
+}
+
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper
+)
+  :where(input, select, textarea) {
+  border-radius: 12px;
+  border: 1px solid #d5ddeb;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper
+)
+  :where(input, select, textarea):focus {
+  outline: none;
+  border-color: var(--sc-accent);
+  box-shadow: 0 0 0 4px rgba(46, 196, 182, 0.16);
+}
+
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper
+)
+  :where(button) {
+  border-radius: 12px;
+}
+
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper
+)
+  :where(button):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 107, 53, 0.2);
+}
+
+:where(.users-table, .orders-table, .menu-table, .slot-table, .vhp-table) {
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.28);
+}
+
+:where(.users-table th, .orders-table th, .menu-table th, .slot-table th, .vhp-table th) {
+  background: linear-gradient(120deg, rgba(255, 107, 53, 0.95), rgba(46, 196, 182, 0.92));
+  color: #ffffff;
+}
+
+/* Dashboard-Like Uniform Premium Overrides (All Pages) */
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper,
+  .st-dashboard,
+  .ha-dashboard,
+  .sa-dashboard,
+  .kds-page,
+  .po-page,
+  .lp-page
+) {
+  min-height: 100vh;
+  background:
+    radial-gradient(880px 360px at 6% -10%, rgba(255, 107, 53, 0.2), transparent 55%),
+    radial-gradient(840px 360px at 96% -10%, rgba(46, 196, 182, 0.2), transparent 55%),
+    #eef3f9 !important;
+}
+
+:where(
+  .ah-header,
+  .aha-header,
+  .cha-header,
+  .vhp-header,
+  .hotel-header,
+  .payment-header,
+  .validate-header,
+  .token-header,
+  .orders-header,
+  .menu-header,
+  .token-hero,
+  .track-hero,
+  .title-section,
+  .hotel-menu-manager-header,
+  .add-menu-header,
+  .pickup-header,
+  .st-header,
+  .ha-header,
+  .sa-header,
+  .kds-header,
+  .hero-section
+) {
+  background: rgba(255, 255, 255, 0.75) !important;
+  color: #0f172a !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(148, 163, 184, 0.24) !important;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12) !important;
+}
+
+:where(
+  .ah-hero,
+  .aha-hero,
+  .cha-hero,
+  .vhp-hero,
+  .st-hero,
+  .ha-hero,
+  .sa-hero,
+  .token-hero,
+  .track-hero,
+  .title-section,
+  .hero-section
+) {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px) !important;
+  color: #ffffff !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14) !important;
+}
+
+:where(
+  .superadmin-card,
+  .aha-card,
+  .cha-card,
+  .vhp-card,
+  .validate-card,
+  .token-card,
+  .order-card,
+  .payment-form,
+  .add-menu-form,
+  .add-menu-manager-form,
+  .slot-table-wrap,
+  .table-wrapper,
+  .users-table-wrap,
+  .menu-table-wrapper,
+  .menu-card,
+  .hotel-card,
+  .insight-card,
+  .login-card,
+  .register-card,
+  .st-card,
+  .ha-card,
+  .sa-card,
+  .kds-card,
+  .lp-card
+) {
+  background: rgba(255, 255, 255, 0.84) !important;
+  border: 1px solid rgba(148, 163, 184, 0.26) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12) !important;
+  backdrop-filter: blur(9px) !important;
+}
+
+:where(
+  .st-card,
+  .ha-card,
+  .sa-card,
+  .menu-card,
+  .hotel-card,
+  .kds-card
+):hover {
+  transform: translateY(-4px) !important;
+  box-shadow: 0 22px 38px rgba(15, 23, 42, 0.18) !important;
+}
+
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper,
+  .st-dashboard,
+  .ha-dashboard,
+  .sa-dashboard,
+  .kds-page,
+  .po-page,
+  .lp-page
+)
+  :where(input, select, textarea) {
+  border-radius: 12px !important;
+  border: 1px solid #d5ddeb !important;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset !important;
+}
+
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper,
+  .st-dashboard,
+  .ha-dashboard,
+  .sa-dashboard,
+  .kds-page,
+  .po-page,
+  .lp-page
+)
+  :where(input, select, textarea):focus {
+  outline: none !important;
+  border-color: #2ec4b6 !important;
+  box-shadow: 0 0 0 4px rgba(46, 196, 182, 0.16) !important;
+}
+
+:where(
+  .ah-page,
+  .aha-page,
+  .cha-page,
+  .vhp-page,
+  .hotel-page,
+  .payment-page,
+  .validate-page,
+  .token-page,
+  .orders-wrapper,
+  .menu-wrapper,
+  .pickup-page,
+  .track-wrapper,
+  .token-wrapper,
+  .hotel-menu-page,
+  .hotel-menu-manager-page,
+  .add-menu-page,
+  .register-page,
+  .login-wrapper,
+  .dashboard-wrapper,
+  .st-dashboard,
+  .ha-dashboard,
+  .sa-dashboard,
+  .kds-page,
+  .po-page,
+  .lp-page
+)
+  :where(button) {
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+}
+
+:where(
+  .footer,
+  .hm-footer,
+  .ah-footer,
+  .aha-footer,
+  .cha-footer,
+  .vhp-footer,
+  .st-footer,
+  .ha-footer,
+  .sa-footer,
+  .token-footer,
+  .validate-footer
+) {
+  background: linear-gradient(130deg, #1f2933, #111827 58%, #0f172a) !important;
+  color: #ffffff !important;
+}

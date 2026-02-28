@@ -9,7 +9,7 @@
 .token-page {
   min-height: 100vh;
   background: var(--bg);
-  font-family: "Poppins", sans-serif;
+  font-family: "Manrope", "Segoe UI", sans-serif;
   display: flex;
   flex-direction: column;
   padding: 20px;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "./LegacyPages.css";
 
 function SuperAdminLogin() {
   const [email, setEmail] = useState("");
@@ -26,22 +27,18 @@ function SuperAdminLogin() {
   };
 
   return (
-    <div>
-      <h2>Super Admin Login</h2>
-
-      <input
-        type="email"
-        placeholder="Email"
-        onChange={(e) => setEmail(e.target.value)}
-      /><br /><br />
-
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setPassword(e.target.value)}
-      /><br /><br />
-
-      <button onClick={handleLogin}>Login</button>
+    <div className="lp-page">
+      <div className="lp-card narrow">
+        <h2 className="lp-title">Super Admin Login</h2>
+        <p className="lp-subtitle">Access system-level analytics and controls.</p>
+        <div className="lp-form">
+          <input type="email" placeholder="Email" onChange={(e) => setEmail(e.target.value)} />
+          <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
+          <button className="lp-btn" onClick={handleLogin}>
+            Login
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

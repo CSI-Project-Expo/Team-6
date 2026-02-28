@@ -5,7 +5,7 @@
 
   min-height: 100vh;
   background: var(--kds-bg);
-  font-family: "Poppins", sans-serif;
+  font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 .kds-header {
@@ -261,3 +261,4 @@
 .kds-card {
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
+
