@@ -270,3 +270,40 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Modern polish */
+.sa-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.sa-hero::before {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  top: -120px;
+  right: -80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sa-kpi-card,
+.sa-heatmap-grid,
+.sa-delay-list,
+.sa-card {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.sa-kpi-card:hover,
+.sa-card:hover {
+  transform: translateY(-3px);
+}
+
+.sa-heat-cell {
+  transition: transform 0.15s ease;
+}
+
+.sa-heat-cell:hover {
+  transform: scale(1.12);
+}

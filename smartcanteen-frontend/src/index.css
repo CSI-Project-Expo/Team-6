@@ -1,15 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap");
+
+:root {
+  --sc-primary: #ff6b35;
+  --sc-accent: #2ec4b6;
+  --sc-ink: #111827;
+  --sc-muted: #64748b;
+  --sc-surface: #ffffff;
+  --sc-bg: #eef2f7;
+  --sc-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+  --sc-radius-lg: 22px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  color: var(--sc-ink);
+  background:
+    radial-gradient(900px 420px at -5% -15%, rgba(255, 107, 53, 0.16), transparent 55%),
+    radial-gradient(900px 420px at 110% -10%, rgba(46, 196, 182, 0.16), transparent 55%),
+    var(--sc-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Sora", "Manrope", sans-serif;
+  letter-spacing: -0.02em;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+button:hover {
+  filter: saturate(1.03);
+}
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 }
 
 .toast-root {
@@ -25,12 +67,12 @@ code {
 
 .toast-item {
   max-width: 340px;
-  background: #1f2937;
+  background: #0f172a;
   color: #ffffff;
-  border-radius: 10px;
+  border-radius: 14px;
   padding: 12px 14px;
   font-size: 0.92rem;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.32);
   animation: toast-in 180ms ease-out;
 }
 

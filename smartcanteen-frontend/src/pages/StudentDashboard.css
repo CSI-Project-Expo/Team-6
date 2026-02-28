@@ -199,3 +199,28 @@
     max-width: 320px;
   }
 }
+
+/* Modern polish */
+.st-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.st-hero::before {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  top: -120px;
+  right: -80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.st-card {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.st-card:hover {
+  transform: translateY(-6px) scale(1.01);
+}

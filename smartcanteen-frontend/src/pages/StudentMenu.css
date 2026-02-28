@@ -299,3 +299,26 @@ body {
     position: static;
   }
 }
+
+/* Modern polish */
+.menu-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.menu-header::before {
+  content: "";
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  top: -130px;
+  right: -90px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.hotel-select-bar,
+.menu-card,
+.cart-section {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}

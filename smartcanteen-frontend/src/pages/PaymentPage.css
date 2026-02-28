@@ -212,3 +212,25 @@
     margin: 20px auto;
   }
 }
+
+/* Modern polish */
+.payment-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.payment-header::before {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  top: -120px;
+  right: -80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.payment-form,
+.mode-box {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}

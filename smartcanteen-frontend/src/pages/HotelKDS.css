@@ -239,3 +239,25 @@
     min-height: auto;
   }
 }
+
+/* Modern polish */
+.kds-header {
+  position: relative;
+  overflow: hidden;
+}
+
+.kds-header::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  top: -110px;
+  right: -80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.kds-column,
+.kds-card {
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
