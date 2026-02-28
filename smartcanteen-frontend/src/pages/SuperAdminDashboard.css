@@ -108,7 +108,7 @@
 
 .sa-heatmap-hours {
   display: grid;
-  grid-template-columns: 70px repeat(24, 1fr);
+  grid-template-columns: 92px repeat(24, 1fr);
   gap: 4px;
   margin-bottom: 8px;
 }
@@ -117,6 +117,7 @@
   font-size: 0.7rem;
   color: #64748b;
   text-align: center;
+  white-space: nowrap;
 }
 
 .sa-heatmap-hours span:first-child {
@@ -125,15 +126,16 @@
 
 .sa-heatmap-row {
   display: grid;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 92px 1fr;
   align-items: center;
   gap: 4px;
   margin: 4px 0;
 }
 
 .sa-day-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: #334155;
+  white-space: nowrap;
 }
 
 .sa-row-cells {
@@ -146,6 +148,55 @@
   height: 16px;
   border-radius: 3px;
   border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.sa-delay-wrap {
+  width: min(1200px, 100%);
+  margin: 20px auto 0;
+  padding: 0 20px;
+}
+
+.sa-delay-wrap h2 {
+  margin: 0 0 10px;
+  color: #1f2937;
+}
+
+.sa-delay-list {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+  padding: 14px;
+}
+
+.sa-delay-item {
+  margin: 10px 0;
+}
+
+.sa-delay-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #1f2937;
+  margin-bottom: 5px;
+}
+
+.sa-delay-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.sa-delay-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(120deg, #f97316, #ef4444);
+}
+
+.sa-no-delay-data {
+  margin: 0;
+  color: #64748b;
 }
 
 .sa-cards {

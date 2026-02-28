@@ -35,10 +35,12 @@ SmartCanteen provides:
 - View active hotels
 - View available menu items by hotel
 - Select pickup slots
+- Get smart pickup slot recommendation based on live load
 - Place orders
 - Generate and view token
 - Pay via UPI/Card/Cash demo flow
 - Track order status
+- See live ETA, queue ahead, and hotel load
 - View order history
 
 ### Hotel Admin
@@ -46,8 +48,12 @@ SmartCanteen provides:
 - Manage own menu
 - Manage pickup slots
 - View hotel orders
+- Use full-screen Kitchen Display System (KDS) board
 - View order items
 - Update order status (PLACED/PREPARING/READY/COLLECTED/CANCELLED)
+- One-click status movement in KDS
+- New-order sound/visual alerts in KDS
+- Delay reason capture for urgent/critical orders
 - Validate and serve token orders
 
 ### Super Admin
@@ -58,6 +64,9 @@ SmartCanteen provides:
 - View all hotels and users
 - Block/unblock users
 - View dashboard counts
+- View proof-of-impact metrics
+- View peak slot heatmap (last 14 days)
+- View delay reason analytics
 
 ## 5. Technology Stack
 
@@ -90,6 +99,8 @@ Main tables:
 - `subscription_orders`
 - `admin_actions`
 - `collected_tokens`
+- `order_status_events`
+- `order_delay_events`
 
 ## 8. API Highlights
 
@@ -104,6 +115,8 @@ Main tables:
 - `GET /student/hotels`
 - `GET /student/menu/<hotel_id>`
 - `GET /student/pickup-slots/<hotel_id>`
+- `GET /student/queue/<hotel_id>`
+- `GET /student/slot-recommendation/<hotel_id>`
 - `POST /student/order`
 - `GET /student/order/<order_id>`
 - `GET /student/orders/<user_id>`
@@ -124,6 +137,7 @@ Main tables:
 - `PUT /superadmin/block-user/<user_id>`
 - `PUT /superadmin/unblock-user/<user_id>`
 - `GET /superadmin/dashboard`
+- `GET /superadmin/impact-metrics`
 - `GET /superadmin/users`
 
 ### Hotel Admin
@@ -134,6 +148,7 @@ Main tables:
 - `PUT /hoteladmin/menu`
 - `DELETE /hoteladmin/menu/<menu_item_id>`
 - `GET /hoteladmin/orders/<hotel_id>`
+- `GET /hoteladmin/kds/my`
 - `GET /hoteladmin/order-items/<order_id>`
 - `PUT /hoteladmin/update-order`
 - `GET /hoteladmin/pickup-slots/my`
@@ -157,16 +172,21 @@ Backend validates mode-specific payloads and prevents duplicate paid records per
 - Payment mode validation (`UPI`, `CARD`, `CASH`)
 - Global non-blocking toast notifications replacing intrusive browser popups
 - Improved payment page header/footer and responsive styling
+- Smart queue meter and ETA estimates in student flow
+- KDS alerting and delay-reason capture
+- 14-day date-wise peak heatmap with slot-based columns
+- Automatic hourly fallback when no pickup slots exist
 
 ## 11. Project Workflow
 
 1. Student logs in
-2. Student selects hotel and pickup slot
+2. Student selects hotel and sees smart slot recommendation + queue load
 3. Student places order
 4. Token is generated
 5. Student makes payment
-6. Hotel admin prepares and updates order status
+6. Hotel admin prepares and updates order status using orders view or KDS
 7. Student tracks status and collects food using token
+8. Super admin monitors impact metrics and delay analytics
 
 ## 12. Installation and Setup
 

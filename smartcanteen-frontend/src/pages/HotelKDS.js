@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import "./HotelKDS.css";
@@ -15,11 +15,57 @@ function HotelKDS() {
   const role = localStorage.getItem("role");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [newAlertCount, setNewAlertCount] = useState(0);
+  const [highlightedOrderIds, setHighlightedOrderIds] = useState([]);
+  const [delayReasonByOrder, setDelayReasonByOrder] = useState({});
+  const previousOrderIdsRef = useRef(new Set());
+
+  const playNewOrderTone = () => {
+    try {
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioCtx.createOscillator();
+      const gainNode = audioCtx.createGain();
+
+      oscillator.type = "triangle";
+      oscillator.frequency.value = 880;
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+      gainNode.gain.value = 0.08;
+
+      oscillator.start();
+      oscillator.stop(audioCtx.currentTime + 0.22);
+    } catch (e) {
+      console.log("Audio alert not available", e);
+    }
+  };
 
   const fetchKdsData = useCallback(async () => {
     try {
       const res = await api.get("/hoteladmin/kds/my");
-      setOrders(res.data.orders || []);
+      const nextOrders = res.data.orders || [];
+
+      const previousIds = previousOrderIdsRef.current;
+      const currentIds = new Set(nextOrders.map((o) => o.order_id));
+      const newlyArrived = nextOrders.filter(
+        (o) => !previousIds.has(o.order_id) && o.status === "PLACED"
+      );
+
+      if (newlyArrived.length > 0) {
+        setNewAlertCount(newlyArrived.length);
+        setHighlightedOrderIds((prev) => [
+          ...new Set([...prev, ...newlyArrived.map((o) => o.order_id)]),
+        ]);
+        playNewOrderTone();
+        setTimeout(() => setNewAlertCount(0), 8000);
+        setTimeout(() => {
+          setHighlightedOrderIds((prev) =>
+            prev.filter((id) => !newlyArrived.some((o) => o.order_id === id))
+          );
+        }, 30000);
+      }
+
+      previousOrderIdsRef.current = currentIds;
+      setOrders(nextOrders);
     } catch (error) {
       console.error(error);
       alert("Failed to load KDS board");
@@ -57,16 +103,24 @@ function HotelKDS() {
     return groups;
   }, [orders]);
 
-  const moveOrder = async (orderId, currentStatus) => {
+  const moveOrder = async (orderId, currentStatus, priority) => {
     const statusFlow = ["PLACED", "PREPARING", "READY", "COLLECTED"];
     const index = statusFlow.indexOf(currentStatus);
     if (index < 0 || index === statusFlow.length - 1) return;
 
     const nextStatus = statusFlow[index + 1];
+    const delayReason = (delayReasonByOrder[orderId] || "").trim();
+
+    if ((priority === "URGENT" || priority === "CRITICAL") && !delayReason && currentStatus !== "READY") {
+      alert("Select a delay reason for urgent/critical orders before moving status.");
+      return;
+    }
+
     try {
       await api.put("/hoteladmin/update-order", {
         order_id: orderId,
         status: nextStatus,
+        delay_reason: delayReason,
       });
       fetchKdsData();
     } catch (error) {
@@ -104,6 +158,12 @@ function HotelKDS() {
         </div>
       </header>
 
+      {newAlertCount > 0 && (
+        <div className="kds-alert-banner">
+          New incoming orders: {newAlertCount}
+        </div>
+      )}
+
       {loading ? (
         <p className="kds-loading">Loading board...</p>
       ) : (
@@ -123,7 +183,9 @@ function HotelKDS() {
                 {groupedOrders[column.key].map((order) => (
                   <article
                     key={order.order_id}
-                    className={`kds-card priority-${String(order.priority || "NORMAL").toLowerCase()}`}
+                    className={`kds-card priority-${String(order.priority || "NORMAL").toLowerCase()} ${
+                      highlightedOrderIds.includes(order.order_id) ? "kds-new-card" : ""
+                    }`}
                   >
                     <div className="kds-card-top">
                       <h3>#{order.order_id}</h3>
@@ -141,9 +203,30 @@ function HotelKDS() {
                       </div>
                     )}
 
+                    {order.status !== "COLLECTED" && (
+                      <select
+                        className="delay-select"
+                        value={delayReasonByOrder[order.order_id] || ""}
+                        onChange={(e) =>
+                          setDelayReasonByOrder((prev) => ({
+                            ...prev,
+                            [order.order_id]: e.target.value,
+                          }))
+                        }
+                      >
+                        <option value="">Delay Reason (optional)</option>
+                        <option value="High Rush">High Rush</option>
+                        <option value="Ingredient Delay">Ingredient Delay</option>
+                        <option value="Staff Shortage">Staff Shortage</option>
+                        <option value="Equipment Issue">Equipment Issue</option>
+                        <option value="Payment Hold">Payment Hold</option>
+                        <option value="Other Operational Delay">Other Operational Delay</option>
+                      </select>
+                    )}
+
                     <button
                       disabled={order.status === "COLLECTED"}
-                      onClick={() => moveOrder(order.order_id, order.status)}
+                      onClick={() => moveOrder(order.order_id, order.status, order.priority)}
                     >
                       {getActionLabel(order.status)}
                     </button>

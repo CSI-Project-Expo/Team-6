@@ -17,6 +17,7 @@ function StudentMenu() {
   const [cartItems, setCartItems] = useState([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
   const [queueStats, setQueueStats] = useState(null);
+  const [slotRecommendation, setSlotRecommendation] = useState(null);
 
   useEffect(() => {
     if (!userId) {
@@ -76,6 +77,33 @@ function StudentMenu() {
     fetchQueueStats();
     const interval = setInterval(fetchQueueStats, 15000);
 
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [selectedHotel]);
+
+  useEffect(() => {
+    if (!selectedHotel) {
+      setSlotRecommendation(null);
+      return;
+    }
+
+    let isMounted = true;
+    const fetchRecommendation = async () => {
+      try {
+        const res = await axios.get(`http://127.0.0.1:5000/student/slot-recommendation/${selectedHotel}`);
+        if (!isMounted) return;
+        setSlotRecommendation(res.data?.recommended_slot || null);
+      } catch {
+        if (isMounted) {
+          setSlotRecommendation(null);
+        }
+      }
+    };
+
+    fetchRecommendation();
+    const interval = setInterval(fetchRecommendation, 20000);
     return () => {
       isMounted = false;
       clearInterval(interval);
@@ -253,6 +281,12 @@ function StudentMenu() {
           <h3>Total: Rs. {totalAmount}</h3>
 
           <label>Pickup Slot</label>
+          {slotRecommendation && (
+            <div className="slot-recommendation">
+              Recommended: {slotRecommendation.start_time} - {slotRecommendation.end_time}
+              {" "}({slotRecommendation.estimated_wait_minutes} min est. wait)
+            </div>
+          )}
           <select
             value={selectedSlot}
             onChange={(e) => setSelectedSlot(e.target.value)}
@@ -262,6 +296,7 @@ function StudentMenu() {
             {slots.map((slot) => (
               <option key={slot.slot_id} value={slot.slot_id}>
                 {slot.start_time} - {slot.end_time}
+                {slotRecommendation && Number(slotRecommendation.slot_id) === Number(slot.slot_id) ? " (Recommended)" : ""}
               </option>
             ))}
           </select>

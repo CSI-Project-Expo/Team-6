@@ -46,6 +46,16 @@ function SuperAdminDashboard() {
     if (!value) return 0.08;
     return 0.15 + (value / heatmapMax) * 0.85;
   };
+  const slotLabels = impact?.heatmap_slot_labels || [];
+
+  const formatHeatmapLabel = (label) => {
+    if (!label) return "";
+    if (/^\d{4}-\d{2}-\d{2}$/.test(label)) {
+      const [year, month, day] = label.split("-");
+      return `${day}/${month}/${year.slice(2)}`;
+    }
+    return label;
+  };
 
   return (
     <div className="sa-dashboard">
@@ -96,23 +106,34 @@ function SuperAdminDashboard() {
       </section>
 
       <section className="sa-heatmap-wrap">
-        <h2>Peak Slot Heatmap (Last 14 Days)</h2>
+        <h2>
+          {impact?.heatmap_mode === "HOUR"
+            ? "Peak Time Heatmap (Last 14 Days)"
+            : "Peak Slot Heatmap (Last 14 Days)"}
+        </h2>
         <div className="sa-heatmap-grid">
-          <div className="sa-heatmap-hours">
-            {Array.from({ length: 24 }).map((_, hour) => (
-              <span key={hour}>{hour}</span>
+          <div
+            className="sa-heatmap-hours"
+            style={{ gridTemplateColumns: `92px repeat(${slotLabels.length}, minmax(70px, 1fr))` }}
+          >
+            <span />
+            {slotLabels.map((slot) => (
+              <span key={slot}>{slot}</span>
             ))}
           </div>
 
           {impact?.heatmap_14d?.map((row, dayIndex) => (
             <div className="sa-heatmap-row" key={dayIndex}>
               <span className="sa-day-label">
-                {impact.heatmap_days?.[dayIndex] || `D${dayIndex + 1}`}
+                {formatHeatmapLabel(impact.heatmap_labels?.[dayIndex]) || `D${dayIndex + 1}`}
               </span>
-              <div className="sa-row-cells">
-                {row.map((value, hour) => (
+              <div
+                className="sa-row-cells"
+                style={{ gridTemplateColumns: `repeat(${slotLabels.length}, minmax(70px, 1fr))` }}
+              >
+                {row.map((value, slotIndex) => (
                   <div
-                    key={`${dayIndex}-${hour}`}
+                    key={`${dayIndex}-${slotIndex}`}
                     className="sa-heat-cell"
                     title={`${value} orders`}
                     style={{ backgroundColor: `rgba(255, 107, 53, ${cellOpacity(value)})` }}
@@ -121,6 +142,31 @@ function SuperAdminDashboard() {
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      <section className="sa-delay-wrap">
+        <h2>Delay Reason Analytics (Last 30 Days)</h2>
+        <div className="sa-delay-list">
+          {impact?.delay_reason_breakdown?.length ? (
+            impact.delay_reason_breakdown.map((item) => {
+              const maxCount = impact.delay_reason_breakdown[0]?.count || 1;
+              const widthPct = Math.max(10, (item.count / maxCount) * 100);
+              return (
+                <div key={item.reason} className="sa-delay-item">
+                  <div className="sa-delay-label">
+                    <span>{item.reason}</span>
+                    <b>{item.count}</b>
+                  </div>
+                  <div className="sa-delay-bar">
+                    <div className="sa-delay-fill" style={{ width: `${widthPct}%` }} />
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p className="sa-no-delay-data">No delay events logged yet.</p>
+          )}
         </div>
       </section>
 

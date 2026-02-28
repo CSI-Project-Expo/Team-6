@@ -4,7 +4,7 @@ import mysql.connector
 import uuid
 import random
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 
 app = Flask(__name__)
@@ -121,6 +121,33 @@ def log_order_status_event(cursor, order_id, status):
     cursor.execute(
         "INSERT INTO order_status_events (order_id, status) VALUES (%s, %s)",
         (order_id, status),
+    )
+
+
+def ensure_order_delay_events_table(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS order_delay_events (
+            delay_id INT AUTO_INCREMENT PRIMARY KEY,
+            order_id INT NOT NULL,
+            hotel_id INT NOT NULL,
+            reason VARCHAR(120) NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_order_delay_events_hotel_id (hotel_id),
+            INDEX idx_order_delay_events_created_at (created_at)
+        ) ENGINE=InnoDB
+    """)
+
+
+def log_order_delay_event(cursor, order_id, hotel_id, reason):
+    if not reason:
+        return
+    ensure_order_delay_events_table(cursor)
+    cursor.execute(
+        """
+        INSERT INTO order_delay_events (order_id, hotel_id, reason)
+        VALUES (%s, %s, %s)
+        """,
+        (order_id, hotel_id, reason),
     )
 
 
@@ -387,6 +414,7 @@ def superadmin_impact_metrics():
     cursor = db.cursor(dictionary=True)
 
     ensure_order_status_events_table(cursor)
+    ensure_order_delay_events_table(cursor)
 
     cursor.execute("""
         SELECT
@@ -445,20 +473,79 @@ def superadmin_impact_metrics():
 
     cursor.execute("""
         SELECT
-            DAYOFWEEK(created_at) AS day_of_week,
-            HOUR(created_at) AS hour_of_day,
-            COUNT(*) AS order_count
-        FROM orders
-        WHERE created_at >= NOW() - INTERVAL 14 DAY
-        GROUP BY DAYOFWEEK(created_at), HOUR(created_at)
+            TIME_FORMAT(ps.start_time, '%H:%i') AS slot_start,
+            TIME_FORMAT(ps.end_time, '%H:%i') AS slot_end
+        FROM pickup_slots ps
+        ORDER BY ps.start_time ASC, ps.end_time ASC
     """)
-    heatmap_rows = cursor.fetchall()
-    # Sunday(1) ... Saturday(7)
-    heatmap_matrix = [[0 for _ in range(24)] for _ in range(7)]
+    slot_rows = cursor.fetchall()
+    slot_labels = [f"{row['slot_start']}-{row['slot_end']}" for row in slot_rows]
+
+    heatmap_mode = "SLOT"
+    if slot_labels:
+        slot_index_map = {label: idx for idx, label in enumerate(slot_labels)}
+        cursor.execute("""
+            SELECT
+                DATE(o.created_at) AS order_date,
+                TIME_FORMAT(ps.start_time, '%H:%i') AS slot_start,
+                TIME_FORMAT(ps.end_time, '%H:%i') AS slot_end,
+                COUNT(*) AS order_count
+            FROM orders o
+            JOIN pickup_slots ps ON o.slot_id = ps.slot_id
+            WHERE o.created_at >= CURDATE() - INTERVAL 13 DAY
+            GROUP BY DATE(o.created_at), TIME_FORMAT(ps.start_time, '%H:%i'), TIME_FORMAT(ps.end_time, '%H:%i')
+        """)
+        heatmap_rows = cursor.fetchall()
+    else:
+        # Fallback to hourly matrix so dashboard always has meaningful columns.
+        heatmap_mode = "HOUR"
+        slot_labels = [f"{hour:02d}:00" for hour in range(24)]
+        slot_index_map = {label: idx for idx, label in enumerate(slot_labels)}
+        cursor.execute("""
+            SELECT
+                DATE(created_at) AS order_date,
+                HOUR(created_at) AS hour_of_day,
+                COUNT(*) AS order_count
+            FROM orders
+            WHERE created_at >= CURDATE() - INTERVAL 13 DAY
+            GROUP BY DATE(created_at), HOUR(created_at)
+        """)
+        heatmap_rows = cursor.fetchall()
+    date_keys = []
+    for offset in range(13, -1, -1):
+        day = (datetime.now() - timedelta(days=offset)).date()
+        date_keys.append(day.isoformat())
+
+    heatmap_matrix = [[0 for _ in range(len(slot_labels))] for _ in range(14)]
+    date_index_map = {key: idx for idx, key in enumerate(date_keys)}
     for row in heatmap_rows:
-        day_index = int(row["day_of_week"]) - 1
-        hour_index = int(row["hour_of_day"])
-        heatmap_matrix[day_index][hour_index] = int(row["order_count"])
+        row_date = row["order_date"]
+        key = row_date.isoformat() if hasattr(row_date, "isoformat") else str(row_date)
+        if key not in date_index_map:
+            continue
+        day_index = date_index_map[key]
+        if heatmap_mode == "SLOT":
+            slot_label = f"{row['slot_start']}-{row['slot_end']}"
+        else:
+            slot_label = f"{int(row['hour_of_day']):02d}:00"
+        if slot_label not in slot_index_map:
+            continue
+        slot_index = slot_index_map[slot_label]
+        heatmap_matrix[day_index][slot_index] = int(row["order_count"])
+
+    cursor.execute("""
+        SELECT reason, COUNT(*) AS reason_count
+        FROM order_delay_events
+        WHERE created_at >= NOW() - INTERVAL 30 DAY
+        GROUP BY reason
+        ORDER BY reason_count DESC
+        LIMIT 8
+    """)
+    delay_rows = cursor.fetchall()
+    delay_reason_breakdown = [
+        {"reason": row["reason"], "count": int(row["reason_count"] or 0)}
+        for row in delay_rows
+    ]
 
     orders_today = sum(hourly_counts)
     current_hour = datetime.now().hour
@@ -475,7 +562,10 @@ def superadmin_impact_metrics():
         "orders_today": orders_today,
         "hourly_orders_today": hourly_counts,
         "heatmap_14d": heatmap_matrix,
-        "heatmap_days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        "heatmap_labels": date_keys,
+        "heatmap_slot_labels": slot_labels,
+        "heatmap_mode": heatmap_mode,
+        "delay_reason_breakdown": delay_reason_breakdown,
     })
 
 
@@ -558,6 +648,59 @@ def pickup_slots(hotel_id):
     db.close()
 
     return jsonify(slots)
+
+
+@app.route("/student/slot-recommendation/<int:hotel_id>", methods=["GET"])
+def recommend_slot(hotel_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT
+            ps.slot_id,
+            ps.start_time,
+            ps.end_time,
+            COUNT(
+                CASE
+                    WHEN o.status IN ('PLACED','PREPARING','READY')
+                     AND o.order_date = CURDATE()
+                    THEN 1
+                    ELSE NULL
+                END
+            ) AS active_orders
+        FROM pickup_slots ps
+        LEFT JOIN orders o ON o.slot_id = ps.slot_id
+        WHERE ps.hotel_id = %s
+        GROUP BY ps.slot_id, ps.start_time, ps.end_time
+        ORDER BY ps.start_time ASC
+    """, (hotel_id,))
+
+    slot_rows = cursor.fetchall()
+
+    recommendations = []
+    best_slot = None
+    for row in slot_rows:
+        active_orders = int(row["active_orders"] or 0)
+        estimated_wait = min(40, 4 + (active_orders * 2))
+        record = {
+            "slot_id": row["slot_id"],
+            "start_time": time_to_str(row["start_time"]),
+            "end_time": time_to_str(row["end_time"]),
+            "active_orders": active_orders,
+            "estimated_wait_minutes": estimated_wait,
+        }
+        recommendations.append(record)
+        if (best_slot is None) or (record["estimated_wait_minutes"] < best_slot["estimated_wait_minutes"]):
+            best_slot = record
+
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "hotel_id": hotel_id,
+        "recommended_slot": best_slot,
+        "slots": recommendations,
+    })
 
 
 @app.route("/student/queue/<int:hotel_id>", methods=["GET"])
@@ -1164,11 +1307,31 @@ def order_items(order_id):
 @app.route("/hoteladmin/update-order", methods=["PUT"])
 def update_order():
     db = get_db_connection()
-    cursor = db.cursor()
-    data = request.json
+    cursor = db.cursor(dictionary=True)
+    data = request.json or {}
 
-    cursor.execute("UPDATE orders SET status=%s WHERE order_id=%s", (data["status"], data["order_id"]))
-    log_order_status_event(cursor, data["order_id"], data["status"])
+    order_id = data.get("order_id")
+    status = data.get("status")
+    delay_reason = (data.get("delay_reason") or "").strip()
+
+    if not order_id or not status:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "order_id and status are required"}), 400
+
+    cursor.execute("SELECT hotel_id FROM orders WHERE order_id=%s", (order_id,))
+    order = cursor.fetchone()
+    if not order:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Order not found"}), 404
+
+    cursor.execute("UPDATE orders SET status=%s WHERE order_id=%s", (status, order_id))
+    log_order_status_event(cursor, order_id, status)
+
+    if delay_reason:
+        log_order_delay_event(cursor, order_id, order["hotel_id"], delay_reason)
+
     db.commit()
     cursor.close()
     db.close()

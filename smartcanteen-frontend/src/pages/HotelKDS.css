@@ -1,6 +1,10 @@
 .kds-page {
+  --kds-primary: #ff6b35;
+  --kds-secondary: #2ec4b6;
+  --kds-bg: #edf1f5;
+
   min-height: 100vh;
-  background: #f1f5f9;
+  background: var(--kds-bg);
   font-family: "Poppins", sans-serif;
 }
 
@@ -9,14 +13,15 @@
   justify-content: space-between;
   align-items: center;
   gap: 16px;
-  padding: 16px 20px;
-  background: linear-gradient(120deg, #0f172a, #1e293b);
+  padding: 16px 24px;
+  background: linear-gradient(120deg, var(--kds-primary) 0%, var(--kds-secondary) 100%);
   color: #fff;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
 }
 
 .kds-header h1 {
   margin: 0;
-  font-size: 1.65rem;
+  font-size: clamp(1.5rem, 2vw, 2rem);
 }
 
 .kds-header p {
@@ -32,20 +37,32 @@
 
 .kds-actions button {
   border: none;
-  border-radius: 10px;
-  padding: 8px 12px;
+  border-radius: 999px;
+  padding: 9px 14px;
   cursor: pointer;
   font-weight: 600;
+  color: #ff6b35;
+  background: #fff;
 }
 
 .kds-logout {
-  background: #ef4444;
+  background: #ef4444 !important;
   color: #fff;
 }
 
 .kds-loading {
   padding: 30px;
   text-align: center;
+}
+
+.kds-alert-banner {
+  margin: 10px 14px 0;
+  background: #f59e0b;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  animation: kds-blink 1s ease-in-out infinite;
 }
 
 .kds-board {
@@ -56,11 +73,12 @@
 }
 
 .kds-column {
-  background: #e2e8f0;
-  border-radius: 14px;
+  background: #e8edf3;
+  border-radius: 18px;
   min-height: calc(100vh - 120px);
   display: flex;
   flex-direction: column;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
 
 .kds-column-head {
@@ -68,7 +86,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px;
-  border-bottom: 1px solid #cbd5e1;
+  border-bottom: 1px solid #dbe3ec;
 }
 
 .kds-column-head h2 {
@@ -77,7 +95,7 @@
 }
 
 .kds-column-head span {
-  background: #111827;
+  background: #1f2933;
   color: #fff;
   padding: 3px 8px;
   border-radius: 999px;
@@ -99,10 +117,15 @@
 
 .kds-card {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 14px;
   padding: 10px;
   box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
   border-left: 4px solid #94a3b8;
+}
+
+.kds-new-card {
+  animation: kds-pulse 1.2s ease-in-out infinite;
+  border-left-color: #22c55e;
 }
 
 .kds-card-top {
@@ -113,13 +136,22 @@
 
 .kds-card h3 {
   margin: 0;
-  color: #0f172a;
+  color: #ff6b35;
 }
 
 .kds-card p {
   margin: 6px 0;
   font-size: 0.88rem;
   color: #334155;
+}
+
+.delay-select {
+  width: 100%;
+  margin: 4px 0 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 7px 8px;
+  font-size: 0.82rem;
 }
 
 .priority-badge {
@@ -153,9 +185,9 @@
 .kds-card button {
   width: 100%;
   border: none;
-  border-radius: 10px;
+  border-radius: 999px;
   padding: 8px 10px;
-  background: #2563eb;
+  background: linear-gradient(120deg, var(--kds-primary), #ff8c5a);
   color: #fff;
   cursor: pointer;
   font-weight: 600;
@@ -164,6 +196,27 @@
 .kds-card button:disabled {
   background: #64748b;
   cursor: not-allowed;
+}
+
+@keyframes kds-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+@keyframes kds-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 @media (max-width: 1300px) {
