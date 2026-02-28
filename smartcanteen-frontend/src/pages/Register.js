@@ -11,17 +11,35 @@ function Register() {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+  const isValidEmail = (value) =>
+    /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
 
   const handleRegister = async () => {
-    if (!name || !email || !password) {
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanName || !cleanEmail || !password) {
       setMessage("All fields are required");
       return;
     }
 
-    try {
-      await api.post("/auth/register", { name, email, password, role });
+    if (!isValidEmail(cleanEmail)) {
+      setMessage("Enter a valid email address");
+      return;
+    }
 
-      const loginRes = await api.post("/auth/login", { email, password });
+    try {
+      await api.post("/auth/register", {
+        name: cleanName,
+        email: cleanEmail,
+        password,
+        role,
+      });
+
+      const loginRes = await api.post("/auth/login", {
+        email: cleanEmail,
+        password,
+      });
 
       localStorage.setItem("user_id", loginRes.data.user_id);
       localStorage.setItem("role", loginRes.data.role);
@@ -50,7 +68,12 @@ function Register() {
         <p className="subtitle">Create your account</p>
 
         <input type="text" placeholder="👤 Full Name" onChange={(e) => setName(e.target.value)} />
-        <input type="email" placeholder="📧 Email Address" onChange={(e) => setEmail(e.target.value)} />
+        <input
+          type="email"
+          placeholder="📧 Email Address"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
         <input type="password" placeholder="🔒 Password" onChange={(e) => setPassword(e.target.value)} />
 
         <select onChange={(e) => setRole(e.target.value)}>

@@ -4,6 +4,18 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+if (typeof window !== "undefined" && !window.__alertOverridden) {
+  window.__alertOverridden = true;
+  window.__nativeAlert = window.alert.bind(window);
+  window.alert = (message) => {
+    window.dispatchEvent(
+      new CustomEvent("app:notify", {
+        detail: { message: String(message || ""), type: "info" },
+      })
+    );
+  };
+}
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

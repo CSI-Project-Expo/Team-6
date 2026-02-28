@@ -10,6 +10,8 @@ function CreateHotelAdmin() {
   const [message, setMessage] = useState("");
 
   const navigate = useNavigate();
+  const isValidEmail = (value) =>
+    /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
 
   const handleLogout = () => {
     localStorage.clear();
@@ -17,8 +19,16 @@ function CreateHotelAdmin() {
   };
 
   const handleCreateAdmin = async () => {
-    if (!name || !email || !password) {
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanName || !cleanEmail || !password) {
       alert("Please fill all fields");
+      return;
+    }
+
+    if (!isValidEmail(cleanEmail)) {
+      alert("Enter a valid email address");
       return;
     }
 
@@ -31,7 +41,7 @@ function CreateHotelAdmin() {
     try {
       const res = await axios.post(
         "http://127.0.0.1:5000/superadmin/create-hotel-admin",
-        { name, email, password },
+        { name: cleanName, email: cleanEmail, password },
         { headers: { role } }
       );
 

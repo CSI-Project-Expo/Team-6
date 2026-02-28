@@ -25,8 +25,10 @@ import SuperAdminUsers from "./pages/SuperAdminUsers";
 import AddMenuItem from "./pages/AddMenuItem";
 import UpdateOrderStatus from "./pages/UpdateOrderStatus";
 import HotelPickupSlots from "./pages/HotelPickupSlots";
+import GlobalToast from "./components/GlobalToast";
 function App() {
   return (
+    <>
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -63,6 +65,8 @@ function App() {
 
       </Routes>
     </Router>
+    <GlobalToast />
+    </>
   );
 }
 

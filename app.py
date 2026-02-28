@@ -3,10 +3,14 @@ from flask_cors import CORS
 import mysql.connector
 import uuid
 import random
+import re
 from functools import wraps
 
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
+
+EMAIL_REGEX = re.compile(r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$")
+VALID_PAYMENT_MODES = {"UPI", "CARD", "CASH"}
 
 # ===============================
 # DATABASE CONNECTION
@@ -85,13 +89,16 @@ def register():
     db = get_db_connection()
     cursor = db.cursor()
 
-    data = request.json
-    name = data.get("name")
-    email = data.get("email")
+    data = request.json or {}
+    name = (data.get("name") or "").strip()
+    email = (data.get("email") or "").strip().lower()
     password = data.get("password")
 
     if not name or not email or not password:
         return jsonify({"message": "All fields required"}), 400
+
+    if not EMAIL_REGEX.match(email):
+        return jsonify({"message": "Enter a valid email address"}), 400
 
     try:
         cursor.execute("""
@@ -186,15 +193,26 @@ def create_hotel_admin():
     db = get_db_connection()
     cursor = db.cursor()
 
-    data = request.json
-    name = data["name"]
-    email = data["email"]
-    password = data["password"]
+    data = request.json or {}
+    name = (data.get("name") or "").strip()
+    email = (data.get("email") or "").strip().lower()
+    password = data.get("password")
 
-    cursor.execute("""
-        INSERT INTO users (name, email, password_hash, role)
-        VALUES (%s, %s, %s, 'HOTEL_ADMIN')
-    """, (name, email, password))
+    if not name or not email or not password:
+        return jsonify({"message": "All fields required"}), 400
+
+    if not EMAIL_REGEX.match(email):
+        return jsonify({"message": "Enter a valid email address"}), 400
+
+    try:
+        cursor.execute("""
+            INSERT INTO users (name, email, password_hash, role)
+            VALUES (%s, %s, %s, 'HOTEL_ADMIN')
+        """, (name, email, password))
+    except mysql.connector.IntegrityError:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Email already exists"}), 400
 
     db.commit()
     cursor.close()
@@ -677,18 +695,88 @@ def validate_token():
 @app.route("/payment", methods=["POST"])
 def payment():
     db = get_db_connection()
-    cursor = db.cursor()
-    data = request.json
+    cursor = db.cursor(dictionary=True)
+    data = request.json or {}
+
+    order_id = data.get("order_id")
+    payment_mode_raw = data.get("payment_mode")
+    amount = data.get("amount")
+    upi_ref = (data.get("upi_ref") or "").strip()
+    card_last4 = (data.get("card_last4") or "").strip()
+    cash_confirmed = data.get("cash_confirmed", False)
+
+    if not order_id or not payment_mode_raw:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "order_id and payment_mode are required"}), 400
+
+    payment_mode = str(payment_mode_raw).strip().upper()
+    if payment_mode not in VALID_PAYMENT_MODES:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Invalid payment_mode. Use UPI, CARD, or CASH"}), 400
+
+    cursor.execute(
+        "SELECT order_id, total_amount FROM orders WHERE order_id=%s",
+        (order_id,),
+    )
+    order = cursor.fetchone()
+    if not order:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Order not found"}), 404
+
+    # If amount is missing/invalid, use the order total from DB as source of truth.
+    try:
+        parsed_amount = float(amount) if amount is not None else None
+    except (TypeError, ValueError):
+        parsed_amount = None
+
+    if parsed_amount is None or parsed_amount <= 0:
+        parsed_amount = float(order["total_amount"])
+
+    cursor.execute(
+        "SELECT payment_id FROM payments WHERE order_id=%s AND payment_status='PAID' LIMIT 1",
+        (order_id,),
+    )
+    existing_payment = cursor.fetchone()
+    if existing_payment:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Payment already completed for this order", "already_paid": True}), 200
+
+    # Mode-specific validation for demo flows
+    if payment_mode == "UPI":
+        if not re.fullmatch(r"[A-Za-z0-9]{8,30}", upi_ref):
+            cursor.close()
+            db.close()
+            return jsonify({"message": "For UPI, provide a valid transaction reference (8-30 letters/numbers)"}), 400
+
+    if payment_mode == "CARD":
+        if not re.fullmatch(r"\d{4}", card_last4):
+            cursor.close()
+            db.close()
+            return jsonify({"message": "For CARD, provide the last 4 digits"}), 400
+
+    if payment_mode == "CASH":
+        if cash_confirmed is not True:
+            cursor.close()
+            db.close()
+            return jsonify({"message": "Please confirm cash will be paid at counter"}), 400
 
     cursor.execute("""
         INSERT INTO payments(order_id, amount, payment_mode)
         VALUES(%s,%s,%s)
-    """, (data["order_id"], data["amount"], data["payment_mode"]))
+    """, (order_id, parsed_amount, payment_mode))
 
     db.commit()
     cursor.close()
     db.close()
-    return jsonify({"message": "Payment successful"})
+    return jsonify({
+        "message": "Payment successful",
+        "amount": parsed_amount,
+        "payment_mode": payment_mode,
+    })
 
 
 # ===============================
