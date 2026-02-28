@@ -40,8 +40,8 @@ function TrackOrder() {
         setOrder(res.data);
         setError("");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
       setError("Failed to fetch order status");
     } finally {
       setLoading(false);
@@ -67,17 +67,14 @@ function TrackOrder() {
 
   return (
     <div className="track-wrapper">
-
-      {/* HERO */}
       <div className="track-hero">
-        <h1>📦 Track Your Order</h1>
-        <p>Real-time food status with token system</p>
+        <h1>Track Your Order</h1>
+        <p>Live order status with estimated readiness time</p>
       </div>
 
-      {/* ACTION BAR */}
       <div className="action-bar">
-        <button onClick={() => navigate("/my-orders")}>📜 My Orders</button>
-        <button onClick={() => navigate(-1)}>⬅ Back</button>
+        <button onClick={() => navigate("/my-orders")}>My Orders</button>
+        <button onClick={() => navigate(-1)}>Back</button>
         <button
           className="logout-btn"
           onClick={() => {
@@ -85,44 +82,56 @@ function TrackOrder() {
             navigate("/login");
           }}
         >
-          🚪 Logout
+          Logout
         </button>
       </div>
 
-      {/* CONTENT */}
       <div className="track-content">
-
-        {loading && <p className="info-text">⏳ Loading order status...</p>}
+        {loading && <p className="info-text">Loading order status...</p>}
         {error && <p className="error-text">{error}</p>}
 
         {order && !loading && (
           <div className="order-card">
-
-            <h2>🎫 Token #{order.order_id}</h2>
+            <h2>Token #{order.order_id}</h2>
 
             <div className={getStatusClass(order.status)}>
               {order.status}
             </div>
 
+            <div className="smart-insights">
+              <div className="insight-card">
+                <span>ETA</span>
+                <b>{order.eta_minutes ?? 0} min</b>
+              </div>
+              <div className="insight-card">
+                <span>Queue Ahead</span>
+                <b>{order.queue_ahead ?? 0}</b>
+              </div>
+              <div className="insight-card">
+                <span>Hotel Load</span>
+                <b className={`load-level ${String(order.load_level || "").toLowerCase()}`}>
+                  {order.load_level || "LOW"}
+                </b>
+              </div>
+            </div>
+
             <div className="order-details">
-              <p><b>💰 Amount:</b> ₹{order.total_amount}</p>
-              <p><b>⏰ Pickup Slot:</b> {order.slot_time}</p>
-              <p><b>📅 Date:</b> {order.order_date}</p>
+              <p><b>Amount:</b> Rs. {order.total_amount}</p>
+              <p><b>Pickup Slot:</b> {order.slot_time}</p>
+              <p><b>Date:</b> {order.order_date}</p>
+              <p><b>Active Hotel Orders:</b> {order.active_orders_hotel ?? 0}</p>
             </div>
 
             <button className="refresh-btn" onClick={fetchOrderStatus}>
-              🔄 Refresh Status
+              Refresh Status
             </button>
           </div>
         )}
-
       </div>
 
-      {/* FOOTER */}
       <footer className="footer">
-        <p>© 2026 🍽 SmartCanteen – Digital Food Ordering & Token System | CSI Project Expo</p>
+        <p>© 2026 SmartCanteen - Digital Food Ordering & Token System | CSI Project Expo</p>
       </footer>
-
     </div>
   );
 }

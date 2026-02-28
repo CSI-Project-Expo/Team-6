@@ -16,6 +16,7 @@ function StudentMenu() {
   const [selectedSlot, setSelectedSlot] = useState("");
   const [cartItems, setCartItems] = useState([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
+  const [queueStats, setQueueStats] = useState(null);
 
   useEffect(() => {
     if (!userId) {
@@ -52,6 +53,35 @@ function StudentMenu() {
       .finally(() => setLoadingMenu(false));
   }, [selectedHotel]);
 
+  useEffect(() => {
+    if (!selectedHotel) {
+      setQueueStats(null);
+      return;
+    }
+
+    let isMounted = true;
+    const fetchQueueStats = async () => {
+      try {
+        const res = await axios.get(`http://127.0.0.1:5000/student/queue/${selectedHotel}`);
+        if (isMounted) {
+          setQueueStats(res.data);
+        }
+      } catch {
+        if (isMounted) {
+          setQueueStats(null);
+        }
+      }
+    };
+
+    fetchQueueStats();
+    const interval = setInterval(fetchQueueStats, 15000);
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [selectedHotel]);
+
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
@@ -79,9 +109,9 @@ function StudentMenu() {
   );
 
   const handleConfirmOrder = async () => {
-    if (!selectedHotel) return alert("Please select a hotel first 🏨");
-    if (!selectedSlot) return alert("Please select a pickup slot ⏰");
-    if (cartItems.length === 0) return alert("Your cart is empty 🛒");
+    if (!selectedHotel) return alert("Please select a hotel first");
+    if (!selectedSlot) return alert("Please select a pickup slot");
+    if (cartItems.length === 0) return alert("Your cart is empty");
 
     const orderData = {
       user_id: userId,
@@ -100,32 +130,30 @@ function StudentMenu() {
         "http://127.0.0.1:5000/student/order",
         orderData
       );
-      alert("🎉 Order placed successfully!");
+      alert("Order placed successfully");
       navigate(`/token/${res.data.order_id}`);
     } catch {
-      alert("❌ Order failed. Try again.");
+      alert("Order failed. Try again.");
     }
   };
 
   return (
     <div className="menu-wrapper">
-      {/* HEADER */}
       <header className="menu-header">
-        <h1>🍽 SmartCanteen</h1>
-        <p>Welcome {userName}! Order food & skip the queue 🚀</p>
+        <h1>SmartCanteen</h1>
+        <p>Welcome {userName}! Order food and skip the queue.</p>
 
         <div className="menu-actions">
-          <button onClick={() => navigate("/my-orders")}>📦 My Orders</button>
-          <button onClick={() => navigate(-1)}>⬅ Back</button>
+          <button onClick={() => navigate("/my-orders")}>My Orders</button>
+          <button onClick={() => navigate(-1)}>Back</button>
           <button className="logout-btn" onClick={handleLogout}>
             Logout
           </button>
         </div>
       </header>
 
-      {/* HOTEL SELECT */}
       <div className="hotel-select-bar">
-        <h3>🏨 Choose Your Hotel</h3>
+        <h3>Choose Your Hotel</h3>
 
         {hotels.length === 0 && (
           <p className="empty-state">No hotels available right now.</p>
@@ -151,12 +179,10 @@ function StudentMenu() {
         </div>
       </div>
 
-      {/* MAIN LAYOUT */}
       <div className="menu-layout">
-        {/* MENU */}
         <div className="menu-section">
           <h2>
-            🍲 Menu{" "}
+            Menu{" "}
             {selectedHotelName && (
               <span style={{ color: "#2EC4B6" }}>
                 ({selectedHotelName})
@@ -166,7 +192,7 @@ function StudentMenu() {
 
           {!selectedHotel && (
             <p className="empty-state">
-              👆 Please select a hotel to explore delicious food.
+              Please select a hotel to explore menu items.
             </p>
           )}
 
@@ -174,7 +200,7 @@ function StudentMenu() {
 
           {selectedHotel && menu.length === 0 && !loadingMenu && (
             <p className="empty-state">
-              😔 No menu items available for this hotel.
+              No menu items available for this hotel.
             </p>
           )}
 
@@ -182,39 +208,51 @@ function StudentMenu() {
             {menu.map((item) => (
               <div className="menu-card" key={item.menu_item_id}>
                 <h3>{item.item_name}</h3>
-                <p className="price">₹ {item.price}</p>
+                <p className="price">Rs. {item.price}</p>
                 <button onClick={() => addToCart(item)}>
-                  ➕ Add to Cart
+                  Add to Cart
                 </button>
               </div>
             ))}
           </div>
         </div>
 
-        {/* CART */}
         <div className="cart-section">
-          <h2>🛒 Your Cart ({cartItems.length})</h2>
+          <h2>Your Cart ({cartItems.length})</h2>
+
+          {queueStats && (
+            <div className="queue-widget">
+              <p><b>Live Queue:</b> {queueStats.active_orders} active orders</p>
+              <p>
+                <b>Load:</b>{" "}
+                <span className={`load-badge ${String(queueStats.load_level || "").toLowerCase()}`}>
+                  {queueStats.load_level}
+                </span>
+              </p>
+              <p><b>Estimated Wait:</b> ~{queueStats.estimated_wait_minutes} min</p>
+            </div>
+          )}
 
           {cartItems.length === 0 && (
             <p className="empty-cart">
-              Your cart is empty. Add some tasty food 😋
+              Your cart is empty. Add some food.
             </p>
           )}
 
           {cartItems.map((item) => (
             <div className="cart-item" key={item.menu_item_id}>
               <span>
-                {item.item_name} × {item.quantity}
+                {item.item_name} x {item.quantity}
               </span>
-              <span>₹ {item.price * item.quantity}</span>
+              <span>Rs. {item.price * item.quantity}</span>
             </div>
           ))}
 
           <hr />
 
-          <h3>Total: ₹ {totalAmount}</h3>
+          <h3>Total: Rs. {totalAmount}</h3>
 
-          <label>⏰ Pickup Slot</label>
+          <label>Pickup Slot</label>
           <select
             value={selectedSlot}
             onChange={(e) => setSelectedSlot(e.target.value)}
@@ -229,14 +267,13 @@ function StudentMenu() {
           </select>
 
           <button className="confirm-btn" onClick={handleConfirmOrder}>
-            ✅ Confirm Order
+            Confirm Order
           </button>
         </div>
       </div>
 
-      {/* FOOTER */}
       <footer className="footer">
-        <p>© 2026 SmartCanteen | Fast • Simple • Smart Food Ordering</p>
+        <p>© 2026 SmartCanteen | Fast | Simple | Smart Food Ordering</p>
       </footer>
     </div>
   );

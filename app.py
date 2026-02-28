@@ -73,6 +73,35 @@ def time_to_str(value):
     return str(value)
 
 
+ACTIVE_ORDER_STATUSES = ("PLACED", "PREPARING", "READY")
+
+
+def get_load_level(active_orders):
+    if active_orders <= 5:
+        return "LOW"
+    if active_orders <= 12:
+        return "MEDIUM"
+    return "HIGH"
+
+
+def estimate_wait_minutes(active_orders):
+    # simple queue-based estimate used for student facing load card
+    return min(45, 5 + (active_orders * 2))
+
+
+def estimate_order_eta(status, queue_ahead):
+    normalized_status = (status or "").upper()
+    if normalized_status in ("COLLECTED", "CANCELLED"):
+        return 0
+    if normalized_status == "READY":
+        return 2
+    if normalized_status == "PREPARING":
+        return 4 + max(queue_ahead, 0)
+    if normalized_status == "PLACED":
+        return 8 + (max(queue_ahead, 0) * 2)
+    return 10 + max(queue_ahead, 0)
+
+
 # ===============================
 # HOME
 # ===============================
@@ -410,6 +439,31 @@ def pickup_slots(hotel_id):
     return jsonify(slots)
 
 
+@app.route("/student/queue/<int:hotel_id>", methods=["GET"])
+def get_queue_stats(hotel_id):
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT COUNT(*) AS active_orders
+        FROM orders
+        WHERE hotel_id=%s
+          AND status IN ('PLACED','PREPARING','READY')
+    """, (hotel_id,))
+    row = cursor.fetchone()
+    active_orders = int(row["active_orders"]) if row else 0
+
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "hotel_id": hotel_id,
+        "active_orders": active_orders,
+        "load_level": get_load_level(active_orders),
+        "estimated_wait_minutes": estimate_wait_minutes(active_orders),
+    })
+
+
 @app.route("/hoteladmin/pickup-slots/my", methods=["GET"])
 @check_role("HOTEL_ADMIN")
 def hoteladmin_pickup_slots_my():
@@ -581,6 +635,8 @@ def track_order(order_id):
     cursor.execute("""
         SELECT 
             o.order_id,
+            o.hotel_id,
+            o.slot_id,
             o.status,
             o.total_amount,
             o.order_date,
@@ -593,6 +649,37 @@ def track_order(order_id):
     """, (order_id,))
 
     order = cursor.fetchone()
+
+    if order:
+        cursor.execute("""
+            SELECT COUNT(*) AS queue_ahead
+            FROM orders
+            WHERE hotel_id=%s
+              AND slot_id=%s
+              AND status IN ('PLACED','PREPARING','READY')
+              AND order_id < %s
+        """, (order["hotel_id"], order["slot_id"], order["order_id"]))
+        queue_row = cursor.fetchone()
+        queue_ahead = int(queue_row["queue_ahead"]) if queue_row else 0
+
+        cursor.execute("""
+            SELECT COUNT(*) AS active_orders
+            FROM orders
+            WHERE hotel_id=%s
+              AND status IN ('PLACED','PREPARING','READY')
+        """, (order["hotel_id"],))
+        active_row = cursor.fetchone()
+        active_orders_hotel = int(active_row["active_orders"]) if active_row else 0
+
+        order["queue_ahead"] = queue_ahead
+        order["active_orders_hotel"] = active_orders_hotel
+        order["load_level"] = get_load_level(active_orders_hotel)
+        order["eta_minutes"] = estimate_order_eta(order.get("status"), queue_ahead)
+
+        # hide internal ids from student response
+        order.pop("hotel_id", None)
+        order.pop("slot_id", None)
+
     cursor.close()
     db.close()
 
