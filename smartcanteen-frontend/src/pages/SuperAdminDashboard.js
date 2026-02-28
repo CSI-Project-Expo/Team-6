@@ -1,73 +1,158 @@
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 import "./SuperAdminDashboard.css";
 
 function SuperAdminDashboard() {
   const navigate = useNavigate();
+  const [impact, setImpact] = useState(null);
+  const [summary, setSummary] = useState(null);
 
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
   };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [summaryRes, impactRes] = await Promise.all([
+          api.get("/superadmin/dashboard"),
+          api.get("/superadmin/impact-metrics"),
+        ]);
+        setSummary(summaryRes.data);
+        setImpact(impactRes.data);
+      } catch (error) {
+        console.error(error);
+        alert("Failed to load super admin analytics");
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const heatmapMax = useMemo(() => {
+    if (!impact?.heatmap_14d) return 1;
+    let maxValue = 1;
+    for (const row of impact.heatmap_14d) {
+      for (const cell of row) {
+        if (cell > maxValue) maxValue = cell;
+      }
+    }
+    return maxValue;
+  }, [impact]);
+
+  const cellOpacity = (value) => {
+    if (!value) return 0.08;
+    return 0.15 + (value / heatmapMax) * 0.85;
+  };
+
   return (
     <div className="sa-dashboard">
       <header className="sa-header">
-        <h1>👑 Super Admin Portal</h1>
+        <h1>Super Admin Portal</h1>
         <button className="sa-logout-btn" onClick={handleLogout}>
-          🚪 Logout
+          Logout
         </button>
       </header>
 
       <section className="sa-hero">
-        <h2>Welcome Super Admin 👋</h2>
-        <p>Manage hotels, admins, and users from one centralized dashboard.</p>
+        <h2>Proof of Impact Dashboard</h2>
+        <p>Operational insights + management controls in one place</p>
+      </section>
+
+      <section className="sa-kpis">
+        <div className="sa-kpi-card">
+          <p>Avg Wait Time Saved</p>
+          <h3>{impact ? `${impact.avg_wait_time_saved_minutes} min` : "--"}</h3>
+        </div>
+        <div className="sa-kpi-card">
+          <p>Orders / Hour (Today)</p>
+          <h3>{impact ? impact.orders_per_hour : "--"}</h3>
+        </div>
+        <div className="sa-kpi-card">
+          <p>Collected On Time</p>
+          <h3>{impact ? `${impact.collected_on_time_pct}%` : "--"}</h3>
+        </div>
+        <div className="sa-kpi-card">
+          <p>Orders Today</p>
+          <h3>{impact ? impact.orders_today : "--"}</h3>
+        </div>
+      </section>
+
+      <section className="sa-kpis sa-kpis-secondary">
+        <div className="sa-kpi-card secondary">
+          <p>Total Users</p>
+          <h3>{summary ? summary.total_users : "--"}</h3>
+        </div>
+        <div className="sa-kpi-card secondary">
+          <p>Total Orders</p>
+          <h3>{summary ? summary.total_orders : "--"}</h3>
+        </div>
+        <div className="sa-kpi-card secondary">
+          <p>Total Hotels</p>
+          <h3>{summary ? summary.total_hotels : "--"}</h3>
+        </div>
+      </section>
+
+      <section className="sa-heatmap-wrap">
+        <h2>Peak Slot Heatmap (Last 14 Days)</h2>
+        <div className="sa-heatmap-grid">
+          <div className="sa-heatmap-hours">
+            {Array.from({ length: 24 }).map((_, hour) => (
+              <span key={hour}>{hour}</span>
+            ))}
+          </div>
+
+          {impact?.heatmap_14d?.map((row, dayIndex) => (
+            <div className="sa-heatmap-row" key={dayIndex}>
+              <span className="sa-day-label">
+                {impact.heatmap_days?.[dayIndex] || `D${dayIndex + 1}`}
+              </span>
+              <div className="sa-row-cells">
+                {row.map((value, hour) => (
+                  <div
+                    key={`${dayIndex}-${hour}`}
+                    className="sa-heat-cell"
+                    title={`${value} orders`}
+                    style={{ backgroundColor: `rgba(255, 107, 53, ${cellOpacity(value)})` }}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="sa-cards">
         <div className="sa-card" onClick={() => navigate("/superadmin/add-hotel")}>
-          <h3>🏨 Add Hotel</h3>
+          <h3>Add Hotel</h3>
           <p>Register new hotels into SmartCanteen</p>
         </div>
 
         <div className="sa-card" onClick={() => navigate("/superadmin/create-hotel-admin")}>
-          <h3>🧑‍🍳 Create Hotel Admin</h3>
+          <h3>Create Hotel Admin</h3>
           <p>Create login accounts for hotel managers</p>
         </div>
 
         <div className="sa-card" onClick={() => navigate("/superadmin/assign-hotel-admin")}>
-          <h3>🔗 Assign Hotel Admin</h3>
+          <h3>Assign Hotel Admin</h3>
           <p>Link hotel admins to hotels</p>
         </div>
 
         <div className="sa-card" onClick={() => navigate("/superadmin/users")}>
-          <h3>👥 Manage Users</h3>
+          <h3>Manage Users</h3>
           <p>View and control all system users</p>
         </div>
 
         <div className="sa-card" onClick={() => navigate("/superadmin/view-hotels")}>
-          <h3>📊 View Hotels</h3>
+          <h3>View Hotels</h3>
           <p>Monitor all registered hotels</p>
-        </div>
-
-        <div className="sa-card sa-card-logout" onClick={handleLogout}>
-          <h3>🚪 Logout</h3>
-          <p>Exit Super Admin Portal securely</p>
-        </div>
-      </section>
-
-      <section className="sa-how">
-        <h2>How Super Admin Manages SmartCanteen ⚙️</h2>
-        <div className="sa-steps">
-          <div className="sa-step">1️⃣ Add Hotels</div>
-          <div className="sa-step">2️⃣ Create Admins</div>
-          <div className="sa-step">3️⃣ Assign Hotels</div>
-          <div className="sa-step">4️⃣ Manage Users</div>
-          <div className="sa-step">5️⃣ Monitor System</div>
         </div>
       </section>
 
       <footer className="sa-footer">
-        <p>© 2026 🍽 SmartCanteen - Digital Food Ordering & Token System | CSI Project Expo</p>
+        <p>© 2026 SmartCanteen - Digital Food Ordering and Token System | CSI Project Expo</p>
       </footer>
     </div>
   );

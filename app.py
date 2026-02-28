@@ -4,6 +4,7 @@ import mysql.connector
 import uuid
 import random
 import re
+from datetime import datetime
 from functools import wraps
 
 app = Flask(__name__)
@@ -100,6 +101,27 @@ def estimate_order_eta(status, queue_ahead):
     if normalized_status == "PLACED":
         return 8 + (max(queue_ahead, 0) * 2)
     return 10 + max(queue_ahead, 0)
+
+
+def ensure_order_status_events_table(cursor):
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS order_status_events (
+            event_id INT AUTO_INCREMENT PRIMARY KEY,
+            order_id INT NOT NULL,
+            status VARCHAR(20) NOT NULL,
+            changed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_order_status_events_order_id (order_id),
+            INDEX idx_order_status_events_changed_at (changed_at)
+        ) ENGINE=InnoDB
+    """)
+
+
+def log_order_status_event(cursor, order_id, status):
+    ensure_order_status_events_table(cursor)
+    cursor.execute(
+        "INSERT INTO order_status_events (order_id, status) VALUES (%s, %s)",
+        (order_id, status),
+    )
 
 
 # ===============================
@@ -355,6 +377,105 @@ def dashboard():
         "total_users": users["users"],
         "total_orders": orders["orders"],
         "total_hotels": hotels["hotels"]
+    })
+
+
+@app.route("/superadmin/impact-metrics", methods=["GET"])
+@check_role("ADMIN")
+def superadmin_impact_metrics():
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    ensure_order_status_events_table(cursor)
+
+    cursor.execute("""
+        SELECT
+            AVG(
+                GREATEST(
+                    0,
+                    25 - TIMESTAMPDIFF(MINUTE, o.created_at, e.collected_at)
+                )
+            ) AS avg_wait_time_saved
+        FROM orders o
+        JOIN (
+            SELECT order_id, MAX(changed_at) AS collected_at
+            FROM order_status_events
+            WHERE status='COLLECTED'
+            GROUP BY order_id
+        ) e ON o.order_id = e.order_id
+        WHERE o.created_at >= NOW() - INTERVAL 30 DAY
+    """)
+    avg_saved_row = cursor.fetchone()
+    avg_wait_time_saved = float(avg_saved_row["avg_wait_time_saved"] or 0)
+
+    cursor.execute("""
+        SELECT
+            SUM(
+                CASE WHEN e.collected_at <= TIMESTAMP(o.order_date, ps.end_time)
+                THEN 1 ELSE 0 END
+            ) AS on_time_collected,
+            COUNT(*) AS total_collected
+        FROM orders o
+        JOIN pickup_slots ps ON o.slot_id = ps.slot_id
+        JOIN (
+            SELECT order_id, MAX(changed_at) AS collected_at
+            FROM order_status_events
+            WHERE status='COLLECTED'
+            GROUP BY order_id
+        ) e ON o.order_id = e.order_id
+        WHERE o.created_at >= NOW() - INTERVAL 30 DAY
+    """)
+    on_time_row = cursor.fetchone()
+    total_collected = int(on_time_row["total_collected"] or 0)
+    on_time_collected = int(on_time_row["on_time_collected"] or 0)
+    collected_on_time_pct = (on_time_collected / total_collected * 100) if total_collected else 0.0
+
+    cursor.execute("""
+        SELECT HOUR(created_at) AS hour_of_day, COUNT(*) AS order_count
+        FROM orders
+        WHERE DATE(created_at) = CURDATE()
+        GROUP BY HOUR(created_at)
+        ORDER BY hour_of_day
+    """)
+    hourly_rows = cursor.fetchall()
+    hourly_counts = [0] * 24
+    for row in hourly_rows:
+        hour_index = int(row["hour_of_day"])
+        hourly_counts[hour_index] = int(row["order_count"])
+
+    cursor.execute("""
+        SELECT
+            DAYOFWEEK(created_at) AS day_of_week,
+            HOUR(created_at) AS hour_of_day,
+            COUNT(*) AS order_count
+        FROM orders
+        WHERE created_at >= NOW() - INTERVAL 14 DAY
+        GROUP BY DAYOFWEEK(created_at), HOUR(created_at)
+    """)
+    heatmap_rows = cursor.fetchall()
+    # Sunday(1) ... Saturday(7)
+    heatmap_matrix = [[0 for _ in range(24)] for _ in range(7)]
+    for row in heatmap_rows:
+        day_index = int(row["day_of_week"]) - 1
+        hour_index = int(row["hour_of_day"])
+        heatmap_matrix[day_index][hour_index] = int(row["order_count"])
+
+    orders_today = sum(hourly_counts)
+    current_hour = datetime.now().hour
+    elapsed_hours = max(1, current_hour + 1)
+    orders_per_hour = orders_today / elapsed_hours
+
+    cursor.close()
+    db.close()
+
+    return jsonify({
+        "avg_wait_time_saved_minutes": round(avg_wait_time_saved, 1),
+        "orders_per_hour": round(orders_per_hour, 2),
+        "collected_on_time_pct": round(collected_on_time_pct, 1),
+        "orders_today": orders_today,
+        "hourly_orders_today": hourly_counts,
+        "heatmap_14d": heatmap_matrix,
+        "heatmap_days": ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     })
 
 
@@ -621,6 +742,8 @@ def place_order():
             VALUES (%s,%s,%s,%s)
         """, (order_id, item["menu_item_id"], item["quantity"], item["price"]))
 
+    log_order_status_event(cursor, order_id, "PLACED")
+
     db.commit()
     cursor.close()
     db.close()
@@ -766,6 +889,7 @@ def validate_token():
     cursor.execute("""
         UPDATE orders SET status='COLLECTED' WHERE order_id=%s
     """, (order_id,))
+    log_order_status_event(cursor, order_id, "COLLECTED")
 
     cursor.execute("""
         DELETE FROM order_tokens WHERE token_code=%s
@@ -964,6 +1088,61 @@ def hotel_orders(hotel_id):
     return jsonify(data)
 
 
+@app.route("/hoteladmin/kds/my", methods=["GET"])
+@check_role("HOTEL_ADMIN")
+def hoteladmin_kds_my():
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
+
+    cursor.execute("""
+        SELECT
+            o.order_id,
+            u.name AS student_name,
+            o.total_amount,
+            o.status,
+            o.created_at,
+            TIMESTAMPDIFF(MINUTE, o.created_at, NOW()) AS age_minutes,
+            CONCAT(ps.start_time, ' - ', ps.end_time) AS slot_time,
+            ot.token_code
+        FROM orders o
+        JOIN users u ON o.user_id = u.user_id
+        LEFT JOIN pickup_slots ps ON o.slot_id = ps.slot_id
+        LEFT JOIN order_tokens ot ON o.order_id = ot.order_id
+        WHERE o.hotel_id = %s
+          AND o.order_date = CURDATE()
+          AND o.status IN ('PLACED', 'PREPARING', 'READY', 'COLLECTED')
+        ORDER BY
+          FIELD(o.status, 'PLACED', 'PREPARING', 'READY', 'COLLECTED'),
+          o.created_at ASC
+    """, (hotel_id,))
+
+    orders = cursor.fetchall()
+
+    for order in orders:
+        age_minutes = int(order.get("age_minutes") or 0)
+        status = (order.get("status") or "").upper()
+        if status in ("PLACED", "PREPARING") and age_minutes >= 30:
+            order["priority"] = "CRITICAL"
+        elif status in ("PLACED", "PREPARING") and age_minutes >= 18:
+            order["priority"] = "URGENT"
+        else:
+            order["priority"] = "NORMAL"
+
+    cursor.close()
+    db.close()
+    return jsonify({"hotel_id": hotel_id, "orders": orders})
+
+
 @app.route("/hoteladmin/order-items/<int:order_id>")
 def order_items(order_id):
     db = get_db_connection()
@@ -989,6 +1168,7 @@ def update_order():
     data = request.json
 
     cursor.execute("UPDATE orders SET status=%s WHERE order_id=%s", (data["status"], data["order_id"]))
+    log_order_status_event(cursor, data["order_id"], data["status"])
     db.commit()
     cursor.close()
     db.close()

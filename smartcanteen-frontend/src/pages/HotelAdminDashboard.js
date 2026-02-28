@@ -38,6 +38,11 @@ function HotelAdminDashboard() {
           <p>Track and manage incoming orders</p>
         </div>
 
+        <div className="ha-card" onClick={() => navigate("/hoteladmin/kds")}>
+          <h3>Kitchen Display (KDS)</h3>
+          <p>Live board for New, Preparing, Ready, Collected</p>
+        </div>
+
         <div className="ha-card" onClick={() => navigate("/hoteladmin/validate-token")}>
           <h3>Validate Token</h3>
           <p>Verify student food tokens</p>

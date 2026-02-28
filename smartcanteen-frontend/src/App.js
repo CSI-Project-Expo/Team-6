@@ -21,6 +21,7 @@ import HotelAdminDashboard from "./pages/HotelAdminDashboard";
 import HotelMenu from "./pages/HotelMenu";
 import HotelOrders from "./pages/HotelOrders";
 import HotelAdminValidateToken from "./pages/HotelAdminValidateToken";
+import HotelKDS from "./pages/HotelKDS";
 import SuperAdminUsers from "./pages/SuperAdminUsers";
 import AddMenuItem from "./pages/AddMenuItem";
 import UpdateOrderStatus from "./pages/UpdateOrderStatus";
@@ -60,6 +61,7 @@ function App() {
 <Route path="/hoteladmin" element={<HotelAdminDashboard />} />
 <Route path="/hoteladmin/menu" element={<HotelMenu />} />
 <Route path="/hoteladmin/orders" element={<HotelOrders />} />
+<Route path="/hoteladmin/kds" element={<HotelKDS />} />
 <Route path="/hoteladmin/validate-token" element={<HotelAdminValidateToken />} />
 <Route path="/hoteladmin/pickup-slots" element={<HotelPickupSlots />} />
 
