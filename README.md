@@ -82,6 +82,80 @@ SmartCanteen provides:
 - Database schema: `canteen managmentsystem.sql`
 - API base URL used in frontend: `http://127.0.0.1:5000`
 
+## 6.1 Project Structure
+
+```text
+Team-6/
+|-- app.py
+|-- canteen managmentsystem.sql
+|-- README.md
+`-- smartcanteen-frontend/
+    |-- package.json
+    |-- public/
+    `-- src/
+        |-- App.js
+        |-- index.js
+        |-- index.css
+        |-- services/
+        |   `-- api.js
+        |-- components/
+        |   `-- GlobalToast.js
+        `-- pages/
+            |-- AddHotel.css
+            |-- AddHotel.js
+            |-- AddMenuItem.css
+            |-- AddMenuItem.js
+            |-- AdminDashboard.js
+            |-- AssignHotelAdmin.css
+            |-- AssignHotelAdmin.js
+            |-- CreateHotelAdmin.css
+            |-- CreateHotelAdmin.js
+            |-- HotelAdminDashboard.css
+            |-- HotelAdminDashboard.js
+            |-- HotelAdminValidateToken.css
+            |-- HotelAdminValidateToken.js
+            |-- HotelKDS.css
+            |-- HotelKDS.js
+            |-- HotelMenu.css
+            |-- HotelMenu.js
+            |-- HotelMenuManager.css
+            |-- HotelMenuManager.js
+            |-- HotelOrders.css
+            |-- HotelOrders.js
+            |-- HotelPickupSlots.css
+            |-- HotelPickupSlots.js
+            |-- Login.css
+            |-- Login.js
+            |-- MyOrders.css
+            |-- MyOrders.js
+            |-- PaymentPage.css
+            |-- PaymentPage.js
+            |-- PlaceOrder.css
+            |-- PlaceOrder.js
+            |-- Register.css
+            |-- Register.js
+            |-- StaffTokenPage.js
+            |-- StudentDashboard.css
+            |-- StudentDashboard.js
+            |-- StudentMenu.css
+            |-- StudentMenu.js
+            |-- SuperAdminDashboard.css
+            |-- SuperAdminDashboard.js
+            |-- SuperAdminHotels.js
+            |-- SuperAdminLogin.js
+            |-- SuperAdminUsers.css
+            |-- SuperAdminUsers.js
+            |-- TokenPage.css
+            |-- TokenPage.js
+            |-- TokenValidate.css
+            |-- TokenValidation.js
+            |-- TrackOrder.css
+            |-- TrackOrder.js
+            |-- UpdateOrderStatus.js
+            |-- ViewHotels.css
+            `-- ViewHotels.js
+```
+
 ## 7. Database Overview
 
 Main tables:
