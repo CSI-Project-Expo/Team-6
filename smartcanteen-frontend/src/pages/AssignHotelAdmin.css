@@ -1,32 +1,39 @@
-:root {
-  --primary: #FF6B35;
-  --secondary: #2EC4B6;
-  --bg: #F4F7FB;
-  --dark: #1F2933;
-}
-
-/* PAGE */
 .aha-page {
+  --aha-primary: #ff6b35;
+  --aha-secondary: #2ec4b6;
+  --aha-ink: #0f172a;
+  --aha-stroke: rgba(148, 163, 184, 0.24);
+  --aha-bg: #eef3f9;
+  --aha-panel: rgba(255, 255, 255, 0.84);
+  --aha-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background:
+    radial-gradient(880px 360px at 6% -10%, rgba(255, 107, 53, 0.2), transparent 55%),
+    radial-gradient(840px 360px at 96% -10%, rgba(46, 196, 182, 0.2), transparent 55%),
+    var(--aha-bg);
+  color: var(--aha-ink);
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
-/* HEADER (GRADIENT ONLY HERE) */
 .aha-header {
-  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
-  color: white;
-  padding: 18px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 0 0 20px 20px;
+  border-bottom: 1px solid var(--aha-stroke);
 }
 
 .aha-header h1 {
-  font-size: 1.8rem;
+  margin: 0;
+  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
 }
 
 .aha-header-actions {
@@ -34,106 +41,117 @@
   gap: 10px;
 }
 
-/* BACK BUTTON */
-.aha-back-btn {
-  background: white;
-  color: var(--primary);
+.aha-back-btn,
+.aha-logout-btn {
   border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
+  border-radius: 999px;
+  padding: 10px 18px;
+  color: #fff;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.aha-back-btn {
+  background: linear-gradient(135deg, #0ea5a1, var(--aha-secondary));
 }
 
 .aha-logout-btn {
-  background: #ef4444;
-  color: #ffffff;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: linear-gradient(135deg, #ef4444, #f97316);
 }
 
-/* HERO */
 .aha-hero {
+  position: relative;
+  overflow: hidden;
+  margin: 16px auto 0;
+  width: min(1200px, calc(100% - 40px));
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px);
+  color: #fff;
   text-align: center;
-  padding: 30px 15px;
-  background: #ffffff;
+  padding: 48px 20px 38px;
+  box-shadow: var(--aha-shadow);
 }
 
 .aha-hero h2 {
-  color: var(--primary);
-  font-size: 1.8rem;
+  margin: 0 0 8px;
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
 }
 
 .aha-hero p {
-  color: #555;
-  font-size: 1rem;
+  margin: 0;
+  opacity: 0.93;
 }
 
-/* CARD */
 .aha-card {
-  background: white;
-  width: 380px;
-  margin: 30px auto;
-  padding: 30px;
+  width: min(460px, 100%);
+  margin: 24px auto;
+  background: var(--aha-panel);
+  border: 1px solid var(--aha-stroke);
   border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  text-align: center;
+  box-shadow: var(--aha-shadow);
+  backdrop-filter: blur(9px);
+  padding: 24px;
 }
 
-/* SELECT */
 .aha-select {
   width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
+  padding: 11px 12px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid #d4deea;
   font-size: 0.95rem;
 }
 
-/* BUTTON */
+.aha-select:focus {
+  outline: none;
+  border-color: var(--aha-secondary);
+  box-shadow: 0 0 0 4px rgba(46, 196, 182, 0.16);
+}
+
 .aha-primary-btn {
   width: 100%;
-  padding: 12px;
-  border-radius: 25px;
+  margin-top: 8px;
   border: none;
-  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
-  color: white;
-  font-weight: bold;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 700;
+  color: #fff;
   cursor: pointer;
-  transition: 0.3s;
+  background: linear-gradient(130deg, var(--aha-primary), #ff915c);
+  box-shadow: 0 12px 22px rgba(255, 107, 53, 0.28);
 }
 
-.aha-primary-btn:hover {
-  transform: scale(1.03);
-}
-
-/* MESSAGE */
 .aha-msg {
-  margin-top: 12px;
-  font-weight: bold;
-  color: var(--dark);
+  margin: 12px 0 0;
+  font-weight: 700;
+  color: #0f766e;
 }
 
-/* FOOTER */
 .aha-footer {
   margin-top: auto;
-  background: #1F2933;
-  color: white;
+  background: linear-gradient(130deg, #1f2933, #111827 58%, #0f172a);
+  color: #fff;
   text-align: center;
-  padding: 12px;
-  font-size: 0.85rem;
-  border-radius: 15px 15px 0 0;
+  padding: 14px;
+  font-size: 0.88rem;
 }
 
-/* MOBILE */
-@media (max-width: 500px) {
+@media (max-width: 700px) {
+  .aha-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .aha-hero {
+    width: calc(100% - 24px);
+    padding: 40px 14px 34px;
+  }
+
   .aha-card {
-    width: 90%;
+    width: calc(100% - 24px);
   }
 }
-

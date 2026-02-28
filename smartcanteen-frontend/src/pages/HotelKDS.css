@@ -262,3 +262,35 @@
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
 
+/* Premium hero override */
+.kds-page .kds-header {
+  margin: 16px auto 0;
+  width: min(1200px, calc(100% - 28px));
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px) !important;
+  color: #fff !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14) !important;
+  padding: 28px 24px;
+}
+
+.kds-page .kds-header h1,
+.kds-page .kds-header p {
+  color: #fff !important;
+}
+
+.kds-page .kds-actions button {
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #0f172a !important;
+  font-weight: 700;
+  box-shadow: 0 10px 18px rgba(255, 255, 255, 0.2);
+}
+
+.kds-page .kds-actions .kds-logout {
+  background: linear-gradient(135deg, #ef4444, #f97316) !important;
+  color: #fff !important;
+}
+

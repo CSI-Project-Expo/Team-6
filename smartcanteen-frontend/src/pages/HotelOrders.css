@@ -133,3 +133,59 @@
     padding: 10px;
   }
 }
+
+/* Premium hero override */
+.hotel-page .hotel-header {
+  position: relative;
+  overflow: hidden;
+  margin: 16px auto 0;
+  width: min(1200px, calc(100% - 40px));
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px) !important;
+  color: #fff !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14) !important;
+  padding: 36px 20px 28px;
+}
+
+.hotel-page .hotel-header::before {
+  content: "";
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  top: -120px;
+  right: -80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.hotel-page .hotel-header::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  left: -90px;
+  bottom: -120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.hotel-page .hotel-header h2 {
+  color: #fff !important;
+  margin: 0;
+}
+
+.hotel-page .hotel-actions button {
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #0f172a !important;
+  font-weight: 700;
+  box-shadow: 0 10px 18px rgba(255, 255, 255, 0.2);
+}
+
+.hotel-page .hotel-actions .logout-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316) !important;
+  color: #fff !important;
+}

@@ -1,32 +1,42 @@
-:root {
-  --primary: #FF6B35;
-  --secondary: #2EC4B6;
-  --bg: #F4F7FB;
-  --dark: #1F2933;
-}
-
-/* PAGE LAYOUT */
 .ah-page {
+  --ah-primary: #ff6b35;
+  --ah-secondary: #2ec4b6;
+  --ah-ink: #0f172a;
+  --ah-muted: #64748b;
+  --ah-stroke: rgba(148, 163, 184, 0.24);
+  --ah-bg: #eef3f9;
+  --ah-panel: rgba(255, 255, 255, 0.84);
+  --ah-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background:
+    radial-gradient(880px 360px at 6% -10%, rgba(255, 107, 53, 0.2), transparent 55%),
+    radial-gradient(840px 360px at 96% -10%, rgba(46, 196, 182, 0.2), transparent 55%),
+    var(--ah-bg);
+  color: var(--ah-ink);
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
-/* HEADER (ONLY GRADIENT HERE) */
 .ah-header {
-  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
-  color: white;
-  padding: 20px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-radius: 0 0 20px 20px;
+  border-bottom: 1px solid var(--ah-stroke);
 }
 
 .ah-header h1 {
-  font-size: 1.8rem;
+  margin: 0;
+  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+  color: var(--ah-ink);
+  letter-spacing: -0.02em;
 }
 
 .ah-header-actions {
@@ -35,123 +45,145 @@
 }
 
 .ah-header button {
-  background: white;
-  color: var(--primary);
   border: none;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-weight: 600;
+  border-radius: 999px;
+  padding: 10px 18px;
+  color: #fff;
+  font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  background: linear-gradient(135deg, #0ea5a1, var(--ah-secondary));
+  box-shadow: 0 12px 20px rgba(14, 165, 161, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .ah-header button:hover {
-  transform: scale(1.05);
+  transform: translateY(-1px);
+  filter: saturate(1.05);
 }
 
 .ah-header .ah-logout-btn {
-  background: #ef4444;
-  color: #ffffff;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  box-shadow: 0 12px 20px rgba(239, 68, 68, 0.24);
 }
 
-/* MAIN */
 .ah-main {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 28px 20px;
 }
 
-/* CARD */
 .superadmin-card {
-  background: white;
-  padding: 30px 35px;
+  position: relative;
+  overflow: hidden;
+  width: min(460px, 100%);
+  background: var(--ah-panel);
+  border: 1px solid var(--ah-stroke);
   border-radius: 20px;
-  width: 380px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  text-align: center;
+  box-shadow: var(--ah-shadow);
+  backdrop-filter: blur(9px);
+  padding: 24px 24px 26px;
+}
+
+.superadmin-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(140deg, rgba(255, 107, 53, 0.08), rgba(46, 196, 182, 0.07));
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.superadmin-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ah-primary), var(--ah-secondary));
+  opacity: 0.9;
 }
 
 .superadmin-card h2 {
-  margin-bottom: 20px;
-  color: var(--primary);
-  font-size: 1.6rem;
+  position: relative;
+  z-index: 1;
+  margin: 0 0 16px;
+  color: var(--ah-ink);
+  font-size: 1.35rem;
+  letter-spacing: -0.01em;
 }
 
-/* FORM */
 .form-group {
-  text-align: left;
-  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 12px;
 }
 
 .form-group label {
-  font-weight: 600;
+  display: block;
   font-size: 0.9rem;
-  color: var(--dark);
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 6px;
 }
 
 .form-group input {
   width: 100%;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  margin-top: 5px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  border: 1px solid #d4deea;
   font-size: 0.95rem;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--secondary);
-  box-shadow: 0 0 5px rgba(46,196,182,0.5);
+  border-color: var(--ah-secondary);
+  box-shadow: 0 0 0 4px rgba(46, 196, 182, 0.16);
 }
 
-/* BUTTON */
 .superadmin-card button {
+  position: relative;
+  z-index: 1;
   width: 100%;
-  margin-top: 15px;
-  padding: 12px;
-  border-radius: 25px;
+  margin-top: 10px;
   border: none;
-  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: 12px;
+  padding: 12px;
+  font-weight: 700;
+  color: #fff;
   cursor: pointer;
-  transition: 0.3s;
+  background: linear-gradient(130deg, var(--ah-primary), #ff915c);
+  box-shadow: 0 12px 22px rgba(255, 107, 53, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .superadmin-card button:hover {
-  transform: scale(1.03);
+  transform: translateY(-1px);
+  box-shadow: 0 16px 26px rgba(255, 107, 53, 0.34);
 }
 
-/* MESSAGE */
 .status-msg {
-  margin-top: 12px;
-  font-weight: bold;
-  color: #1F2933;
+  position: relative;
+  z-index: 1;
+  margin: 12px 0 0;
+  font-weight: 700;
+  color: #0f766e;
+  font-size: 0.92rem;
 }
 
-/* FOOTER */
 .ah-footer {
   margin-top: auto;
-  background: #1F2933;
-  color: white;
+  background: linear-gradient(130deg, #1f2933, #111827 58%, #0f172a);
+  color: #fff;
   text-align: center;
-  padding: 12px;
-  font-size: 0.85rem;
-  border-radius: 15px 15px 0 0;
+  padding: 14px;
+  font-size: 0.88rem;
 }
 
-/* MOBILE */
-@media (max-width: 500px) {
-  .superadmin-card {
-    width: 90%;
-    padding: 25px;
-  }
-
-  .ah-header h1 {
-    font-size: 1.5rem;
+@media (max-width: 700px) {
+  .ah-header {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
   }
 }
-

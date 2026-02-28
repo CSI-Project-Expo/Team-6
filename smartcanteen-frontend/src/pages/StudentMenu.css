@@ -11,49 +11,82 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background:
+    radial-gradient(880px 360px at 6% -10%, rgba(255, 107, 53, 0.2), transparent 55%),
+    radial-gradient(840px 360px at 96% -10%, rgba(46, 196, 182, 0.2), transparent 55%),
+    #eef3f9 !important;
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 /* ================= HEADER ================= */
-.menu-header {
-  background: linear-gradient(135deg, #FF6B35, #2EC4B6);
-  color: white;
-  padding: 35px 20px;
+.menu-wrapper .menu-header {
+  margin: 16px auto 0;
+  width: min(1200px, calc(100% - 40px));
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px) !important;
+  color: #ffffff !important;
+  padding: 46px 20px 34px;
   text-align: center;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14) !important;
+  backdrop-filter: none !important;
 }
 
-.menu-header h1 {
-  font-size: 2.5rem;
-  letter-spacing: 1px;
+.menu-wrapper .menu-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  letter-spacing: -0.03em;
+  color: #ffffff !important;
 }
 
-.menu-header p {
+.menu-wrapper .menu-header p {
+  margin: 0;
+  font-size: clamp(0.95rem, 2vw, 1.08rem);
   opacity: 0.95;
+  color: rgba(255, 255, 255, 0.92) !important;
 }
 
 .menu-actions {
-  margin-top: 16px;
+  margin-top: 20px;
   display: flex;
   justify-content: center;
-  gap: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .menu-actions button {
-  padding: 10px 22px;
-  border-radius: 30px;
+  padding: 10px 18px;
+  border-radius: 999px;
   border: none;
-  background: white;
-  color: var(--primary);
-  font-weight: 600;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0f172a;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  box-shadow: 0 10px 18px rgba(255, 255, 255, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
 .menu-actions button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+  transform: translateY(-1px);
+  filter: saturate(1.03);
+}
+
+.menu-actions button:first-child {
+  background: linear-gradient(130deg, #ff6b35, #ff915c);
+  color: #ffffff;
+  box-shadow: 0 14px 24px rgba(255, 107, 53, 0.34);
+}
+
+.menu-actions button:first-child:hover {
+  box-shadow: 0 18px 28px rgba(255, 107, 53, 0.42);
+}
+
+.menu-wrapper .menu-actions .logout-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: #fff;
+  box-shadow: 0 12px 20px rgba(239, 68, 68, 0.3);
 }
 
 /* ================= HOTEL SELECT ================= */
@@ -170,18 +203,21 @@
 
 .menu-card button {
   margin-top: 10px;
-  background: linear-gradient(135deg, var(--primary), #ff8c5a);
+  background: linear-gradient(130deg, var(--primary), #ff8f5a);
   color: white;
   border: none;
-  padding: 9px 18px;
-  border-radius: 25px;
+  padding: 10px 18px;
+  border-radius: 999px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  font-weight: 700;
+  box-shadow: 0 12px 20px rgba(255, 107, 53, 0.28);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
 }
 
 .menu-card button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 16px rgba(255,107,53,0.4);
+  transform: translateY(-1px);
+  filter: saturate(1.05);
+  box-shadow: 0 16px 24px rgba(255, 107, 53, 0.36);
 }
 
 /* ================= CART ================= */
@@ -260,18 +296,21 @@
   width: 100%;
   margin-top: 18px;
   padding: 13px;
-  background: linear-gradient(135deg, var(--secondary), #1fb6aa);
+  background: linear-gradient(130deg, #0ea5a1, var(--secondary));
   border: none;
   color: white;
-  border-radius: 30px;
+  border-radius: 999px;
   font-size: 1.05rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
+  box-shadow: 0 14px 24px rgba(14, 165, 161, 0.3);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
 }
 
 .confirm-btn:hover {
-  transform: scale(1.03);
-  box-shadow: 0 8px 22px rgba(46,196,182,0.5);
+  transform: translateY(-1px);
+  filter: saturate(1.05);
+  box-shadow: 0 18px 28px rgba(14, 165, 161, 0.38);
 }
 
 /* ================= FOOTER ================= */
@@ -287,6 +326,11 @@
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 900px) {
+  .menu-header {
+    width: calc(100% - 24px);
+    padding: 40px 14px 30px;
+  }
+
   .menu-layout {
     flex-direction: column;
   }
@@ -297,20 +341,31 @@
 }
 
 /* Modern polish */
-.menu-header {
+.menu-wrapper .menu-header {
   position: relative;
   overflow: hidden;
 }
 
-.menu-header::before {
+.menu-wrapper .menu-header::before {
   content: "";
   position: absolute;
-  width: 320px;
-  height: 320px;
-  top: -130px;
-  right: -90px;
+  width: 300px;
+  height: 300px;
+  top: -120px;
+  right: -80px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.2);
+}
+
+.menu-wrapper .menu-header::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  left: -85px;
+  bottom: -120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .hotel-select-bar,
@@ -318,4 +373,82 @@
 .cart-section {
   border: 1px solid rgba(148, 163, 184, 0.2);
 }
+
+/* Student Menu page-specific hero to avoid global header overrides */
+.student-menu-page .student-menu-hero {
+  margin: 16px auto 0;
+  width: min(1200px, calc(100% - 40px));
+  border-radius: 28px !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px) !important;
+  color: #ffffff !important;
+  padding: 46px 20px 34px;
+  text-align: center;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14) !important;
+  backdrop-filter: none !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.student-menu-page .student-menu-hero::before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  top: -120px;
+  right: -80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.student-menu-page .student-menu-hero::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  left: -85px;
+  bottom: -120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.student-menu-page .student-menu-hero h1 {
+  margin: 0 0 8px;
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  letter-spacing: -0.03em;
+  color: #ffffff !important;
+}
+
+.student-menu-page .student-menu-hero p {
+  margin: 0;
+  font-size: clamp(0.95rem, 2vw, 1.08rem);
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.student-menu-page .student-menu-actions button {
+  padding: 10px 18px;
+  border-radius: 999px !important;
+  border: none;
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #0f172a !important;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(255, 255, 255, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.student-menu-page .student-menu-actions button:first-child {
+  background: linear-gradient(130deg, #ff6b35, #ff915c) !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 24px rgba(255, 107, 53, 0.34);
+}
+
+.student-menu-page .student-menu-actions .logout-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 20px rgba(239, 68, 68, 0.3);
+}
+
 

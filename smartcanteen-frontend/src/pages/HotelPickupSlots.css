@@ -122,3 +122,68 @@
   }
 }
 
+/* Premium hero override */
+.pickup-page .pickup-header {
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto 18px;
+  width: min(1200px, 100%);
+  border-radius: 28px !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px) !important;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14) !important;
+  padding: 28px 22px;
+}
+
+.pickup-page .pickup-header::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  top: -120px;
+  right: -80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pickup-page .pickup-header::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  left: -90px;
+  bottom: -120px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pickup-page .pickup-header h2 {
+  color: #fff !important;
+  position: relative;
+  z-index: 2;
+}
+
+.pickup-page .pickup-actions {
+  position: relative;
+  z-index: 2;
+}
+
+.pickup-page .pickup-actions button {
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.94) !important;
+  color: #0f172a !important;
+  font-weight: 700;
+  box-shadow: 0 10px 18px rgba(255, 255, 255, 0.2);
+}
+
+.pickup-page .pickup-actions .logout-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316) !important;
+  color: #fff !important;
+}
+

@@ -166,12 +166,12 @@ function StudentMenu() {
   };
 
   return (
-    <div className="menu-wrapper">
-      <header className="menu-header">
+    <div className="menu-wrapper student-menu-page">
+      <header className="menu-header student-menu-hero">
         <h1>SmartCanteen</h1>
         <p>Welcome {userName}! Order food and skip the queue.</p>
 
-        <div className="menu-actions">
+        <div className="menu-actions student-menu-actions">
           <button onClick={() => navigate("/my-orders")}>My Orders</button>
           <button onClick={() => navigate(-1)}>Back</button>
           <button className="logout-btn" onClick={handleLogout}>

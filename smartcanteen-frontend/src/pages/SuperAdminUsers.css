@@ -1,82 +1,119 @@
-:root {
+.dashboard-wrapper {
   --su-primary: #ff6b35;
   --su-secondary: #2ec4b6;
-  --su-bg: #edf1f5;
-  --su-card: #ffffff;
-  --su-text: #1f2933;
-}
+  --su-ink: #0f172a;
+  --su-muted: #64748b;
+  --su-stroke: rgba(148, 163, 184, 0.24);
+  --su-bg: #eef3f9;
+  --su-panel: rgba(255, 255, 255, 0.84);
+  --su-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
 
-.dashboard-wrapper {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--su-bg);
+  background:
+    radial-gradient(880px 360px at 6% -10%, rgba(255, 107, 53, 0.2), transparent 55%),
+    radial-gradient(840px 360px at 96% -10%, rgba(46, 196, 182, 0.2), transparent 55%),
+    var(--su-bg);
+  color: var(--su-ink);
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 .hero-section {
-  background: linear-gradient(120deg, var(--su-primary) 0%, var(--su-secondary) 100%);
-  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  margin: 16px auto 0;
+  width: min(1200px, calc(100% - 40px));
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background:
+    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px);
+  color: #fff;
   text-align: center;
-  padding: 72px 20px 66px;
+  padding: 48px 20px 38px;
+  box-shadow: var(--su-shadow);
 }
 
 .hero-section h2 {
-  margin: 0 0 10px;
-  font-size: clamp(2rem, 3.5vw, 3rem);
-  font-weight: 700;
+  margin: 0 0 8px;
+  font-size: clamp(1.7rem, 3.2vw, 2.5rem);
 }
 
 .hero-section p {
   margin: 0;
-  font-size: clamp(0.95rem, 1.4vw, 1.2rem);
-  opacity: 0.96;
+  opacity: 0.93;
 }
 
 .superadmin-card {
+  position: relative;
+  overflow: hidden;
   width: min(1200px, calc(100% - 32px));
-  margin: -32px auto 28px;
-  background: var(--su-card);
+  margin: 22px auto 26px;
+  background: var(--su-panel);
   border-radius: 20px;
-  padding: 24px;
-  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+  border: 1px solid var(--su-stroke);
+  box-shadow: var(--su-shadow);
+  backdrop-filter: blur(9px);
+  padding: 18px;
+}
+
+.superadmin-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(140deg, rgba(255, 107, 53, 0.06), rgba(46, 196, 182, 0.06));
+  pointer-events: none;
 }
 
 .users-actions {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 
-.back-btn,
-.logout-btn {
+.dashboard-wrapper .back-btn,
+.dashboard-wrapper .logout-btn {
   border: none;
   border-radius: 999px;
-  padding: 9px 16px;
-  color: #ffffff;
-  font-size: 0.92rem;
-  font-weight: 600;
+  padding: 10px 16px;
+  color: #fff;
+  font-weight: 700;
   cursor: pointer;
+  transition: transform 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
 }
 
-.back-btn {
-  background: var(--su-secondary);
+.dashboard-wrapper .back-btn {
+  background: linear-gradient(135deg, #0ea5a1, var(--su-secondary));
+  box-shadow: 0 10px 20px rgba(14, 165, 161, 0.24);
 }
 
-.logout-btn {
-  background: #ef4444;
+.dashboard-wrapper .logout-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  box-shadow: 0 10px 20px rgba(239, 68, 68, 0.24);
+}
+
+.dashboard-wrapper .back-btn:hover,
+.dashboard-wrapper .logout-btn:hover {
+  transform: translateY(-1px);
+  filter: saturate(1.05);
 }
 
 .users-table-wrap {
+  position: relative;
+  z-index: 1;
   overflow-x: auto;
   border-radius: 14px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(148, 163, 184, 0.3);
 }
 
 .users-table {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   min-width: 760px;
 }
 
@@ -84,14 +121,24 @@
 .users-table td {
   padding: 12px 10px;
   text-align: center;
-  border-bottom: 1px solid #edf2f7;
-  color: var(--su-text);
+  border-bottom: 1px solid #e8edf5;
+  color: #1f2937;
+}
+
+.users-table thead tr {
+  background: linear-gradient(90deg, rgba(255, 107, 53, 0.97), rgba(46, 196, 182, 0.94));
 }
 
 .users-table th {
-  background: #f8fafc;
-  color: #0f172a;
-  font-weight: 700;
+  background: transparent;
+  color: #fff;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
+  border-bottom: none;
+}
+
+.users-table th + th {
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .users-table tbody tr:nth-child(even) {
@@ -99,7 +146,7 @@
 }
 
 .users-table tbody tr:hover {
-  background: #f1f5f9;
+  background: #f8fbff;
 }
 
 .status-badge {
@@ -108,63 +155,76 @@
   padding: 4px 10px;
   font-size: 0.78rem;
   font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .status-badge.active {
-  background: #dcfce7;
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
   color: #166534;
 }
 
 .status-badge.blocked {
-  background: #fee2e2;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
   color: #991b1b;
 }
 
-.action-btn {
+.dashboard-wrapper .action-btn {
   border: none;
-  color: #ffffff;
+  color: #fff;
   padding: 7px 12px;
   border-radius: 10px;
   cursor: pointer;
   font-size: 0.84rem;
   font-weight: 700;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  min-width: 92px;
 }
 
-.block-btn {
-  background: #ef4444;
+.dashboard-wrapper .block-btn {
+  background: linear-gradient(135deg, #ef4444, #f97316);
 }
 
-.unblock-btn {
-  background: #16a34a;
+.dashboard-wrapper .unblock-btn {
+  background: linear-gradient(135deg, #10b981, #22c55e);
+}
+
+.dashboard-wrapper .action-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.2);
 }
 
 .action-na {
-  color: #64748b;
-  font-weight: 600;
+  color: var(--su-muted);
+  font-weight: 700;
 }
 
 .footer {
   margin-top: auto;
-  background: linear-gradient(135deg, #1f2933, #111827);
-  color: #ffffff;
+  background: linear-gradient(130deg, #1f2933, #111827 58%, #0f172a);
+  color: #fff;
   text-align: center;
-  padding: 12px;
-  font-size: 0.9rem;
+  padding: 14px;
+  font-size: 0.88rem;
+}
+
+.footer,
+.footer p {
+  color: #fff;
 }
 
 @media (max-width: 768px) {
   .hero-section {
-    padding: 54px 16px 58px;
+    width: calc(100% - 24px);
+    padding: 40px 14px 34px;
   }
 
   .superadmin-card {
     width: calc(100% - 20px);
-    padding: 16px;
-    margin-top: -24px;
+    padding: 14px;
   }
 
   .users-actions {
-    justify-content: space-between;
+    justify-content: center;
+    flex-wrap: wrap;
   }
 }
-
