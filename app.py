@@ -1390,21 +1390,42 @@ def delete_menu_item(menu_item_id):
         db.close()
         return jsonify({"message": "Hotel not assigned to this admin"}), 403
 
-    cursor.execute(
-        "DELETE FROM menu_items WHERE menu_item_id=%s AND hotel_id=%s",
-        (menu_item_id, hotel_id),
-    )
+    try:
+        cursor.execute(
+            "DELETE FROM menu_items WHERE menu_item_id=%s AND hotel_id=%s",
+            (menu_item_id, hotel_id),
+        )
 
-    if cursor.rowcount == 0:
-        cursor.close()
-        db.close()
-        return jsonify({"message": "Menu item not found for your hotel"}), 404
-    db.commit()
+        if cursor.rowcount == 0:
+            cursor.close()
+            db.close()
+            return jsonify({"message": "Menu item not found for your hotel"}), 404
+
+        db.commit()
+        response = jsonify({"message": "Menu item deleted", "deleted": True})
+
+    except mysql.connector.IntegrityError:
+        # Item is referenced in order history; keep history intact and hide item.
+        cursor.execute(
+            "UPDATE menu_items SET is_available=FALSE WHERE menu_item_id=%s AND hotel_id=%s",
+            (menu_item_id, hotel_id),
+        )
+
+        if cursor.rowcount == 0:
+            cursor.close()
+            db.close()
+            return jsonify({"message": "Menu item not found for your hotel"}), 404
+
+        db.commit()
+        response = jsonify({
+            "message": "Item has order history and cannot be deleted. It was marked unavailable.",
+            "deleted": False,
+            "archived": True,
+        })
 
     cursor.close()
     db.close()
-
-    return jsonify({"message": "Menu item deleted"})  
+    return response
 # ===============================
 # RUN
 # ===============================

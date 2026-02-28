@@ -81,12 +81,16 @@ function HotelMenuManager() {
     if (!window.confirm("Delete this item?")) return;
 
     try {
-      await axios.delete(
+      const res = await axios.delete(
         `http://127.0.0.1:5000/hoteladmin/menu/${menu_item_id}`
       );
+      if (res?.data?.message) {
+        alert(res.data.message);
+      }
       fetchMenu();
     } catch (error) {
       console.log(error);
+      alert(error?.response?.data?.message || "Failed to delete item");
     }
   };
 

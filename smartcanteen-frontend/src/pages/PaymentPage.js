@@ -120,7 +120,7 @@ function PaymentPage() {
 
   return (
     <div className="payment-page">
-      <header className="payment-header">
+      <header className="payment-header payment-hero">
         <h1>SmartCanteen Payment</h1>
         <p>Complete your order securely and skip the queue</p>
         <div className="payment-actions">

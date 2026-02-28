@@ -71,10 +71,13 @@ function HotelMenu() {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
 
     try {
-      await api.delete(`/hoteladmin/menu/${menuItemId}`);
+      const res = await api.delete(`/hoteladmin/menu/${menuItemId}`);
+      if (res?.data?.message) {
+        alert(res.data.message);
+      }
       fetchMenu();
-    } catch {
-      alert("Failed to delete item");
+    } catch (error) {
+      alert(error?.response?.data?.message || "Failed to delete item");
     }
   };
 
