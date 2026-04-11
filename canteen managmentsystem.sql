@@ -207,3 +207,5 @@ SELECT * FROM order_tokens;
 SELECT o.order_id, ot.token_code
 FROM orders o
 LEFT JOIN order_tokens ot ON o.order_id = ot.order_id;
+
+select * from hotels;
