@@ -10,7 +10,7 @@ function HotelPickupSlots() {
   const [endTime, setEndTime] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
 
   const fetchSlots = useCallback(async () => {
     setLoading(true);
@@ -75,7 +75,7 @@ function HotelPickupSlots() {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 

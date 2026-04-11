@@ -3,13 +3,13 @@ import "./HotelAdminDashboard.css";
 
 function HotelAdminDashboard() {
   const navigate = useNavigate();
-  const userName = localStorage.getItem("user_name") || "Hotel Admin";
+  const userName = sessionStorage.getItem("user_name") || "Hotel Admin";
 
   const handleLogout = () => {
-    localStorage.removeItem("user_id");
-    localStorage.removeItem("role");
-    localStorage.removeItem("hotel_id");
-    localStorage.removeItem("user_name");
+    sessionStorage.removeItem("user_id");
+    sessionStorage.removeItem("role");
+    sessionStorage.removeItem("hotel_id");
+    sessionStorage.removeItem("user_name");
     navigate("/login");
   };
 

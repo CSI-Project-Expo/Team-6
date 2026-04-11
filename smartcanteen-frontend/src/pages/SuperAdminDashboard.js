@@ -7,10 +7,10 @@ function SuperAdminDashboard() {
   const navigate = useNavigate();
   const [impact, setImpact] = useState(null);
   const [summary, setSummary] = useState(null);
-  const userName = localStorage.getItem("user_name") || "Admin";
+  const userName = sessionStorage.getItem("user_name") || "Admin";
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 

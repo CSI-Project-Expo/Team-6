@@ -41,8 +41,8 @@ function Register() {
         password,
       });
 
-      localStorage.setItem("user_id", loginRes.data.user_id);
-      localStorage.setItem("role", loginRes.data.role);
+      sessionStorage.setItem("user_id", loginRes.data.user_id);
+      sessionStorage.setItem("role", loginRes.data.role);
 
       setMessage("✅ Registered & logged in successfully!");
 

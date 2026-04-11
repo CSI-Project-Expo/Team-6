@@ -10,7 +10,7 @@ function PlaceOrder() {
 
   const hotel_id = params.get("hotel_id");
   const slot_id = params.get("slot_id");
-  const user_id = localStorage.getItem("user_id");
+  const user_id = sessionStorage.getItem("user_id");
 
   const placeOrder = async () => {
     if (!slot_id) {

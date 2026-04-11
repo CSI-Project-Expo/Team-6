@@ -6,10 +6,10 @@ import "./ViewHotels.css";
 function ViewHotels() {
   const [hotels, setHotels] = useState([]);
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 

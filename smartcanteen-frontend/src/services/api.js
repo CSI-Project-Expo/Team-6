@@ -5,8 +5,8 @@ const API = axios.create({
 });
 
 API.interceptors.request.use((config) => {
-  const role = localStorage.getItem("role");
-  const userId = localStorage.getItem("user_id");
+  const role = sessionStorage.getItem("role");
+  const userId = sessionStorage.getItem("user_id");
 
   if (role) {
     config.headers.role = role;

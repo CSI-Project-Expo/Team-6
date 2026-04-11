@@ -1,4 +1,4 @@
-﻿import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import "./HotelMenu.css";
@@ -14,8 +14,8 @@ function HotelMenu() {
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
-  const hotelId = localStorage.getItem("hotel_id");
+  const role = sessionStorage.getItem("role");
+  const hotelId = sessionStorage.getItem("hotel_id");
 
   const fetchMenu = useCallback(async (showLoading = true) => {
     if (showLoading) {
@@ -129,7 +129,7 @@ function HotelMenu() {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 
@@ -297,7 +297,7 @@ function HotelMenu() {
       </section>
 
       <footer className="hm-footer">
-        <p>© 2026 SmartCanteen - Digital Food Ordering & Token System | CSI Project Expo</p>
+        <p>� 2026 SmartCanteen - Digital Food Ordering & Token System | CSI Project Expo</p>
       </footer>
     </div>
   );

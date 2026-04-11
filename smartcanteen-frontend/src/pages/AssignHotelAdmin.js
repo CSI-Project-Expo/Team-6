@@ -10,11 +10,11 @@ function AssignHotelAdmin() {
   const [hotelId, setHotelId] = useState("");
   const [message, setMessage] = useState("");
 
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 

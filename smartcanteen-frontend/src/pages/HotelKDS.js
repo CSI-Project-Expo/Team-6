@@ -12,7 +12,7 @@ const COLUMN_CONFIG = [
 
 function HotelKDS() {
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newAlertCount, setNewAlertCount] = useState(0);
@@ -149,7 +149,7 @@ function HotelKDS() {
           <button
             className="kds-logout"
             onClick={() => {
-              localStorage.clear();
+              sessionStorage.clear();
               navigate("/login");
             }}
           >

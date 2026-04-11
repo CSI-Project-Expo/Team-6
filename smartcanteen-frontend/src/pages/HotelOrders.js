@@ -7,8 +7,8 @@ function HotelOrders() {
   const [orders, setOrders] = useState([]);
   const navigate = useNavigate();
 
-  const role = localStorage.getItem("role");
-  const hotelId = localStorage.getItem("hotel_id");
+  const role = sessionStorage.getItem("role");
+  const hotelId = sessionStorage.getItem("hotel_id");
 
   const fetchOrders = useCallback(async () => {
     try {
@@ -54,7 +54,7 @@ function HotelOrders() {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/");
   };
 

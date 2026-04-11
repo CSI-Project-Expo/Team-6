@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./MyOrders.css";
 
 function MyOrders() {
-  const userId = localStorage.getItem("user_id");
+  const userId = sessionStorage.getItem("user_id");
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
 

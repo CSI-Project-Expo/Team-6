@@ -14,7 +14,7 @@ function CreateHotelAdmin() {
     /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(value);
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 
@@ -32,7 +32,7 @@ function CreateHotelAdmin() {
       return;
     }
 
-    const role = localStorage.getItem("role");
+    const role = sessionStorage.getItem("role");
     if (role !== "ADMIN") {
       alert("Access denied");
       return;

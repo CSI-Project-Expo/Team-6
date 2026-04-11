@@ -11,7 +11,7 @@ function AddHotel() {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 
@@ -21,7 +21,7 @@ function AddHotel() {
       return;
     }
 
-    const role = localStorage.getItem("role");
+    const role = sessionStorage.getItem("role");
 
     if (role !== "ADMIN") {
       alert("Access denied. Only Super Admin can add hotels.");

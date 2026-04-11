@@ -6,11 +6,11 @@ import "./SuperAdminUsers.css";
 function SuperAdminUsers() {
   const [users, setUsers] = useState([]);
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
-  const currentUserId = Number(localStorage.getItem("user_id"));
+  const role = sessionStorage.getItem("role");
+  const currentUserId = Number(sessionStorage.getItem("user_id"));
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 

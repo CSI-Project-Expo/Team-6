@@ -5,8 +5,8 @@ import "./StudentMenu.css";
 
 function StudentMenu() {
   const navigate = useNavigate();
-  const userId = Number(localStorage.getItem("user_id"));
-  const userName = localStorage.getItem("username") || "Student";
+  const userId = Number(sessionStorage.getItem("user_id"));
+  const userName = sessionStorage.getItem("username") || "Student";
 
   const [hotels, setHotels] = useState([]);
   const [selectedHotel, setSelectedHotel] = useState("");
@@ -111,7 +111,7 @@ function StudentMenu() {
   }, [selectedHotel]);
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 

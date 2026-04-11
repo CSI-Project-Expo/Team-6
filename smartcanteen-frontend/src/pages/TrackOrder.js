@@ -11,8 +11,8 @@ function TrackOrder() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const userId = localStorage.getItem("user_id");
-  const role = localStorage.getItem("role");
+  const userId = sessionStorage.getItem("user_id");
+  const role = sessionStorage.getItem("role");
 
   useEffect(() => {
     if (!userId || role !== "STUDENT") {
@@ -78,7 +78,7 @@ function TrackOrder() {
         <button
           className="logout-btn"
           onClick={() => {
-            localStorage.clear();
+            sessionStorage.clear();
             navigate("/login");
           }}
         >

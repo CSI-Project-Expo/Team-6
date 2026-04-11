@@ -9,7 +9,7 @@ function TokenValidate() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
 
   useEffect(() => {
     if (!role || role !== "HOTEL_ADMIN") {
@@ -44,7 +44,7 @@ function TokenValidate() {
   };
 
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 

@@ -10,7 +10,7 @@ function TokenPage() {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const userId = localStorage.getItem("user_id");
+  const userId = sessionStorage.getItem("user_id");
 
   useEffect(() => {
     if (!userId) {
@@ -50,7 +50,7 @@ function TokenPage() {
       <div className="token-actions">
         <button onClick={() => navigate(-1)}>⬅ Back</button>
         <button className="logout-btn" onClick={() => {
-          localStorage.clear();
+          sessionStorage.clear();
           navigate("/login");
         }}>🚪 Logout</button>
       </div>

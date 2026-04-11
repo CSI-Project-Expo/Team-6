@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "./HotelMenuManager.css";
@@ -6,14 +6,14 @@ import "./HotelMenuManager.css";
 function HotelMenuManager() {
   const navigate = useNavigate();
 
-  const hotelId = localStorage.getItem("hotel_id") || 1; // temporary
-  const role = localStorage.getItem("role");
+  const hotelId = sessionStorage.getItem("hotel_id") || 1; // temporary
+  const role = sessionStorage.getItem("role");
 
   const [menu, setMenu] = useState([]);
   const [itemName, setItemName] = useState("");
   const [price, setPrice] = useState("");
 
-  // ðŸ” Role protection
+  // 🔐 Role protection
   useEffect(() => {
     if (role !== "HOTEL_ADMIN") {
       alert("Unauthorized access");
@@ -96,7 +96,7 @@ function HotelMenuManager() {
 
   // Logout
   const handleLogout = () => {
-    localStorage.clear();
+    sessionStorage.clear();
     navigate("/login");
   };
 
