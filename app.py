@@ -1247,8 +1247,14 @@ def hotel_orders_my():
         return jsonify({"message": "Hotel not assigned to this admin"}), 403
 
     cursor.execute("""
-        SELECT o.order_id, u.name AS student_name, o.total_amount, o.status, o.order_date
-        FROM orders o JOIN users u ON o.user_id=u.user_id
+        SELECT
+            o.order_id,
+            COALESCE(NULLIF(TRIM(u.name), ''), u.email, 'Unknown') AS student_name,
+            o.total_amount,
+            o.status,
+            o.order_date
+        FROM orders o
+        LEFT JOIN users u ON o.user_id=u.user_id
         WHERE o.hotel_id=%s
         ORDER BY o.order_id DESC
     """, (hotel_id,))
@@ -1281,8 +1287,14 @@ def hotel_orders(hotel_id):
         return jsonify({"message": "You can only access your own hotel orders"}), 403
 
     cursor.execute("""
-        SELECT o.order_id, u.name AS student_name, o.total_amount, o.status, o.order_date
-        FROM orders o JOIN users u ON o.user_id=u.user_id
+        SELECT
+            o.order_id,
+            COALESCE(NULLIF(TRIM(u.name), ''), u.email, 'Unknown') AS student_name,
+            o.total_amount,
+            o.status,
+            o.order_date
+        FROM orders o
+        LEFT JOIN users u ON o.user_id=u.user_id
         WHERE o.hotel_id=%s
         ORDER BY o.order_id DESC
     """, (assigned_hotel_id,))
@@ -1312,7 +1324,7 @@ def hoteladmin_kds_my():
     cursor.execute("""
         SELECT
             o.order_id,
-            u.name AS student_name,
+            COALESCE(NULLIF(TRIM(u.name), ''), u.email, 'Unknown') AS student_name,
             o.total_amount,
             o.status,
             o.created_at,
@@ -1320,7 +1332,7 @@ def hoteladmin_kds_my():
             CONCAT(ps.start_time, ' - ', ps.end_time) AS slot_time,
             ot.token_code
         FROM orders o
-        JOIN users u ON o.user_id = u.user_id
+        LEFT JOIN users u ON o.user_id = u.user_id
         LEFT JOIN pickup_slots ps ON o.slot_id = ps.slot_id
         LEFT JOIN order_tokens ot ON o.order_id = ot.order_id
         WHERE o.hotel_id = %s
