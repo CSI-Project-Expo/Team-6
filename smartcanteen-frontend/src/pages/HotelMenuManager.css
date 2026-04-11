@@ -1,201 +1,286 @@
-:root {
-  --primary: #FF6B35;
-  --secondary: #2EC4B6;
-  --bg: #F7F9FC;
-  --dark: #1F2933;
+﻿:root {
+  --primary: #ff6b35;
+  --secondary: #2ec4b6;
+  --bg: #f5f7fb;
+  --dark: #1f2933;
+  --text: #0f172a;
+  --muted: #64748b;
+  --card: #ffffff;
+  --border: #e2e8f0;
 }
 
-/* PAGE */
 .hotel-menu-manager-page {
   min-height: 100vh;
-  background: var(--bg);
+  background: radial-gradient(circle at top, #ffffff 0%, #f5f7fb 55%, #eef2f7 100%);
   font-family: "Manrope", "Segoe UI", sans-serif;
+  color: var(--text);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px 20px;
+  padding: 40px 20px 60px;
 }
 
-/* HEADER */
+.hotel-menu-hero {
+  width: min(1100px, 100%);
+  background: linear-gradient(120deg, rgba(255, 107, 53, 0.16), rgba(46, 196, 182, 0.2));
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 24px;
+  padding: 28px 28px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+  margin-bottom: 28px;
+}
+
+.hero-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
 .hotel-menu-manager-header {
-  background: linear-gradient(135deg, #FF6B35, #eaf1f0);
-  color: white;
-  padding: 20px 40px;
-  border-radius: 16px;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 30px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  font-size: 2rem;
+  margin: 0 0 6px;
+  color: var(--dark);
 }
 
-/* ACTION BUTTONS */
+.hero-subtitle {
+  margin: 0;
+  color: #334155;
+}
+
 .hotel-menu-manager-actions {
   display: flex;
   gap: 12px;
-  margin-bottom: 30px;
   flex-wrap: wrap;
 }
 
 .hotel-menu-manager-actions button {
   padding: 10px 18px;
-  border-radius: 20px;
+  border-radius: 999px;
   border: none;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .hotel-menu-manager-actions button:not(.logout-btn) {
-  background: var(--primary);
-  color: white;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 10px 18px rgba(15, 23, 42, 0.1);
 }
 
 .hotel-menu-manager-actions .logout-btn {
-  background: #ef4444;
-  color: white;
+  background: linear-gradient(135deg, #ef4444, #f97316);
+  color: #fff;
+  box-shadow: 0 10px 18px rgba(239, 68, 68, 0.2);
 }
 
 .hotel-menu-manager-actions button:hover {
-  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
-/* ADD ITEM FORM */
-.add-menu-manager-form {
+.hotel-menu-layout {
+  width: min(1100px, 100%);
+  display: grid;
+  grid-template-columns: minmax(260px, 360px) 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.menu-panel {
+  background: var(--card);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  padding: 22px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.panel-header {
   display: flex;
-  gap: 12px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-  flex-direction: column;
-  width: 100%;
-  max-width: 400px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
 }
 
-.add-menu-manager-form input {
-  padding: 10px 15px;
+.panel-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.panel-hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.add-menu-manager-form {
+  display: grid;
+  gap: 14px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.field input {
+  padding: 12px 14px;
   border-radius: 12px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border);
   outline: none;
   font-size: 1rem;
-  width: 100%;
 }
 
-.add-menu-manager-form input:focus {
+.field input:focus {
   border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.15);
 }
 
 .add-menu-manager-form button {
-  padding: 10px 20px;
-  border-radius: 20px;
+  padding: 12px 18px;
+  border-radius: 14px;
   border: none;
   background: var(--secondary);
   color: white;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.2s ease;
 }
 
 .add-menu-manager-form button:hover {
-  background: #25b4a6;
+  background: #1fb4a6;
 }
 
-/* MENU ITEM CARD */
+.menu-list-panel {
+  min-height: 360px;
+}
+
+.menu-empty {
+  background: #f8fafc;
+  border: 1px dashed #cbd5f5;
+  border-radius: 16px;
+  padding: 20px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.menu-empty p {
+  margin: 0 0 6px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.menu-grid {
+  display: grid;
+  gap: 16px;
+}
+
 .menu-item-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  padding: 15px 20px;
-  margin: 10px 0;
-  width: 100%;
-  max-width: 500px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
 }
 
-.menu-item-card b {
+.menu-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: start;
+}
+
+.menu-item-top h4 {
+  margin: 0 0 4px;
   font-size: 1.1rem;
 }
 
-.menu-item-card button {
-  padding: 6px 12px;
-  border-radius: 16px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 8px;
-}
-
-.menu-item-card .toggle-btn {
-  background: var(--primary);
-  color: white;
-}
-
-.menu-item-card .delete-btn {
-  background: #ef4444;
-  color: white;
-  margin-left: 10px;
-}
-
-.menu-item-card button:hover {
-  opacity: 0.85;
-}
-
-/* RESPONSIVE */
-@media (max-width: 500px) {
-  .add-menu-manager-form {
-    gap: 10px;
-  }
-
-  .menu-item-card {
-    padding: 12px 15px;
-  }
-}
-
-/* Premium hero override */
-.hotel-menu-manager-page .hotel-menu-manager-header {
-  position: relative;
-  overflow: hidden;
-  margin: 16px auto 18px;
-  width: min(1200px, 100%);
-  border-radius: 28px !important;
-  border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  background:
-    linear-gradient(120deg, rgba(255, 107, 53, 0.94), rgba(46, 196, 182, 0.92)),
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0 2px, transparent 2px 9px) !important;
-  color: #fff !important;
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14) !important;
-  padding: 34px 20px 28px;
-}
-
-.hotel-menu-manager-page .hotel-menu-manager-header::before {
-  content: "";
-  position: absolute;
-  width: 260px;
-  height: 260px;
-  top: -110px;
-  right: -80px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.hotel-menu-manager-page .hotel-menu-manager-header::after {
-  content: "";
-  position: absolute;
-  width: 220px;
-  height: 220px;
-  left: -90px;
-  bottom: -120px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.16);
-}
-
-.hotel-menu-manager-page .hotel-menu-manager-actions button {
-  border-radius: 999px !important;
-  background: rgba(255, 255, 255, 0.94) !important;
-  color: #0f172a !important;
+.menu-price {
+  margin: 0;
   font-weight: 700;
-  box-shadow: 0 10px 18px rgba(255, 255, 255, 0.18);
+  color: #0f172a;
 }
 
-.hotel-menu-manager-page .hotel-menu-manager-actions .logout-btn {
-  background: linear-gradient(135deg, #ef4444, #f97316) !important;
-  color: #fff !important;
+.status-pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.status-pill.available {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+}
+
+.status-pill.unavailable {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+}
+
+.menu-item-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.menu-item-actions button {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.menu-item-actions .toggle-btn {
+  background: var(--primary);
+  color: #fff;
+}
+
+.menu-item-actions .delete-btn {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.menu-item-actions button:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+  .hotel-menu-hero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .hotel-menu-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .hotel-menu-manager-page {
+    padding: 28px 16px 50px;
+  }
+
+  .hotel-menu-hero {
+    padding: 22px;
+  }
+
+  .menu-item-top {
+    flex-direction: column;
+  }
+
+  .menu-item-actions {
+    flex-direction: column;
+  }
 }

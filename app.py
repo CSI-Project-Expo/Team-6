@@ -47,6 +47,12 @@ def get_hotel_id_for_admin(cursor, user_id):
         (user_id,),
     )
     hotel = cursor.fetchone()
+    # Ensure no unread results remain on this cursor.
+    try:
+        cursor.fetchall()
+    except mysql.connector.errors.InterfaceError:
+        # No remaining rows to consume.
+        pass
     if not hotel:
         return None
     return hotel["hotel_id"]
@@ -221,7 +227,8 @@ def login():
     response = {
         "message": "Login successful",
         "user_id": user["user_id"],
-        "role": user["role"]
+        "role": user["role"],
+        "name": user["name"],
     }
 
     if user["role"] == "HOTEL_ADMIN":
@@ -342,7 +349,16 @@ def view_hotels():
     cursor = db.cursor(dictionary=True)
 
     cursor.execute("""
-        SELECT h.hotel_id, h.hotel_name, h.location, h.is_active, u.name AS admin_name
+        SELECT
+            h.hotel_id,
+            h.hotel_name,
+            h.location,
+            CASE
+                WHEN u.status = 'BLOCKED' THEN FALSE
+                ELSE h.is_active
+            END AS is_active,
+            u.name AS admin_name,
+            u.status AS admin_status
         FROM hotels h
         LEFT JOIN hotel_admins ha ON h.hotel_id = ha.hotel_id
         LEFT JOIN users u ON ha.user_id = u.user_id

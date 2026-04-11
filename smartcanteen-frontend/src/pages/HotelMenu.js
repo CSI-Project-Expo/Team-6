@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+﻿import React, { useCallback, useEffect, useState } from "react";
 import api from "../services/api";
 import { useNavigate } from "react-router-dom";
 import "./HotelMenu.css";
@@ -8,14 +8,19 @@ function HotelMenu() {
   const [itemName, setItemName] = useState("");
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(false);
+  const [updatingIds, setUpdatingIds] = useState(new Set());
+  const [deletingIds, setDeletingIds] = useState(new Set());
   const [search, setSearch] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   const navigate = useNavigate();
   const role = localStorage.getItem("role");
   const hotelId = localStorage.getItem("hotel_id");
 
-  const fetchMenu = useCallback(async () => {
-    setLoading(true);
+  const fetchMenu = useCallback(async (showLoading = true) => {
+    if (showLoading) {
+      setLoading(true);
+    }
     try {
       const res = await api.get("/hoteladmin/menu/my");
       setMenu(res.data);
@@ -31,7 +36,9 @@ function HotelMenu() {
       }
       alert("Failed to load menu");
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   }, [hotelId]);
 
@@ -48,7 +55,7 @@ function HotelMenu() {
     const numericPrice = Number(price);
 
     if (!itemName.trim() || !price || numericPrice <= 0) {
-      alert("⚠ Please enter valid item name and price");
+      alert("Please enter valid item name and price");
       return;
     }
 
@@ -58,38 +65,66 @@ function HotelMenu() {
         price: numericPrice,
       });
 
-      alert("✅ Menu item added successfully");
+      alert("Menu item added successfully");
       setItemName("");
       setPrice("");
-      fetchMenu();
+      fetchMenu(false);
     } catch {
-      alert("❌ Failed to add item");
+      alert("Failed to add item");
     }
   };
 
   const deleteMenuItem = async (menuItemId) => {
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
+    setConfirmDeleteId(null);
+    setDeletingIds((prev) => new Set(prev).add(menuItemId));
+    const previousMenu = menu;
+    setMenu((prev) => prev.filter((item) => item.menu_item_id !== menuItemId));
 
     try {
       const res = await api.delete(`/hoteladmin/menu/${menuItemId}`);
-      if (res?.data?.message) {
-        alert(res.data.message);
-      }
-      fetchMenu();
+      // If backend archives instead of deleting, keep it hidden per UI preference.
     } catch (error) {
+      setMenu(previousMenu);
       alert(error?.response?.data?.message || "Failed to delete item");
+    } finally {
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(menuItemId);
+        return next;
+      });
     }
   };
 
   const toggleAvailability = async (menuItemId, currentStatus) => {
+    setUpdatingIds((prev) => new Set(prev).add(menuItemId));
+    setMenu((prev) =>
+      prev.map((item) =>
+        item.menu_item_id === menuItemId
+          ? { ...item, is_available: !currentStatus }
+          : item
+      )
+    );
+
     try {
       await api.put("/hoteladmin/menu", {
         menu_item_id: menuItemId,
         is_available: !currentStatus,
       });
-      fetchMenu();
     } catch {
+      setMenu((prev) =>
+        prev.map((item) =>
+          item.menu_item_id === menuItemId
+            ? { ...item, is_available: currentStatus }
+            : item
+        )
+      );
       alert("Failed to update availability");
+    } finally {
+      setUpdatingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(menuItemId);
+        return next;
+      });
     }
   };
 
@@ -98,65 +133,83 @@ function HotelMenu() {
     navigate("/login");
   };
 
-  // Stats
   const totalItems = menu.length;
   const availableItems = menu.filter((i) => i.is_available).length;
   const unavailableItems = totalItems - availableItems;
 
-  // Search filter
   const filteredMenu = menu.filter((item) =>
     item.item_name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
     <div className="hotel-menu-page">
-      <div className="title-section">
-      <h2 className="hotel-menu-header">🍽 SmartCanteen - Menu Management</h2>
-      <p className="subtitle">Manage your food items, prices and availability</p>
-</div>
-      <div className="hotel-menu-actions">
-        <button onClick={() => navigate("/hoteladmin/orders")}>📦 View Orders</button>
-        <button onClick={() => navigate("/hoteladmin")}>⬅ Back</button>
-        <button className="logout-btn" onClick={handleLogout}>🚪 Logout</button>
-      </div>
+      <header className="title-section">
+        <div>
+          <p className="title-kicker">Hotel Admin</p>
+          <h2 className="hotel-menu-header">Menu Management</h2>
+          <p className="subtitle">Manage your food items, prices and availability.</p>
+        </div>
+        <div className="hotel-menu-actions">
+          <button onClick={() => navigate("/hoteladmin/orders")}>View Orders</button>
+          <button onClick={() => navigate("/hoteladmin")}>Back</button>
+          <button className="logout-btn" onClick={handleLogout}>Logout</button>
+        </div>
+      </header>
 
-      {/* Stats */}
-      <div className="menu-stats">
-        <p>📊 Total Items: {totalItems}</p>
-        <p>🟢 Available: {availableItems}</p>
-        <p>🔴 Unavailable: {unavailableItems}</p>
-      </div>
+      <section className="menu-stats">
+        <div className="stat-card">
+          <span>Total Items</span>
+          <strong>{totalItems}</strong>
+        </div>
+        <div className="stat-card available">
+          <span>Available</span>
+          <strong>{availableItems}</strong>
+        </div>
+        <div className="stat-card unavailable">
+          <span>Unavailable</span>
+          <strong>{unavailableItems}</strong>
+        </div>
+      </section>
 
-      {/* Add Item */}
-      <h3>➕ Add New Food Item</h3>
-      <div className="add-menu-form">
-        <input
-          type="text"
-          placeholder="Enter Item Name (eg: Veg Burger)"
-          value={itemName}
-          onChange={(e) => setItemName(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Enter Price (₹)"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
-        />
-        <button onClick={addMenuItem}>Add Item</button>
-      </div>
+      <section className="menu-controls">
+        <div className="add-menu-form">
+          <label>
+            <span>Item Name</span>
+            <input
+              type="text"
+              placeholder="e.g., Veg Burger"
+              value={itemName}
+              onChange={(e) => setItemName(e.target.value)}
+            />
+          </label>
+          <label>
+            <span>Price (Rs)</span>
+            <input
+              type="number"
+              placeholder="e.g., 60"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+          </label>
+          <button onClick={addMenuItem}>Add Item</button>
+        </div>
 
-      {/* Search */}
-      <input
-        className="search-box"
-        type="text"
-        placeholder="🔍 Search menu item..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="Search menu item..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+      </section>
 
-      <h3>📋 Your Menu Items</h3>
+      <section className="menu-table-wrapper">
+        <div className="table-header">
+          <h3>Your Menu Items</h3>
+          {loading && <span className="loading-pill">Loading...</span>}
+        </div>
 
-      <div className="menu-table-wrapper">
         <table className="menu-table">
           <thead>
             <tr>
@@ -169,53 +222,82 @@ function HotelMenu() {
           </thead>
 
           <tbody>
-            {loading && (
-              <tr>
-                <td colSpan="5">⏳ Loading your menu...</td>
-              </tr>
-            )}
-
-            {filteredMenu.map((item) => (
-              <tr key={item.menu_item_id}>
+            {filteredMenu.map((item) => {
+              const isUpdating = updatingIds.has(item.menu_item_id);
+              const isDeleting = deletingIds.has(item.menu_item_id);
+              const isBusy = isUpdating || isDeleting;
+              const isConfirming = confirmDeleteId === item.menu_item_id;
+              return (
+              <tr key={item.menu_item_id} className={isBusy ? "row-busy" : ""} aria-busy={isBusy}>
                 <td>{item.menu_item_id}</td>
                 <td>{item.item_name}</td>
-                <td>₹ {item.price}</td>
+                <td>Rs {item.price}</td>
                 <td>
                   {item.is_available ? (
                     <span className="available-badge">Available</span>
                   ) : (
                     <span className="unavailable-badge">Unavailable</span>
                   )}
+                  {item.archived && (
+                    <span className="archived-badge">Archived</span>
+                  )}
                 </td>
                 <td>
-                  <button
-                    onClick={() =>
-                      toggleAvailability(item.menu_item_id, item.is_available)
-                    }
-                  >
-                    {item.is_available ? "Mark Unavailable" : "Mark Available"}
-                  </button>
-                  <button
-                    className="menu-delete-btn"
-                    onClick={() => deleteMenuItem(item.menu_item_id)}
-                  >
-                    Delete
-                  </button>
+                  <div className="actions-cell">
+                    <button
+                      disabled={isUpdating}
+                      onClick={() =>
+                        toggleAvailability(item.menu_item_id, item.is_available)
+                      }
+                    >
+                      {isUpdating
+                        ? "Updating..."
+                        : item.is_available
+                        ? "Mark Unavailable"
+                        : "Mark Available"}
+                    </button>
+                    {isConfirming ? (
+                      <>
+                        <button
+                          className="menu-confirm-btn"
+                          disabled={isDeleting}
+                          onClick={() => deleteMenuItem(item.menu_item_id)}
+                        >
+                          {isDeleting ? "Deleting..." : "Confirm"}
+                        </button>
+                        <button
+                          className="menu-cancel-btn"
+                          disabled={isDeleting}
+                          onClick={() => setConfirmDeleteId(null)}
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="menu-delete-btn"
+                        disabled={isDeleting}
+                        onClick={() => setConfirmDeleteId(item.menu_item_id)}
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
-            ))}
+            )})}
 
             {!loading && filteredMenu.length === 0 && (
               <tr>
-                <td colSpan="5">🍔 No menu items found. Add your first item!</td>
+                <td colSpan="5">No menu items found. Add your first item!</td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </section>
 
       <footer className="hm-footer">
-        <p>© 2026 🍽 SmartCanteen - Digital Food Ordering & Token System | CSI Project Expo</p>
+        <p>© 2026 SmartCanteen - Digital Food Ordering & Token System | CSI Project Expo</p>
       </footer>
     </div>
   );

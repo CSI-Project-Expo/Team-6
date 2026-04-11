@@ -3,11 +3,13 @@ import "./HotelAdminDashboard.css";
 
 function HotelAdminDashboard() {
   const navigate = useNavigate();
+  const userName = localStorage.getItem("user_name") || "Hotel Admin";
 
   const handleLogout = () => {
     localStorage.removeItem("user_id");
     localStorage.removeItem("role");
     localStorage.removeItem("hotel_id");
+    localStorage.removeItem("user_name");
     navigate("/login");
   };
 
@@ -23,7 +25,7 @@ function HotelAdminDashboard() {
       </header>
 
       <section className="ha-hero">
-        <h2>Welcome Hotel Admin</h2>
+        <h2>Welcome, {userName}</h2>
         <p>Manage menu, pickup slots, orders and token validation from one place.</p>
       </section>
 

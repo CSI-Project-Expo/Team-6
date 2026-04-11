@@ -18,6 +18,11 @@ function Login() {
 
       localStorage.setItem("user_id", res.data.user_id);
       localStorage.setItem("role", res.data.role);
+      if (res.data.name) {
+        localStorage.setItem("user_name", res.data.name);
+      } else {
+        localStorage.removeItem("user_name");
+      }
       if (res.data.hotel_id) {
         localStorage.setItem("hotel_id", res.data.hotel_id);
       } else {

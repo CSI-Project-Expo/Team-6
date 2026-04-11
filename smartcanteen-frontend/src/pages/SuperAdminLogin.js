@@ -19,6 +19,11 @@ function SuperAdminLogin() {
 
       localStorage.setItem("user_id", res.data.user_id);
       localStorage.setItem("role", res.data.role);
+      if (res.data.name) {
+        localStorage.setItem("user_name", res.data.name);
+      } else {
+        localStorage.removeItem("user_name");
+      }
 
       navigate("/superadmin/dashboard");
     } catch (error) {

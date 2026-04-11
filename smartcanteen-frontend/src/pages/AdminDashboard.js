@@ -4,17 +4,19 @@ import "./LegacyPages.css";
 
 function AdminDashboard() {
   const navigate = useNavigate();
+  const userName = localStorage.getItem("user_name") || "Hotel Admin";
 
   const handleLogout = () => {
     localStorage.removeItem("user_id");
     localStorage.removeItem("role");
+    localStorage.removeItem("user_name");
     navigate("/login");
   };
 
   return (
     <div className="lp-page">
       <div className="lp-card narrow">
-        <h2 className="lp-title">Hotel Admin Dashboard</h2>
+        <h2 className="lp-title">Welcome, {userName}</h2>
         <p className="lp-subtitle">Manage menu, orders and operational updates.</p>
 
         <div className="lp-actions">

@@ -7,6 +7,7 @@ function SuperAdminDashboard() {
   const navigate = useNavigate();
   const [impact, setImpact] = useState(null);
   const [summary, setSummary] = useState(null);
+  const userName = localStorage.getItem("user_name") || "Admin";
 
   const handleLogout = () => {
     localStorage.clear();
@@ -60,7 +61,10 @@ function SuperAdminDashboard() {
   return (
     <div className="sa-dashboard">
       <header className="sa-header">
-        <h1>Super Admin Portal</h1>
+        <div>
+          <h1>Super Admin Portal</h1>
+          <p className="sa-welcome">Welcome, {userName}</p>
+        </div>
         <button className="sa-logout-btn" onClick={handleLogout}>
           Logout
         </button>
