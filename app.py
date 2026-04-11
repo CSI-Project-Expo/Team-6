@@ -1230,16 +1230,62 @@ def add_menu():
     return jsonify({"message": "Menu item added"})
 
 
-@app.route("/hoteladmin/orders/<int:hotel_id>")
-def hotel_orders(hotel_id):
+@app.route("/hoteladmin/orders/my", methods=["GET"])
+@check_role("HOTEL_ADMIN")
+def hotel_orders_my():
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
+
     db = get_db_connection()
     cursor = db.cursor(dictionary=True)
+    hotel_id = get_hotel_id_for_admin(cursor, user_id)
+
+    if not hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
 
     cursor.execute("""
         SELECT o.order_id, u.name AS student_name, o.total_amount, o.status, o.order_date
         FROM orders o JOIN users u ON o.user_id=u.user_id
         WHERE o.hotel_id=%s
+        ORDER BY o.order_id DESC
     """, (hotel_id,))
+
+    data = cursor.fetchall()
+    cursor.close()
+    db.close()
+    return jsonify(data)
+
+
+@app.route("/hoteladmin/orders/<int:hotel_id>")
+@check_role("HOTEL_ADMIN")
+def hotel_orders(hotel_id):
+    user_id = get_request_user_id()
+    if user_id is None:
+        return jsonify({"message": "Missing or invalid user_id"}), 400
+
+    db = get_db_connection()
+    cursor = db.cursor(dictionary=True)
+    assigned_hotel_id = get_hotel_id_for_admin(cursor, user_id)
+
+    if not assigned_hotel_id:
+        cursor.close()
+        db.close()
+        return jsonify({"message": "Hotel not assigned to this admin"}), 403
+
+    if int(hotel_id) != int(assigned_hotel_id):
+        cursor.close()
+        db.close()
+        return jsonify({"message": "You can only access your own hotel orders"}), 403
+
+    cursor.execute("""
+        SELECT o.order_id, u.name AS student_name, o.total_amount, o.status, o.order_date
+        FROM orders o JOIN users u ON o.user_id=u.user_id
+        WHERE o.hotel_id=%s
+        ORDER BY o.order_id DESC
+    """, (assigned_hotel_id,))
 
     data = cursor.fetchall()
     cursor.close()
@@ -1278,7 +1324,7 @@ def hoteladmin_kds_my():
         LEFT JOIN pickup_slots ps ON o.slot_id = ps.slot_id
         LEFT JOIN order_tokens ot ON o.order_id = ot.order_id
         WHERE o.hotel_id = %s
-          AND o.order_date = CURDATE()
+          AND (o.order_date = CURDATE() OR DATE(o.created_at) = CURDATE())
           AND o.status IN ('PLACED', 'PREPARING', 'READY', 'COLLECTED')
         ORDER BY
           FIELD(o.status, 'PLACED', 'PREPARING', 'READY', 'COLLECTED'),

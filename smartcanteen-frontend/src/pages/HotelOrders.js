@@ -12,9 +12,18 @@ function HotelOrders() {
 
   const fetchOrders = useCallback(async () => {
     try {
-      const res = await api.get(`/hoteladmin/orders/${hotelId}`);
+      const res = await api.get("/hoteladmin/orders/my");
       setOrders(res.data);
     } catch (error) {
+      if (hotelId) {
+        try {
+          const fallbackRes = await api.get(`/hoteladmin/orders/${hotelId}`);
+          setOrders(fallbackRes.data);
+          return;
+        } catch (fallbackError) {
+          console.log(fallbackError);
+        }
+      }
       console.log(error);
       alert("Failed to fetch orders");
     }
